@@ -1,1 +1,1 @@
-module.exports = require('./dist/ne.js');
+throw "This module is intended to run from client side only."
