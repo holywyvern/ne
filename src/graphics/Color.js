@@ -1,7 +1,4 @@
-// Ensure the module is loaded
-if (typeof window.ne == 'undefined') {
-  window.ne = {};
-}
+
 ne.Color = (function () {
 
   return class Color {

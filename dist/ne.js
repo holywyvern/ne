@@ -1,51 +1,111 @@
+"use strict";
+
+window.ne = {};
+"use strict";
+
+window.ne.tools = {};
+"use strict";
+
+ne.tools.gl = (function () {
+
+  var $ = {};
+
+  $.textureFromCanvas = function (gl, canvas) {
+    var texture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    return texture;
+  };
+
+  return $;
+})();
 'use strict';
 
-var _slicedToArray = (function () {
-    function sliceIterator(arr, i) {
-        var _arr = [];var _n = true;var _d = false;var _e = undefined;try {
-            for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
-                _arr.push(_s.value);if (i && _arr.length === i) break;
-            }
-        } catch (err) {
-            _d = true;_e = err;
-        } finally {
-            try {
-                if (!_n && _i["return"]) _i["return"]();
-            } finally {
-                if (_d) throw _e;
-            }
-        }return _arr;
-    }return function (arr, i) {
-        if (Array.isArray(arr)) {
-            return arr;
-        } else if (Symbol.iterator in Object(arr)) {
-            return sliceIterator(arr, i);
-        } else {
-            throw new TypeError("Invalid attempt to destructure non-iterable instance");
-        }
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+ne.Loader = (function () {
+
+    var _cache = {
+        audio: {},
+        pixmaps: {},
+        json: {},
+        fonts: {}
     };
-})();
 
-var _createClass = (function () {
-    function defineProperties(target, props) {
-        for (var i = 0; i < props.length; i++) {
-            var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+    return (function () {
+        function Loader() {
+            _classCallCheck(this, Loader);
         }
-    }return function (Constructor, protoProps, staticProps) {
-        if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
-    };
+
+        _createClass(Loader, [{
+            key: 'loadPixmaps',
+            value: function loadPixmaps(name, url) {
+                if (typeof _cache.pixmaps[name] == 'undefined') {}
+                return this;
+            }
+        }, {
+            key: 'loadAudio',
+            value: function loadAudio(name, url) {
+                if (typeof _cache.audio[name] == 'undefined') {}
+                return this;
+            }
+        }, {
+            key: 'loadJson',
+            value: function loadJson(name, url) {
+                if (typeof _cache.json[name] == 'undefined') {}
+                return this;
+            }
+        }, {
+            key: 'loadFont',
+            value: function loadFont(name, url) {
+                if (typeof _cache.fonts[name] == 'undefined') {}
+                return this;
+            }
+        }, {
+            key: 'pixmap',
+            value: function pixmap(name) {}
+        }, {
+            key: 'audio',
+            value: function audio(name) {}
+        }, {
+            key: 'json',
+            value: function json(name) {}
+        }, {
+            key: 'font',
+            value: function font(name) {}
+        }], [{
+            key: 'clear',
+            value: function clear() {
+                this.clearPixmaps();
+                this.clearAudio();
+                this.clearJson();
+            }
+        }, {
+            key: 'clearPixmaps',
+            value: function clearPixmaps() {}
+        }, {
+            key: 'clearAudio',
+            value: function clearAudio() {}
+        }, {
+            key: 'clearJson',
+            value: function clearJson() {}
+        }]);
+
+        return Loader;
+    })();
 })();
+'use strict';
 
-function _classCallCheck(instance, Constructor) {
-    if (!(instance instanceof Constructor)) {
-        throw new TypeError("Cannot call a class as a function");
-    }
-}
+var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; })();
 
-// Ensure the module is loaded
-if (typeof window.ne == 'undefined') {
-    window.ne = {};
-}
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
 ne.Color = (function () {
 
     return (function () {
@@ -387,180 +447,114 @@ ne.Color = (function () {
 })();
 'use strict';
 
-var _createClass = (function () {
-    function defineProperties(target, props) {
-        for (var i = 0; i < props.length; i++) {
-            var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
-        }
-    }return function (Constructor, protoProps, staticProps) {
-        if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
-    };
-})();
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-function _classCallCheck(instance, Constructor) {
-    if (!(instance instanceof Constructor)) {
-        throw new TypeError("Cannot call a class as a function");
-    }
-}
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-// Ensure the module is loaded
-if (typeof window.ne == 'undefined') {
-    window.ne = {};
-}
 ne.Pixmap = (function () {
 
-    return (function () {
-        function Pixmal() {
-            var width = arguments.length <= 0 || arguments[0] === undefined ? 1 : arguments[0];
-            var height = arguments.length <= 1 || arguments[1] === undefined ? 1 : arguments[1];
+  return (function () {
+    function Pixmal() {
+      var width = arguments.length <= 0 || arguments[0] === undefined ? 1 : arguments[0];
+      var height = arguments.length <= 1 || arguments[1] === undefined ? 1 : arguments[1];
 
-            _classCallCheck(this, Pixmal);
+      _classCallCheck(this, Pixmal);
 
-            this._canvas = document.createElement('canvas');
-            this._context = this._canvas.getContext('2d');
-        }
-
-        _createClass(Pixmal, [{
-            key: '_bltImage',
-            value: function _bltImage(img) {
-                var sx = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
-                var sy = arguments.length <= 2 || arguments[2] === undefined ? 0 : arguments[2];
-                var sw = arguments.length <= 3 || arguments[3] === undefined ? undefined : arguments[3];
-                var sh = arguments.length <= 4 || arguments[4] === undefined ? undefined : arguments[4];
-                var dx = arguments.length <= 5 || arguments[5] === undefined ? 0 : arguments[5];
-                var dy = arguments.length <= 6 || arguments[6] === undefined ? 0 : arguments[6];
-                var dw = arguments.length <= 7 || arguments[7] === undefined ? undefined : arguments[7];
-                var dh = arguments.length <= 8 || arguments[8] === undefined ? undefined : arguments[8];
-
-                if (typeof sw == 'undefined') sw = img.width;
-                if (typeof sh == 'undefined') sh = img.height;
-                if (typeof dw == 'undefined') dw = sw;
-                if (typeof dh == 'undefined') dh = sh;
-                this._context.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh);
-                return this;
-            }
-        }, {
-            key: 'blt',
-            value: function blt(bmp) {
-                var sx = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
-                var sy = arguments.length <= 2 || arguments[2] === undefined ? 0 : arguments[2];
-                var sw = arguments.length <= 3 || arguments[3] === undefined ? undefined : arguments[3];
-                var sh = arguments.length <= 4 || arguments[4] === undefined ? undefined : arguments[4];
-                var dx = arguments.length <= 5 || arguments[5] === undefined ? 0 : arguments[5];
-                var dy = arguments.length <= 6 || arguments[6] === undefined ? 0 : arguments[6];
-                var dw = arguments.length <= 7 || arguments[7] === undefined ? undefined : arguments[7];
-                var dh = arguments.length <= 8 || arguments[8] === undefined ? undefined : arguments[8];
-
-                this._bltImage(bmp._canvas, sx, sy, sw, sh, dx, dy, dw, dh);
-                return this;
-            }
-        }, {
-            key: 'drawLine',
-            value: function drawLine(from, to, color) {}
-        }], [{
-            key: 'fromImage',
-            value: function fromImage(img) {
-                var pixmap = new Pixmap(img.width, img.height);
-                pixmap._bltImage(img, 0, 0, img.width, img.height);
-                return pixmap;
-            }
-        }]);
-
-        return Pixmal;
-    })();
-})();
-'use strict';
-
-var _createClass = (function () {
-    function defineProperties(target, props) {
-        for (var i = 0; i < props.length; i++) {
-            var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
-        }
-    }return function (Constructor, protoProps, staticProps) {
-        if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
-    };
-})();
-
-function _classCallCheck(instance, Constructor) {
-    if (!(instance instanceof Constructor)) {
-        throw new TypeError("Cannot call a class as a function");
+      this._canvas = document.createElement('canvas');
+      this._context = this._canvas.getContext('2d');
     }
-}
 
-// Ensure the module is loaded
-if (typeof window.ne == 'undefined') {
-    window.ne = {};
-}
-ne.Loader = (function () {
+    _createClass(Pixmal, [{
+      key: '_bltImage',
+      value: function _bltImage(img) {
+        var sx = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+        var sy = arguments.length <= 2 || arguments[2] === undefined ? 0 : arguments[2];
+        var sw = arguments.length <= 3 || arguments[3] === undefined ? undefined : arguments[3];
+        var sh = arguments.length <= 4 || arguments[4] === undefined ? undefined : arguments[4];
+        var dx = arguments.length <= 5 || arguments[5] === undefined ? 0 : arguments[5];
+        var dy = arguments.length <= 6 || arguments[6] === undefined ? 0 : arguments[6];
+        var dw = arguments.length <= 7 || arguments[7] === undefined ? undefined : arguments[7];
+        var dh = arguments.length <= 8 || arguments[8] === undefined ? undefined : arguments[8];
 
-    var _cache = {
-        audio: {},
-        pixmaps: {},
-        json: {},
-        fonts: {}
-    };
+        if (typeof sw == 'undefined') sw = img.width;
+        if (typeof sh == 'undefined') sh = img.height;
+        if (typeof dw == 'undefined') dw = sw;
+        if (typeof dh == 'undefined') dh = sh;
+        this._context.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh);
+        return this;
+      }
+    }, {
+      key: 'blt',
+      value: function blt(bmp) {
+        var sx = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+        var sy = arguments.length <= 2 || arguments[2] === undefined ? 0 : arguments[2];
+        var sw = arguments.length <= 3 || arguments[3] === undefined ? undefined : arguments[3];
+        var sh = arguments.length <= 4 || arguments[4] === undefined ? undefined : arguments[4];
+        var dx = arguments.length <= 5 || arguments[5] === undefined ? 0 : arguments[5];
+        var dy = arguments.length <= 6 || arguments[6] === undefined ? 0 : arguments[6];
+        var dw = arguments.length <= 7 || arguments[7] === undefined ? undefined : arguments[7];
+        var dh = arguments.length <= 8 || arguments[8] === undefined ? undefined : arguments[8];
+
+        this._bltImage(bmp._canvas, sx, sy, sw, sh, dx, dy, dw, dh);
+        return this;
+      }
+    }, {
+      key: 'drawLine',
+      value: function drawLine(from, to, color) {}
+    }], [{
+      key: 'fromImage',
+      value: function fromImage(img) {
+        var pixmap = new Pixmap(img.width, img.height);
+        pixmap._bltImage(img, 0, 0, img.width, img.height);
+        return pixmap;
+      }
+    }]);
+
+    return Pixmal;
+  })();
+})();
+"use strict";
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+ne.Drawable = (function () {
 
     return (function () {
-        function Loader() {
-            _classCallCheck(this, Loader);
+        function Drawable() {
+            _classCallCheck(this, Drawable);
+
+            this._parent = null;
+            this.z = 0;
         }
 
-        _createClass(Loader, [{
-            key: 'loadPixmaps',
-            value: function loadPixmaps(name, url) {
-                if (typeof _cache.pixmaps[name] == 'undefined') {}
-                return this;
+        _createClass(Drawable, [{
+            key: "render",
+            value: function render(renderer) {}
+        }, {
+            key: "act",
+            value: function act(delta) {}
+        }, {
+            key: "parent",
+            get: function get() {
+                return this._parent;
             }
         }, {
-            key: 'loadAudio',
-            value: function loadAudio(name, url) {
-                if (typeof _cache.audio[name] == 'undefined') {}
-                return this;
+            key: "z",
+            get: function get() {
+                return this._z;
+            },
+            set: function set(value) {
+                this._z = value;
+                var parent = this.parent;
+                if (parent) {
+                    parent.zUpdate();
+                }
             }
-        }, {
-            key: 'loadJson',
-            value: function loadJson(name, url) {
-                if (typeof _cache.json[name] == 'undefined') {}
-                return this;
-            }
-        }, {
-            key: 'loadFont',
-            value: function loadFont(name, url) {
-                if (typeof _cache.fonts[name] == 'undefined') {}
-                return this;
-            }
-        }, {
-            key: 'pixmap',
-            value: function pixmap(name) {}
-        }, {
-            key: 'audio',
-            value: function audio(name) {}
-        }, {
-            key: 'json',
-            value: function json(name) {}
-        }, {
-            key: 'font',
-            value: function font(name) {}
-        }], [{
-            key: 'clear',
-            value: function clear() {
-                this.clearPixmaps();
-                this.clearAudio();
-                this.clearJson();
-            }
-        }, {
-            key: 'clearPixmaps',
-            value: function clearPixmaps() {}
-        }, {
-            key: 'clearAudio',
-            value: function clearAudio() {}
-        }, {
-            key: 'clearJson',
-            value: function clearJson() {}
         }]);
 
-        return Loader;
+        return Drawable;
     })();
 })();
-//# sourceMappingURL=ne.js.map
 //# sourceMappingURL=ne.js.map

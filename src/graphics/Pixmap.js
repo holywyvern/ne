@@ -1,7 +1,4 @@
-// Ensure the module is loaded
-if (typeof window.ne == 'undefined') {
-  window.ne = {};
-}
+
 ne.Pixmap = (function () {
 
   return class Pixmal {
