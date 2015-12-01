@@ -1,10 +1,12 @@
 
 ne.Pixmap = (function () {
 
-  return class Pixmal {
+  return class Pixmap {
 
     constructor(width=1, height=1) {
       this._canvas  = document.createElement('canvas');
+      this._canvas.width = width;
+      this._canvas.height = height;
       this._context = this._canvas.getContext('2d');
     }
 
@@ -30,6 +32,18 @@ ne.Pixmap = (function () {
 
     drawLine(from, to, color) {
 
+    }
+
+    generateTexture(gl) {
+      return ne.tools.gl.textureFromCanvas(gl, this._canvas);
+    }
+
+    get width() {
+      return this._canvas.width;
+    }
+
+    get height() {
+      return this._canvas.height;
     }
 
   }

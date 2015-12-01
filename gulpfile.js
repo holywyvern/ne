@@ -10,6 +10,8 @@ var $SCRIPTS = [
   "src/tools/gl.js",
   "src/tools/Loader.js",
   "src/graphics/Color.js",
+  "src/graphics/Shader.js",
+  "src/graphics/Texture.js",
   "src/graphics/Pixmap.js",
   "src/graphics/Drawable.js",
   "src/graphics/Container.js"
