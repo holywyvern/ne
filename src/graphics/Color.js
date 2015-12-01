@@ -136,11 +136,11 @@ ne.Color = (function () {
       this.green = value;
     }
 
-    get b(value) {
+    set b(value) {
       this.blue = value;
     }
 
-    get a(value) {
+    set a(value) {
       this.alpha = value;
     }
 
@@ -261,7 +261,7 @@ ne.Color = (function () {
     }
 
     grayscale() {
-      var avg = 0.21 this.red + 0.72 this.green + 0.07 this.blue;
+      var avg = 0.21 * this.red + 0.72 * this.green + 0.07 * this.blue;
       return this.set(avg, avg, avg);
     }
 
@@ -272,7 +272,7 @@ ne.Color = (function () {
 
     lightnessAverage() {
       var args = [this.red, this.green, this.blue];
-      var avg =  Math.max(...args) + Math.min(...args)) / 2;
+      var avg =  (Math.max(...args) + Math.min(...args)) / 2;
       return this.set(avg, avg, avg);
     }
 
