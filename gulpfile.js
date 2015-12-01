@@ -11,7 +11,8 @@ var $SCRIPTS = [
   "src/tools/Loader.js",
   "src/graphics/Color.js",
   "src/graphics/Pixmap.js",
-  "src/graphics/Drawable.js"
+  "src/graphics/Drawable.js",
+  "src/graphics/Container.js"
 ];
 
 gulp.task("compile", function () {
