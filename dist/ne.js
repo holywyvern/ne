@@ -495,8 +495,9 @@ ne.Loader = (function () {
 
     var _cache = {
         audio: {},
-        bitmaps: {},
-        json: {}
+        pixmaps: {},
+        json: {},
+        fonts: {}
     };
 
     return (function () {
@@ -506,22 +507,40 @@ ne.Loader = (function () {
 
         _createClass(Loader, [{
             key: 'loadPixmaps',
-            value: function loadPixmaps(url) {}
+            value: function loadPixmaps(name, url) {
+                if (typeof _cache.pixmaps[name] == 'undefined') {}
+                return this;
+            }
         }, {
             key: 'loadAudio',
-            value: function loadAudio(url) {}
+            value: function loadAudio(name, url) {
+                if (typeof _cache.audio[name] == 'undefined') {}
+                return this;
+            }
         }, {
             key: 'loadJson',
-            value: function loadJson(url) {}
+            value: function loadJson(name, url) {
+                if (typeof _cache.json[name] == 'undefined') {}
+                return this;
+            }
+        }, {
+            key: 'loadFont',
+            value: function loadFont(name, url) {
+                if (typeof _cache.fonts[name] == 'undefined') {}
+                return this;
+            }
         }, {
             key: 'pixmap',
-            value: function pixmap(url) {}
+            value: function pixmap(name) {}
         }, {
             key: 'audio',
-            value: function audio(url) {}
+            value: function audio(name) {}
         }, {
             key: 'json',
-            value: function json(url) {}
+            value: function json(name) {}
+        }, {
+            key: 'font',
+            value: function font(name) {}
         }], [{
             key: 'clear',
             value: function clear() {
