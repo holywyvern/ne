@@ -7,7 +7,8 @@ ne.Loader = (function () {
   var _cache = {
     audio:    {},
     bitmaps:  {},
-    json:     {}
+    json:     {},
+    fonts:    {}
   };
 
   return class Loader {
@@ -16,27 +17,35 @@ ne.Loader = (function () {
 
     }
 
-    loadPixmaps(url) {
+    loadPixmaps(name, url) {
 
     }
 
-    loadAudio(url) {
+    loadAudio(name, url) {
 
     }
 
-    loadJson(url) {
+    loadJson(name, url) {
 
     }
 
-    pixmap(url) {
+    loadFont(name, url) {
 
     }
 
-    audio(url) {
+    pixmap(name) {
 
     }
 
-    json(url) {
+    audio(name) {
+
+    }
+
+    json(name) {
+
+    }
+
+    font(name) {
 
     }
 
