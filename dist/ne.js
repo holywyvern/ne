@@ -513,7 +513,7 @@ ne.Pixmap = (function () {
     return Pixmal;
   })();
 })();
-"use strict";
+'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
@@ -521,41 +521,107 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 ne.Drawable = (function () {
 
-    return (function () {
-        function Drawable() {
-            _classCallCheck(this, Drawable);
+  return (function () {
+    function Drawable() {
+      _classCallCheck(this, Drawable);
 
-            this._parent = null;
-            this.z = 0;
+      this._parent = null;
+      this._events = {};
+      this.z = 0;
+    }
+
+    _createClass(Drawable, [{
+      key: 'render',
+      value: function render(gl) {}
+    }, {
+      key: 'act',
+      value: function act(delta) {}
+    }, {
+      key: 'fire',
+      value: function fire(name) {
+        var event = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+        this._ensureEventType(name);
+        var result = true;
+        var _iteratorNormalCompletion = true;
+        var _didIteratorError = false;
+        var _iteratorError = undefined;
+
+        try {
+          for (var _iterator = this._events[name][Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+            var callback = _step.value;
+
+            var i = callback(event);
+            if (typeof i != 'undefined' && i === false) {
+              result = false;
+            }
+          }
+        } catch (err) {
+          _didIteratorError = true;
+          _iteratorError = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion && _iterator.return) {
+              _iterator.return();
+            }
+          } finally {
+            if (_didIteratorError) {
+              throw _iteratorError;
+            }
+          }
         }
 
-        _createClass(Drawable, [{
-            key: "render",
-            value: function render(gl) {}
-        }, {
-            key: "act",
-            value: function act(delta) {}
-        }, {
-            key: "parent",
-            get: function get() {
-                return this._parent;
-            }
-        }, {
-            key: "z",
-            get: function get() {
-                return this._z;
-            },
-            set: function set(value) {
-                this._z = value;
-                var parent = this.parent;
-                if (parent) {
-                    parent.zUpdate();
-                }
-            }
-        }]);
+        return result;
+      }
+    }, {
+      key: 'on',
+      value: function on(name, callback) {
+        this._ensureEventType(name);
+        this._events[name].push(callback);
+      }
+    }, {
+      key: 'off',
+      value: function off(name) {
+        var callback = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
 
-        return Drawable;
-    })();
+        if (callback === null) {
+          this._events[name] = [];
+          return;
+        }
+        this._ensureEventType(name);
+        var index = this._events[name].indexOf(callback);
+        if (index !== -1) {
+          this._events[name].splice(index, 1);
+        }
+      }
+    }, {
+      key: '_ensureEventType',
+      value: function _ensureEventType(name) {
+        if (typeof this._events[name] == 'undefined') {
+          this._events[name] = [];
+        }
+      }
+    }, {
+      key: 'parent',
+      get: function get() {
+        return this._parent;
+      }
+    }, {
+      key: 'z',
+      get: function get() {
+        return this._z;
+      },
+      set: function set(value) {
+        this._z = value;
+        var parent = this.parent;
+        if (parent) {
+          parent.zUpdate();
+        }
+      }
+    }]);
+
+    return Drawable;
+  })();
 })();
 "use strict";
 
@@ -605,6 +671,7 @@ ne.Container = (function () {
           this.children.sort(function (a, b) {
             return a.z - b.z;
           });
+          this._zRefresh = false;
         }
       }
     }, {
@@ -620,6 +687,48 @@ ne.Container = (function () {
         this.children.forEach(function (child) {
           return child.render(gl);
         });
+      }
+    }, {
+      key: "add",
+      value: function add(child) {
+        if (!this.contains(child)) {
+          this.children.push(child);
+          this.zUpdate();
+        }
+      }
+    }, {
+      key: "remove",
+      value: function remove(child) {
+        var index = this.indexOf(child);
+        if (index !== -1) {
+          this.children.splice(index, 1);
+        }
+      }
+    }, {
+      key: "indexOf",
+      value: function indexOf(child) {
+        return this.children.indexOf(child);
+      }
+    }, {
+      key: "clear",
+      value: function clear() {
+        this.children = [];
+      }
+    }, {
+      key: "swap",
+      value: function swap(a, b) {
+        var i = this.indexOf(a);
+        var j = this.indexOf(b);
+        if (i !== -1 && j !== -1) {
+          var z = a.z;
+          a.z = b.z;
+          b.z = z;
+        }
+      }
+    }, {
+      key: "contains",
+      value: function contains(child) {
+        return this.indexOf(child) !== -1;
       }
     }, {
       key: "children",
