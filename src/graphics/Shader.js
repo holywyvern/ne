@@ -134,7 +134,7 @@ ne.Shader = (function () {
     }
 
     mainFunction(code) {
-      return 'void main(void) {' + code + '}';
+      return `void main(void) { ${code} }`;
     }
 
   }
