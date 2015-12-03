@@ -19,6 +19,55 @@ ne.tools.gl = (function () {
     return texture;
   };
 
+  $.bindTexture = function (gl, texture) {
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  };
+
+  $.bindBuffer = function (gl, buffer, data) {
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
+  };
+
+  $.draw = function () {
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+  };
+
+  $.checkShader = function (gl, shader) {
+    var success = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
+    if (!success) {
+      var log = gl.getShaderInfoLog(shader);
+      var e = "Could not compile shader:" + log + ".\nSource was:\n" + source;
+      gl.deleteShader(shader);
+      throw e;
+    }
+  };
+
+  $.makeShader = function (gl, type, source) {
+    var shader = gl.createShader(type);
+    gl.shaderSource(shader, source);
+    gl.compileShader(shader);
+    this.checkShader(gl, shader);
+    return shader;
+  };
+
+  $.checkProgram = function (gl, program) {
+    var success = gl.getProgramParameter(program, gl.LINK_STATUS);
+    if (!success) {
+      throw "program failed to link:" + gl.getProgramInfoLog(program);
+    }
+  };
+
+  $.makeProgram = function (gl, vertex, fragment) {
+    var program = gl.createProgram();
+    gl.attachShader(program, vertex);
+    gl.attachShader(program, fragment);
+    gl.linkProgram(program);
+    this.checkProgram(gl, program);
+    return program;
+  };
+
   return $;
 })();
 'use strict';
@@ -97,6 +146,46 @@ ne.Loader = (function () {
 
         return Loader;
     })();
+})();
+'use strict';
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+ne.Point = (function () {
+
+  return (function () {
+    function Point() {
+      var x = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+      var y = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+      var z = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
+
+      _classCallCheck(this, Point);
+
+      this.x = x;
+      this.y = y;
+      this.z = z;
+    }
+
+    _createClass(Point, [{
+      key: 'set',
+      value: function set(x, y) {
+        var z = arguments.length <= 2 || arguments[2] === undefined ? undefined : arguments[2];
+
+        this.x = x;
+        this.y = y;
+        this.z = typeof z == 'undefined' ? z : this.z;
+      }
+    }, {
+      key: 'dimensions',
+      get: function get() {
+        return z === null ? 2 : 3;
+      }
+    }]);
+
+    return Point;
+  })();
 })();
 'use strict';
 
@@ -445,6 +534,436 @@ ne.Color = (function () {
         return Color;
     })();
 })();
+"use strict";
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+ne.ShaderBase = (function () {
+
+  return (function () {
+    function ShaderBase() {
+      _classCallCheck(this, ShaderBase);
+
+      this.initMembers();
+    }
+
+    _createClass(ShaderBase, [{
+      key: "initMembers",
+      value: function initMembers() {
+        this._glProgram = null;
+        this._glVertex = null;
+        this._glFragment = null;
+        this._glAttributes = {};
+        this._glUniforms = {};
+      }
+    }, {
+      key: "vertex",
+      value: function vertex() {
+        return "";
+      }
+    }, {
+      key: "fragment",
+      value: function fragment() {
+        return "";
+      }
+    }, {
+      key: "attributes",
+      value: function attributes() {
+        return {};
+      }
+    }, {
+      key: "uniforms",
+      value: function uniforms() {
+        return {};
+      }
+    }, {
+      key: "varying",
+      value: function varying() {
+        return {};
+      }
+    }, {
+      key: "generate",
+      value: function generate(gl) {
+        if (!this._glProgram) {
+          this.generateVertexShader(gl);
+          this.generateFragmentShader(gl);
+          this.generateProgram(gl);
+          this.generateVariables(gl);
+        }
+        return this._glProgram;
+      }
+    }, {
+      key: "use",
+      value: function use(gl) {
+        gl.useProgram(this._glProgram);
+      }
+    }, {
+      key: "generateVariables",
+      value: function generateVariables(gl) {
+        this.generateAttributes(gl);
+        this.generateUniforms(gl);
+      }
+    }, {
+      key: "generateAttributes",
+      value: function generateAttributes(gl) {
+        var _this = this;
+
+        var attributes = this.attributes();
+        Object.keys(attributes).forEach(function (attr) {
+          _this._glAttributes[attr] = gl.getAttribLocation(_this._glProgram, attr);
+        });
+      }
+    }, {
+      key: "generateUniforms",
+      value: function generateUniforms(gl) {
+        var _this2 = this;
+
+        var uniforms = this.attributes();
+        Object.keys(uniforms).forEach(function (u) {
+          _this2._glUniforms[u] = gl.getUniformLocation(_this2._glProgram, u);
+        });
+      }
+    }, {
+      key: "destroy",
+      value: function destroy(gl) {
+        this.destroyVertexShader(gl);
+        this.destroyFragmentShader(gl);
+        this.destroyProgram(gl);
+      }
+    }, {
+      key: "destroyVertexShader",
+      value: function destroyVertexShader(gl) {
+        if (this._glVertex) {
+          if (this._glProgram) {
+            gl.detachShader(this._glProgram, this._glVertex);
+            gl.destroyShader(this._glVertex);
+          }
+          this._glVertex = null;
+        }
+      }
+    }, {
+      key: "destroyFragmentShader",
+      value: function destroyFragmentShader(gl) {
+        if (this._glFragment) {
+          if (this._glProgram) {
+            gl.detachShader(this._glProgram, this._glFragment);
+            gl.destroyShader(this._glFragment);
+          }
+          this._glVertex = null;
+        }
+      }
+    }, {
+      key: "destroyProgram",
+      value: function destroyProgram(gl) {
+        if (this._glProgram) {
+          gl.destroyProgram(this._glProgram);
+          this._glProgram = null;
+        }
+      }
+    }, {
+      key: "generateVertexShader",
+      value: function generateVertexShader(gl) {
+        try {
+          this._glVertex = ne.tools.gl.makeShader(gl, gl.VERTEX_SHADER, this.vertexSource());
+        } catch (e) {
+          this.destroy(gl);
+          throw e;
+        }
+      }
+    }, {
+      key: "generateFragmentShader",
+      value: function generateFragmentShader(gl) {
+        try {
+          this._glFragment = ne.tools.gl.makeShader(gl, gl.FRAGMENT_SHADER, this.fragmentSource());
+        } catch (e) {
+          this.destroy(gl);
+          throw e;
+        }
+      }
+    }, {
+      key: "vertexSource",
+      value: function vertexSource() {
+        return this.vertexHeader() + this.mainFunction(this.vertex());
+      }
+    }, {
+      key: "fragmentSource",
+      value: function fragmentSource() {
+        return this.fragmentHeader() + this.mainFunction(this.fragment());
+      }
+    }, {
+      key: "generateProgram",
+      value: function generateProgram(gl) {
+        try {
+          this._glProgram = ne.tools.gl.generateProgram(gl, this._glVertex, this._glFragment);
+        } catch (e) {
+          this.destroy(gl);
+          throw e;
+        }
+      }
+    }, {
+      key: "vertexHeader",
+      value: function vertexHeader() {
+        return this.precision() + this.attributeSource() + this.uniformSource() + this.varyingSource();
+      }
+    }, {
+      key: "fragmentHeader",
+      value: function fragmentHeader() {
+        return this.precision() + this.uniformSource() + this.varyingSource();
+      }
+    }, {
+      key: "sourceFromObject",
+      value: function sourceFromObject(kind, list) {
+        var result = '';
+        for (var a in list) {
+          if (list.hasOwnProperty(a)) {
+            var type = list[a];
+            result += kind + " " + type + " " + a + ";";
+          }
+        }
+        return result;
+      }
+    }, {
+      key: "updateAttributes",
+      value: function updateAttributes(gl) {
+        var _this3 = this;
+
+        Object.keys(this._glAttributes).forEach(function (name) {
+          _this3.updateAttribute(gl, name);
+        });
+      }
+    }, {
+      key: "updateAttribute",
+      value: function updateAttribute(gl, name) {
+        var location = this._glAttributes[name];
+        if (location) {
+          gl.enableVertexAttribArray(location);
+          gl.vertexAttribPointer(location, 2, gl.FLOAT, false, 0, 0);
+        }
+      }
+    }, {
+      key: "attributeSource",
+      value: function attributeSource() {
+        return this.sourceFromObject('attribute', this.attributes());
+      }
+    }, {
+      key: "uniformSource",
+      value: function uniformSource() {
+        return this.sourceFromObject('uniform', this.uniforms());
+      }
+    }, {
+      key: "varyingSource",
+      value: function varyingSource() {
+        return this.sourceFromObject('varying', this.varying());
+      }
+    }, {
+      key: "precision",
+      value: function precision() {
+        return 'precision mediump float;';
+      }
+    }, {
+      key: "mainFunction",
+      value: function mainFunction(code) {
+        return "void main(void) { " + code + " }";
+      }
+    }]);
+
+    return ShaderBase;
+  })();
+})();
+'use strict';
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+ne.Shader = (function () {
+
+  return (function (_ne$ShaderBase) {
+    _inherits(Shader, _ne$ShaderBase);
+
+    function Shader() {
+      _classCallCheck(this, Shader);
+
+      return _possibleConstructorReturn(this, Object.getPrototypeOf(Shader).call(this));
+    }
+
+    _createClass(Shader, [{
+      key: 'initMembers',
+      value: function initMembers() {
+        _get(Object.getPrototypeOf(Shader.prototype), 'initMembers', this).call(this);
+        this._values = this._defaultSet(this.uniforms());
+      }
+    }, {
+      key: '_defaultSet',
+      value: function _defaultSet(set) {
+        var _this2 = this;
+
+        var result = {};
+        Object.keys(set).forEach(function (i) {
+          result[i] = _this2._getDefaultValue(set[i]);
+        });
+        return result;
+      }
+    }, {
+      key: '_getDefaultValue',
+      value: function _getDefaultValue(type) {
+        switch (type) {
+          case 'vec2':
+            return new ne.Point(0, 0);
+          case 'vec3':
+            return new ne.Point(0, 0, 0);
+          case 'vec4':
+            return [0, 0, 0, 0];
+          default:
+            return 0;
+        }
+      }
+    }, {
+      key: 'update',
+      value: function update(gl) {
+        this.updateUniforms(gl);
+      }
+    }, {
+      key: 'updateUniforms',
+      value: function updateUniforms(gl) {}
+    }, {
+      key: 'uniformValues',
+      get: function get() {
+        return this._values;
+      }
+    }]);
+
+    return Shader;
+  })(ne.ShaderBase);
+})();
+"use strict";
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+ne.Texture = (function () {
+
+  return (function () {
+    function Texture(pixmap) {
+      _classCallCheck(this, Texture);
+
+      this._data = new Float32Array([0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0]);
+      this._pixmap = pixmap;
+      this._glTexture = null;
+      this._buffer = null;
+      this._isDirty = false;
+    }
+
+    _createClass(Texture, [{
+      key: "generate",
+      value: function generate(gl) {
+        if (this._isDirty) {
+          this._isDirty = false;
+          this.destroyTexture();
+        }
+        this.regenerateTexture(gl);
+        this.regenerateBuffer(gl);
+        return this._glTexture;
+      }
+    }, {
+      key: "update",
+      value: function update() {
+        this._isDirty = true;
+      }
+    }, {
+      key: "regenerateTexture",
+      value: function regenerateTexture(gl) {
+        if (!this._glTexture) {
+          this.generateTexture(gl);
+        }
+      }
+    }, {
+      key: "regenerateBuffer",
+      value: function regenerateBuffer(gl) {
+        if (!this._buffer) {
+          this.generateBuffer(gl);
+        }
+      }
+    }, {
+      key: "destroy",
+      value: function destroy(gl) {
+        this.destroyTexture(gl);
+        this.destroyBuffer(gl);
+      }
+    }, {
+      key: "destroyTexture",
+      value: function destroyTexture(gl) {
+        if (this._glTexture) {
+          gl.destroyTexture(gl);
+          this._glTexture = null;
+        }
+      }
+    }, {
+      key: "destroyBuffer",
+      value: function destroyBuffer(gl) {
+        if (this._buffer) {
+          gl.destroyBuffer(this._buffer);
+          this._buffer = null;
+        }
+      }
+    }, {
+      key: "generateBuffer",
+      value: function generateBuffer(gl) {
+        this._buffer = gl.createBuffer();
+      }
+    }, {
+      key: "generateTexture",
+      value: function generateTexture(gl) {
+        this._glTexture = this._pixmap.generateTexture(gl);
+      }
+    }, {
+      key: "bind",
+      value: function bind(gl, rect) {
+        this.bindBuffer(gl, rect);
+        this.bindTexture(gl);
+      }
+    }, {
+      key: "bindBuffer",
+      value: function bindBuffer(gl, rect) {
+        this.refreshData(rect);
+        ne.tools.gl.bindBuffer(gl, this._buffer, this._data);
+      }
+    }, {
+      key: "refreshData",
+      value: function refreshData(rect) {
+        var x1 = this.clamp(rect.x / this._pixmap.width);
+        var y1 = this.clamp(rect.y / this._pixmap.height);
+        var x2 = this.clamp((rect.x + rect.width) / this._pixmap.width);
+        var y2 = this.clamp((rect.y + rect.height) / this._pixmap.height);
+        this._data[0] = this._data[4] = this._data[6] = x1;
+        this._data[1] = this._data[3] = this._data[9] = y1;
+        this._data[2] = this._data[8] = this._data[10] = x2;
+        this._data[5] = this._data[7] = this._data[11] = y2;
+      }
+    }, {
+      key: "clamp",
+      value: function clamp(value) {
+        return Math.max(0, Math.min(1, value));
+      }
+    }, {
+      key: "bindTexture",
+      value: function bindTexture(gl) {
+        ne.tools.gl.bindTexture(gl, this._glTexture);
+      }
+    }]);
+
+    return Texture;
+  })();
+})();
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -454,17 +973,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 ne.Pixmap = (function () {
 
   return (function () {
-    function Pixmal() {
+    function Pixmap() {
       var width = arguments.length <= 0 || arguments[0] === undefined ? 1 : arguments[0];
       var height = arguments.length <= 1 || arguments[1] === undefined ? 1 : arguments[1];
 
-      _classCallCheck(this, Pixmal);
+      _classCallCheck(this, Pixmap);
 
       this._canvas = document.createElement('canvas');
+      this._canvas.width = width;
+      this._canvas.height = height;
       this._context = this._canvas.getContext('2d');
     }
 
-    _createClass(Pixmal, [{
+    _createClass(Pixmap, [{
       key: '_bltImage',
       value: function _bltImage(img) {
         var sx = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
@@ -501,6 +1022,21 @@ ne.Pixmap = (function () {
     }, {
       key: 'drawLine',
       value: function drawLine(from, to, color) {}
+    }, {
+      key: 'generateTexture',
+      value: function generateTexture(gl) {
+        return ne.tools.gl.textureFromCanvas(gl, this._canvas);
+      }
+    }, {
+      key: 'width',
+      get: function get() {
+        return this._canvas.width;
+      }
+    }, {
+      key: 'height',
+      get: function get() {
+        return this._canvas.height;
+      }
     }], [{
       key: 'fromImage',
       value: function fromImage(img) {
@@ -510,7 +1046,7 @@ ne.Pixmap = (function () {
       }
     }]);
 
-    return Pixmal;
+    return Pixmap;
   })();
 })();
 'use strict';
@@ -739,5 +1275,86 @@ ne.Container = (function () {
 
     return Container;
   })(ne.Drawable);
+})();
+"use strict";
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+ne.Sprite = (function () {
+
+  return (function (_ne$Drawable) {
+    _inherits(Sprite, _ne$Drawable);
+
+    function Sprite() {
+      _classCallCheck(this, Sprite);
+
+      var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Sprite).call(this));
+
+      _this.position = new ne.Point();
+      _this.scale = new ne.Point(1, 1);
+      _this.offset = new ne.Point();
+      _this.shader = new ne.SpriteShader();
+      return _this;
+    }
+
+    return Sprite;
+  })(ne.Drawable);
+})();
+"use strict";
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+ne.SpriteShader = (function () {
+
+  return (function (_ne$Shader) {
+    _inherits(SpriteShader, _ne$Shader);
+
+    function SpriteShader() {
+      _classCallCheck(this, SpriteShader);
+
+      return _possibleConstructorReturn(this, Object.getPrototypeOf(SpriteShader).apply(this, arguments));
+    }
+
+    _createClass(SpriteShader, [{
+      key: "vertex",
+      value: function vertex() {
+        return "gl_Position = vec4(a_position, 0, 1);";
+      }
+    }, {
+      key: "fragment",
+      value: function fragment() {
+        return "gl_FragColor = vec4(0, 1, 0, 1);";
+      }
+    }, {
+      key: "attributes",
+      value: function attributes() {
+        return {
+          a_position: 'vec2'
+        };
+      }
+    }, {
+      key: "uniforms",
+      value: function uniforms() {
+        return {};
+      }
+    }, {
+      key: "varying",
+      value: function varying() {
+        return {};
+      }
+    }]);
+
+    return SpriteShader;
+  })(ne.Shader);
 })();
 //# sourceMappingURL=ne.js.map

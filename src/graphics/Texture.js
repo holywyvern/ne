@@ -1,4 +1,4 @@
-new.Texture = (function () {
+ne.Texture = (function () {
 
   return class Texture {
 
