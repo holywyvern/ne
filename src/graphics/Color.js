@@ -1,11 +1,7 @@
 
 ne.Color = (function () {
 
-  class Color {
-
-    constructor(r=0, g=0, b=0, a=255) {
-      this.set(r, g, b, a);
-    }
+  class Color extends ne.ColorBase {
 
     static _hue2rgb(p, q, t){
         if(t < 0) t += 1;
@@ -64,138 +60,8 @@ ne.Color = (function () {
       return this._hslToRgb(h, s, l, 255);
     }
 
-    set(r, g, b, a=undefined) {
-      if (typeof a == 'undefined') a = this.alpha;
-      this.red = r;
-      this.green = g;
-      this.blue = b;
-      this.alpha = a;
-      return this;
-    }
-
     clone() {
       return new Color(this.red, this.green, this.blue, this.alpha);
-    }
-
-    get red() {
-      return this._r;
-    }
-
-    get green() {
-      return this._g;
-    }
-
-    get blue() {
-      return this._b;
-    }
-
-    get alpha() {
-      return this._a;
-    }
-
-    set red(value) {
-      this._r = Math.max(0, Math.min(255, value));
-    }
-
-    set green(value) {
-      this._g = Math.max(0, Math.min(255, value));
-    }
-
-    set blue(value) {
-      this._b = Math.max(0, Math.min(255, value));
-    }
-
-    set alpha(value) {
-      this._a = Math.max(0, Math.min(255, value));
-    }
-
-    get r() {
-      return this.red;
-    }
-
-    get g() {
-      return this.green;
-    }
-
-    get b() {
-      return this.blue;
-    }
-
-    get a() {
-      return this.alpha;
-    }
-
-    set r(value) {
-      this.red = value;
-    }
-
-    set g(value) {
-      this.green = value;
-    }
-
-    set b(value) {
-      this.blue = value;
-    }
-
-    set a(value) {
-      this.alpha = value;
-    }
-
-    get hue() {
-      return this.toHsl()[0];
-    }
-
-    set hue(value) {
-      var hsla = this.toHsla();
-      hsla[0] = value;
-      var c = Color.fromHsla(hsla);
-      this.set(c.red, c.green, c.blue, c.alpha);
-    }
-
-    get saturation() {
-      return this.toHsl()[1];
-    }
-
-    set saturation(value) {
-      var hsla = this.toHsla();
-      hsla[1] = value;
-      var c = Color.fromHsla(hsla);
-      this.set(c.red, c.green, c.blue, c.alpha);
-    }
-
-    get luminance() {
-      return this.toHsl()[2];
-    }
-
-    set luminance(value) {
-      var hsla = this.toHsla();
-      hsla[2] = value;
-      var c = Color.fromHsla(hsla);
-      this.set(c.red, c.green, c.blue, c.alpha);
-    }
-
-    get h() {
-      return this.hue;
-    }
-
-    set h(value) {
-      this.hue = value;
-    }
-
-    get s() {
-      return this.saturation;
-    }
-
-    set s(value) {
-      this.saturation = value;
-    }
-
-    get l() {
-      return this.luminance;
-    }
-
-    set l(value) {
-      this.luminance = value;
     }
 
     toCss() {
@@ -280,8 +146,7 @@ ne.Color = (function () {
 
   }
 
-  ne.tools.defineEscalarPorperties(Color.prototype, 'r', 'g', 'b', 'a');
-  ne.tools.defineEscalarPorperties(Color.prototype, 'h', 'l', 's', 'a');
+
 
   return Color;
 

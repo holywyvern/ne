@@ -149,6 +149,8 @@ ne.Loader = (function () {
 })();
 'use strict';
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 ne.tools.defineEscalarPorperties = (function () {
 
   function permutator(inputArr) {
@@ -174,22 +176,23 @@ ne.tools.defineEscalarPorperties = (function () {
   }
 
   function makePropertyAccessor(slice) {
+    var length = slice.length;
     return {
 
       get: function get() {
         var _this = this;
 
-        return slice.map(function (i) {
+        var map = slice.map(function (i) {
           return _this[i];
         });
+        return new (Function.prototype.bind.apply(ne.Vec4, [null].concat(_toConsumableArray(map))))();
       },
 
       set: function set(value) {
-        var _this2 = this;
-
-        slice.forEach(function (i, index) {
-          return _this2[i] = value[index];
-        });
+        for (var index = 0; index < length; ++index) {
+          var p = slice[index];
+          this[p] = value[index];
+        }
       },
 
       configurable: true
@@ -229,9 +232,257 @@ var _createClass = (function () { function defineProperties(target, props) { for
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-ne.Point = (function () {
+ne.Vec2 = (function () {
+  var Vec2 = (function () {
+    function Vec2() {
+      var x = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+      var y = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
 
-  return (function () {
+      _classCallCheck(this, Vec2);
+
+      this.x = x;
+      this.y = y;
+    }
+
+    _createClass(Vec2, [{
+      key: 'clone',
+      value: function clone() {
+        return new Vec2(this.x, this.y);
+      }
+    }, {
+      key: 'set',
+      value: function set(x, y) {
+        this.x = x;
+        this.y = y;
+      }
+    }, {
+      key: '0',
+      get: function get() {
+        return this.x;
+      },
+      set: function set(value) {
+        this.x = value;
+      }
+    }, {
+      key: '1',
+      get: function get() {
+        return this.y;
+      },
+      set: function set(value) {
+        this.y = value;
+      }
+    }, {
+      key: '2',
+      get: function get() {
+        return this.z;
+      }
+    }, {
+      key: 'r',
+      get: function get() {
+        return this.x;
+      },
+      set: function set(value) {
+        this.x = value;
+      }
+    }, {
+      key: 's',
+      get: function get() {
+        return this.y;
+      },
+      set: function set(value) {
+        this.y = value;
+      }
+    }, {
+      key: 'u',
+      get: function get() {
+        return this.x;
+      },
+      set: function set(value) {
+        this.x = value;
+      }
+    }, {
+      key: 'v',
+      get: function get() {
+        return this.y;
+      },
+      set: function set(value) {
+        this.y = value;
+      }
+    }, {
+      key: 'g',
+      get: function get() {
+        return this.y;
+      },
+      set: function set(value) {
+        this.y = value;
+      }
+    }]);
+
+    return Vec2;
+  })();
+
+  ne.tools.defineEscalarPorperties(Vec2.prototype, 'x', 'y');
+  ne.tools.defineEscalarPorperties(Vec2.prototype, 'r', 's');
+  ne.tools.defineEscalarPorperties(Vec2.prototype, 'r', 'g');
+  ne.tools.defineEscalarPorperties(Vec2.prototype, 'u', 'v');
+
+  return Vec2;
+})();
+'use strict';
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+ne.Vec3 = (function () {
+  var Vec3 = (function (_ne$Vec) {
+    _inherits(Vec3, _ne$Vec);
+
+    function Vec3() {
+      var x = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+      var y = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+      var z = arguments.length <= 2 || arguments[2] === undefined ? 0 : arguments[2];
+
+      _classCallCheck(this, Vec3);
+
+      var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Vec3).call(this, x, y));
+
+      _this.z = z;
+      return _this;
+    }
+
+    _createClass(Vec3, [{
+      key: 'clone',
+      value: function clone() {
+        return new Vec3(this.x, this.y, this.z);
+      }
+    }, {
+      key: 'set',
+      value: function set(x, y) {
+        var z = arguments.length <= 2 || arguments[2] === undefined ? undefined : arguments[2];
+
+        if (typeof z !== 'undefined') {
+          this.z = z;
+        }
+        _get(Object.getPrototypeOf(Vec3.prototype), 'set', this).call(this, x, y);
+      }
+    }, {
+      key: '2',
+      get: function get() {
+        return this.z;
+      },
+      set: function set(value) {
+        this.z = value;
+      }
+    }, {
+      key: 'b',
+      get: function get() {
+        return this.z;
+      },
+      set: function set(value) {
+        this.z = value;
+      }
+    }]);
+
+    return Vec3;
+  })(ne.Vec2);
+
+  ne.tools.defineEscalarPorperties(Vec3.prototype, 'x', 'y', 'z');
+  ne.tools.defineEscalarPorperties(Vec3.prototype, 'r', 'g', 'b');
+
+  return Vec3;
+})();
+'use strict';
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+ne.Vec4 = (function () {
+  var Vec4 = (function (_ne$Vec) {
+    _inherits(Vec4, _ne$Vec);
+
+    function Vec4() {
+      var x = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+      var y = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+      var z = arguments.length <= 2 || arguments[2] === undefined ? 0 : arguments[2];
+      var w = arguments.length <= 3 || arguments[3] === undefined ? 0 : arguments[3];
+
+      _classCallCheck(this, Vec4);
+
+      var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Vec4).call(this, x, y, z));
+
+      _this.w = w;
+      return _this;
+    }
+
+    _createClass(Vec4, [{
+      key: 'set',
+      value: function set(x, y, z) {
+        var w = arguments.length <= 3 || arguments[3] === undefined ? undefined : arguments[3];
+
+        if (typeof w !== 'undefined') {
+          this.w = w;
+        }
+        _get(Object.getPrototypeOf(Vec4.prototype), 'set', this).call(this, x, y, z);
+      }
+    }, {
+      key: 'clone',
+      value: function clone() {
+        return new Vec4(this.x, this.y, this.z, this.w);
+      }
+    }, {
+      key: 'a',
+      get: function get() {
+        return this.w;
+      },
+      set: function set(value) {
+        this.w = value;
+      }
+    }, {
+      key: '3',
+      get: function get() {
+        return this.w;
+      },
+      set: function set(value) {
+        this.w = value;
+      }
+    }]);
+
+    return Vec4;
+  })(ne.Vec3);
+
+  ne.tools.defineEscalarPorperties(Vec4.prototype, 'x', 'y', 'z', 'w');
+  ne.tools.defineEscalarPorperties(Vec4.prototype, 'r', 'g', 'b', 'a');
+
+  return Vec4;
+})();
+'use strict';
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+ne.Point = (function () {
+  var Point = (function (_ne$Vec) {
+    _inherits(Point, _ne$Vec);
+
     function Point() {
       var x = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
       var y = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
@@ -239,9 +490,10 @@ ne.Point = (function () {
 
       _classCallCheck(this, Point);
 
-      this.x = x;
-      this.y = y;
-      this.z = z;
+      var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Point).call(this, x, y));
+
+      _this.z = z;
+      return _this;
     }
 
     _createClass(Point, [{
@@ -254,49 +506,145 @@ ne.Point = (function () {
         this.z = typeof z == 'undefined' ? z : this.z;
       }
     }, {
+      key: 'clone',
+      value: function clone() {
+        return new Point(this.x, this.y, this.z);
+      }
+    }, {
       key: 'dimensions',
       get: function get() {
         return z === null ? 2 : 3;
       }
+    }, {
+      key: '2',
+      get: function get() {
+        return this.z;
+      },
+      set: function set(value) {
+        this.z = value;
+      }
     }]);
 
     return Point;
-  })();
+  })(ne.Vec2);
+
+  ne.tools.defineEscalarPorperties(Point.prototype, 'x', 'y', 'z');
+
+  return Point;
 })();
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-ne.Rect = (function () {
-  var Rect = (function () {
-    function Rect() {
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+ne.RectBase = (function () {
+  var RectBase = (function (_ne$Vec) {
+    _inherits(RectBase, _ne$Vec);
+
+    function RectBase() {
       var x = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
       var y = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
-      var width = arguments.length <= 2 || arguments[2] === undefined ? 0 : arguments[2];
-      var height = arguments.length <= 3 || arguments[3] === undefined ? 0 : arguments[3];
+      var w = arguments.length <= 2 || arguments[2] === undefined ? 0 : arguments[2];
+      var h = arguments.length <= 3 || arguments[3] === undefined ? 0 : arguments[3];
 
-      _classCallCheck(this, Rect);
+      _classCallCheck(this, RectBase);
 
-      this.set(x, y, width, height);
+      return _possibleConstructorReturn(this, Object.getPrototypeOf(RectBase).call(this, x, y, h, w));
     }
 
-    _createClass(Rect, [{
+    _createClass(RectBase, [{
       key: 'set',
-      value: function set(x, y, width, height) {
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
+      value: function set(x, y, w, h) {
+        _get(Object.getPrototypeOf(RectBase.prototype), 'set', this).call(this, x, y, h, w);
       }
     }, {
       key: 'clone',
       value: function clone() {
+        return new RectBase(this.x, this.y, this.width, this.height);
+      }
+    }, {
+      key: 'width',
+      get: function get() {
+        return this.w;
+      },
+      set: function set(value) {
+        this.w = value;
+      }
+    }, {
+      key: 'height',
+      get: function get() {
+        return this.z;
+      },
+      set: function set(value) {
+        this.z = value;
+      }
+    }, {
+      key: 'h',
+      get: function get() {
+        return this.z;
+      },
+      set: function set(value) {
+        this.z = value;
+      }
+    }, {
+      key: '2',
+      get: function get() {
+        return this.w;
+      },
+      set: function set(value) {
+        this.w = value;
+      }
+    }, {
+      key: '3',
+      get: function get() {
+        return this.h;
+      },
+      set: function set(value) {
+        this.h = value;
+      }
+    }]);
+
+    return RectBase;
+  })(ne.Vec4);
+
+  ne.tools.defineEscalarPorperties(RectBase.prototype, 'x', 'y', 'w', 'h');
+
+  return RectBase;
+})();
+"use strict";
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+ne.Rect = (function () {
+  var Rect = (function (_ne$RectBase) {
+    _inherits(Rect, _ne$RectBase);
+
+    function Rect() {
+      _classCallCheck(this, Rect);
+
+      return _possibleConstructorReturn(this, Object.getPrototypeOf(Rect).apply(this, arguments));
+    }
+
+    _createClass(Rect, [{
+      key: "clone",
+      value: function clone() {
         return new Rect(this.x, this.y, this.width, this.height);
       }
     }, {
-      key: 'topLeft',
+      key: "topLeft",
       get: function get() {
         var self = this;
         return {
@@ -309,23 +657,7 @@ ne.Rect = (function () {
         };
       }
     }, {
-      key: 'w',
-      get: function get() {
-        return this.width;
-      },
-      set: function set(value) {
-        this.width = value;
-      }
-    }, {
-      key: 'h',
-      get: function get() {
-        return this.height;
-      },
-      set: function set(value) {
-        this.height = value;
-      }
-    }, {
-      key: 'topRight',
+      key: "topRight",
       get: function get() {
         var self = this;
         return {
@@ -338,7 +670,7 @@ ne.Rect = (function () {
         };
       }
     }, {
-      key: 'bottomLeft',
+      key: "bottomLeft",
       get: function get() {
         var self = this;
         return {
@@ -351,7 +683,7 @@ ne.Rect = (function () {
         };
       }
     }, {
-      key: 'bottomRight',
+      key: "bottomRight",
       get: function get() {
         var self = this;
         return {
@@ -366,14 +698,158 @@ ne.Rect = (function () {
     }]);
 
     return Rect;
-  })();
+  })(ne.RectBase);
 
   ;
 
-  ne.tools.defineEscalarPorperties(Rect.prototype, 'x', 'y', 'w', 'h');
   return Rect;
 })();
 'use strict';
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+ne.ColorBase = (function () {
+  var ColorBase = (function (_ne$Vec) {
+    _inherits(ColorBase, _ne$Vec);
+
+    function ColorBase() {
+      var r = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+      var g = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+      var b = arguments.length <= 2 || arguments[2] === undefined ? 0 : arguments[2];
+      var a = arguments.length <= 3 || arguments[3] === undefined ? 255 : arguments[3];
+
+      _classCallCheck(this, ColorBase);
+
+      return _possibleConstructorReturn(this, Object.getPrototypeOf(ColorBase).call(this, r, g, b, a));
+    }
+
+    _createClass(ColorBase, [{
+      key: 'set',
+      value: function set(r, g, b) {
+        var a = arguments.length <= 3 || arguments[3] === undefined ? undefined : arguments[3];
+
+        if (typeof a == 'undefined') a = this.alpha;
+        _get(Object.getPrototypeOf(ColorBase.prototype), 'set', this).call(this, r, g, b, a);
+        return this;
+      }
+    }, {
+      key: 'clone',
+      value: function clone() {
+        return new ColorBase(this.red, this.green, this.blue, this.alpha);
+      }
+    }, {
+      key: 'x',
+      get: function get() {
+        return this.red;
+      },
+      set: function set(value) {
+        this.red = value;
+      }
+    }, {
+      key: 'y',
+      get: function get() {
+        return this.green;
+      },
+      set: function set(value) {
+        this.green = value;
+      }
+    }, {
+      key: 'z',
+      get: function get() {
+        return this.blue;
+      },
+      set: function set(value) {
+        this.blue = value;
+      }
+    }, {
+      key: 'w',
+      get: function get() {
+        return this.alpha;
+      },
+      set: function set(value) {
+        this.alpha = value;
+      }
+    }, {
+      key: 'red',
+      get: function get() {
+        return this._r;
+      },
+      set: function set(value) {
+        this._r = Math.max(0, Math.min(255, value));
+      }
+    }, {
+      key: 'green',
+      get: function get() {
+        return this._g;
+      },
+      set: function set(value) {
+        this._g = Math.max(0, Math.min(255, value));
+      }
+    }, {
+      key: 'blue',
+      get: function get() {
+        return this._b;
+      },
+      set: function set(value) {
+        this._b = Math.max(0, Math.min(255, value));
+      }
+    }, {
+      key: 'alpha',
+      get: function get() {
+        return this._a;
+      },
+      set: function set(value) {
+        this._a = Math.max(0, Math.min(255, value));
+      }
+    }, {
+      key: 'hue',
+      get: function get() {
+        return this.toHsl()[0];
+      },
+      set: function set(value) {
+        var hsla = this.toHsla();
+        hsla[0] = value;
+        var c = Color.fromHsla(hsla);
+        this.set(c.red, c.green, c.blue, c.alpha);
+      }
+    }, {
+      key: 'saturation',
+      get: function get() {
+        return this.toHsl()[1];
+      },
+      set: function set(value) {
+        var hsla = this.toHsla();
+        hsla[1] = value;
+        var c = Color.fromHsla(hsla);
+        this.set(c.red, c.green, c.blue, c.alpha);
+      }
+    }, {
+      key: 'luminance',
+      get: function get() {
+        return this.toHsl()[2];
+      },
+      set: function set(value) {
+        var hsla = this.toHsla();
+        hsla[2] = value;
+        var c = Color.fromHsla(hsla);
+        this.set(c.red, c.green, c.blue, c.alpha);
+      }
+    }]);
+
+    return ColorBase;
+  })(ne.Vec4);
+
+  return ColorBase;
+})();
+"use strict";
 
 var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; })();
 
@@ -381,59 +857,48 @@ var _createClass = (function () { function defineProperties(target, props) { for
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-ne.Color = (function () {
-    var Color = (function () {
-        function Color() {
-            var r = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
-            var g = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
-            var b = arguments.length <= 2 || arguments[2] === undefined ? 0 : arguments[2];
-            var a = arguments.length <= 3 || arguments[3] === undefined ? 255 : arguments[3];
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+ne.Color = (function () {
+    var Color = (function (_ne$ColorBase) {
+        _inherits(Color, _ne$ColorBase);
+
+        function Color() {
             _classCallCheck(this, Color);
 
-            this.set(r, g, b, a);
+            return _possibleConstructorReturn(this, Object.getPrototypeOf(Color).apply(this, arguments));
         }
 
         _createClass(Color, [{
-            key: 'set',
-            value: function set(r, g, b) {
-                var a = arguments.length <= 3 || arguments[3] === undefined ? undefined : arguments[3];
-
-                if (typeof a == 'undefined') a = this.alpha;
-                this.red = r;
-                this.green = g;
-                this.blue = b;
-                this.alpha = a;
-                return this;
-            }
-        }, {
-            key: 'clone',
+            key: "clone",
             value: function clone() {
                 return new Color(this.red, this.green, this.blue, this.alpha);
             }
         }, {
-            key: 'toCss',
+            key: "toCss",
             value: function toCss() {
                 var a = this.alpha / 255;
-                return 'rgba(' + this.red + ', ' + this.green + ', ' + this.blue + ', ' + a + ')';
+                return "rgba(" + this.red + ", " + this.green + ", " + this.blue + ", " + a + ")";
             }
         }, {
-            key: 'toArgb',
+            key: "toArgb",
             value: function toArgb() {
                 return this.alpha << 24 + this.red << 16 + this.green << 8 + this.blue;
             }
         }, {
-            key: 'toRgba',
+            key: "toRgba",
             value: function toRgba() {
                 return this.red << 24 + this.green << 16 + this.blue << 8 + this.alpha;
             }
         }, {
-            key: 'toRgb',
+            key: "toRgb",
             value: function toRgb() {
                 return this.red << 16 + this.green << 8 + this.blue;
             }
         }, {
-            key: 'toHsla',
+            key: "toHsla",
             value: function toHsla() {
                 var r = this.red / 255,
                     g = this.green / 255,
@@ -463,7 +928,7 @@ ne.Color = (function () {
                 return [h, s, l, this.alpha];
             }
         }, {
-            key: 'toHsl',
+            key: "toHsl",
             value: function toHsl() {
                 var r = this.red / 255,
                     g = this.green / 255,
@@ -493,19 +958,19 @@ ne.Color = (function () {
                 return [h, s, l];
             }
         }, {
-            key: 'grayscale',
+            key: "grayscale",
             value: function grayscale() {
                 var avg = 0.21 * this.red + 0.72 * this.green + 0.07 * this.blue;
                 return this.set(avg, avg, avg);
             }
         }, {
-            key: 'average',
+            key: "average",
             value: function average() {
                 var avg = (this.red + this.green + this.blue) / 3;
                 return this.set(avg, avg, avg);
             }
         }, {
-            key: 'lightnessAverage',
+            key: "lightnessAverage",
             value: function lightnessAverage() {
                 var _Math, _Math2;
 
@@ -514,136 +979,15 @@ ne.Color = (function () {
                 return this.set(avg, avg, avg);
             }
         }, {
-            key: 'invert',
+            key: "invert",
             value: function invert() {
                 var alpha = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
 
                 var a = alpha ? 255 - this.alpha : this.alpha;
                 return this.set(255 - this.red, 255 - this.green, 255 - this.blue, a);
             }
-        }, {
-            key: 'red',
-            get: function get() {
-                return this._r;
-            },
-            set: function set(value) {
-                this._r = Math.max(0, Math.min(255, value));
-            }
-        }, {
-            key: 'green',
-            get: function get() {
-                return this._g;
-            },
-            set: function set(value) {
-                this._g = Math.max(0, Math.min(255, value));
-            }
-        }, {
-            key: 'blue',
-            get: function get() {
-                return this._b;
-            },
-            set: function set(value) {
-                this._b = Math.max(0, Math.min(255, value));
-            }
-        }, {
-            key: 'alpha',
-            get: function get() {
-                return this._a;
-            },
-            set: function set(value) {
-                this._a = Math.max(0, Math.min(255, value));
-            }
-        }, {
-            key: 'r',
-            get: function get() {
-                return this.red;
-            },
-            set: function set(value) {
-                this.red = value;
-            }
-        }, {
-            key: 'g',
-            get: function get() {
-                return this.green;
-            },
-            set: function set(value) {
-                this.green = value;
-            }
-        }, {
-            key: 'b',
-            get: function get() {
-                return this.blue;
-            },
-            set: function set(value) {
-                this.blue = value;
-            }
-        }, {
-            key: 'a',
-            get: function get() {
-                return this.alpha;
-            },
-            set: function set(value) {
-                this.alpha = value;
-            }
-        }, {
-            key: 'hue',
-            get: function get() {
-                return this.toHsl()[0];
-            },
-            set: function set(value) {
-                var hsla = this.toHsla();
-                hsla[0] = value;
-                var c = Color.fromHsla(hsla);
-                this.set(c.red, c.green, c.blue, c.alpha);
-            }
-        }, {
-            key: 'saturation',
-            get: function get() {
-                return this.toHsl()[1];
-            },
-            set: function set(value) {
-                var hsla = this.toHsla();
-                hsla[1] = value;
-                var c = Color.fromHsla(hsla);
-                this.set(c.red, c.green, c.blue, c.alpha);
-            }
-        }, {
-            key: 'luminance',
-            get: function get() {
-                return this.toHsl()[2];
-            },
-            set: function set(value) {
-                var hsla = this.toHsla();
-                hsla[2] = value;
-                var c = Color.fromHsla(hsla);
-                this.set(c.red, c.green, c.blue, c.alpha);
-            }
-        }, {
-            key: 'h',
-            get: function get() {
-                return this.hue;
-            },
-            set: function set(value) {
-                this.hue = value;
-            }
-        }, {
-            key: 's',
-            get: function get() {
-                return this.saturation;
-            },
-            set: function set(value) {
-                this.saturation = value;
-            }
-        }, {
-            key: 'l',
-            get: function get() {
-                return this.luminance;
-            },
-            set: function set(value) {
-                this.luminance = value;
-            }
         }], [{
-            key: '_hue2rgb',
+            key: "_hue2rgb",
             value: function _hue2rgb(p, q, t) {
                 if (t < 0) t += 1;
                 if (t > 1) t -= 1;
@@ -653,7 +997,7 @@ ne.Color = (function () {
                 return p;
             }
         }, {
-            key: '_hslToRgb',
+            key: "_hslToRgb",
             value: function _hslToRgb(h, s, l, a) {
                 var r, g, b;
 
@@ -669,7 +1013,7 @@ ne.Color = (function () {
                 return new Color(Math.round(r * 255), Math.round(g * 255), Math.round(b * 255), a);
             }
         }, {
-            key: 'fromRgba',
+            key: "fromRgba",
             value: function fromRgba(rgba) {
                 var r = rgba >> 24 && 0xFF;
                 var g = rgba >> 16 && 0xFF;
@@ -678,7 +1022,7 @@ ne.Color = (function () {
                 return new Color(r, g, b, a);
             }
         }, {
-            key: 'fromRgb',
+            key: "fromRgb",
             value: function fromRgb(rgb) {
                 var r = rgba >> 16 && 0xFF;
                 var g = rgba >> 8 && 0xFF;
@@ -686,7 +1030,7 @@ ne.Color = (function () {
                 return new Color(r, g, b);
             }
         }, {
-            key: 'fromArgb',
+            key: "fromArgb",
             value: function fromArgb(argb) {
                 var a = rgba >> 24 && 0xFF;
                 var r = rgba >> 16 && 0xFF;
@@ -695,7 +1039,7 @@ ne.Color = (function () {
                 return new Color(r, g, b, a);
             }
         }, {
-            key: 'fromHsla',
+            key: "fromHsla",
             value: function fromHsla(hsla) {
                 var _hsla = _slicedToArray(hsla, 4);
 
@@ -707,7 +1051,7 @@ ne.Color = (function () {
                 return this._hslToRgb(h, s, l, a);
             }
         }, {
-            key: 'fromHsl',
+            key: "fromHsl",
             value: function fromHsl(hsl) {
                 var _hsl = _slicedToArray(hsl, 3);
 
@@ -720,10 +1064,7 @@ ne.Color = (function () {
         }]);
 
         return Color;
-    })();
-
-    ne.tools.defineEscalarPorperties(Color.prototype, 'r', 'g', 'b', 'a');
-    ne.tools.defineEscalarPorperties(Color.prototype, 'h', 'l', 's', 'a');
+    })(ne.ColorBase);
 
     return Color;
 })();

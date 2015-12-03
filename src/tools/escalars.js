@@ -22,14 +22,19 @@ ne.tools.defineEscalarPorperties = (function () {
   }
 
   function makePropertyAccessor(slice) {
+    var length = slice.length;
     return {
 
       get: function () {
-        return slice.map( (i) => this[i] );
+        var map = slice.map( (i) => this[i] );
+        return new ne.Vec4(...map);
       },
 
       set: function (value) {
-        slice.forEach( (i, index) => this[i] = value[index] );
+        for (var index = 0; index < length; ++index) {
+          let p = slice[index];
+          this[p] = value[index];
+        }
       },
 
       configurable: true

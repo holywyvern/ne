@@ -1,10 +1,6 @@
 ne.Rect = (function () {
 
-  class Rect {
-
-    constructor(x=0, y=0, width=0, height=0) {
-      this.set(x, y, width, height);
-    }
+  class Rect extends ne.RectBase {
 
     get topLeft() {
       var self = this;
@@ -16,22 +12,6 @@ ne.Rect = (function () {
           return self.y;
         }
       };
-    }
-
-    get w() {
-      return this.width;
-    }
-
-    get h() {
-      return this.height;
-    }
-
-    set w(value) {
-      this.width = value;
-    }
-
-    set h(value) {
-      this.height = value;
     }
 
     get topRight() {
@@ -70,20 +50,13 @@ ne.Rect = (function () {
       };
     }
 
-    set(x, y, width, height) {
-      this.x = x;
-      this.y = y;
-      this.width = width;
-      this.height = height;
-    }
-
     clone() {
       return new Rect(this.x, this.y, this.width, this.height);
     }
 
   };
 
-  ne.tools.defineEscalarPorperties(Rect.prototype, 'x', 'y', 'w', 'h');
+
   return Rect;
 
 })();
