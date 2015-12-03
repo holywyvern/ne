@@ -30,9 +30,10 @@ ne.Shader = (function () {
         case 'color':                             return new ne.Color(0, 0, 0);
         case 'rect':                              return new ne.Rect();
         case 'number': case 'float': case 'real': return 0;
-        case 'vec2':                              return [0, 0];
-        case 'vec3':                              return [0, 0, 0];
-        case 'array':case 'vec4':                 return [0, 0, 0, 0];
+        case 'vec2':                              return new ne.Vec2();
+        case 'vec3':                              return new ne.Vec3();
+        case 'vec4':                              return new ne.Vec4();
+        case 'array':                             return  [0, 0, 0, 0];
         default:                                  return 0;
       }
     }
@@ -70,12 +71,17 @@ ne.Shader = (function () {
         case 'vec4':
           gl.uniform4f(location, value[0], value[1], value[2], value[3]);
           break;
+        case 'point':
+          gl.uniform2f(location, rect.x, rect.y);
+          break;
         case 'rect':
           gl.uniform4f(location, rect.x, rect.y, rect.width, rect.height);
           break;
         case 'color':
           gl.uniform4f(location, color.red, color.green, color.blue, color.alpha);
           break;
+        case 'array':
+          gl['uniform' + value.length + 'f'](location, ...value);
         default:
             break;
       }
