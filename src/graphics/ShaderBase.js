@@ -1,6 +1,6 @@
 ne.ShaderBase = (function () {
 
-  return class ShaderBase {
+  class ShaderBase {
     constructor() {
       this.initMembers();
     }
@@ -146,7 +146,7 @@ ne.ShaderBase = (function () {
       var result = '';
       for (var a in list) {
         if (list.hasOwnProperty(a)) {
-          let type = list[a];
+          let type = this.glType(list[a]);
           result += `${kind} ${type} ${a};`;
         }
       }
@@ -163,7 +163,7 @@ ne.ShaderBase = (function () {
       var location = this._glAttributes[name];
       if (location) {
         gl.enableVertexAttribArray(location);
-        gl.vertexAttribPointer(location, 2, gl.FLOAT, false, 0, 0);        
+        gl.vertexAttribPointer(location, 2, gl.FLOAT, false, 0, 0);
       }
     }
 
@@ -187,6 +187,27 @@ ne.ShaderBase = (function () {
       return `void main(void) { ${code} }`;
     }
 
+    glType(type) {
+      return ShaderBase.TYPES[type];
+    }
+
   }
+
+  ShaderBase.TYPES = {
+    'point':    'vec2',
+    '3d-point': 'vec3',
+    'color':    'vec4',
+    'number':   'float',
+    'array':    'vec4',
+    'real':     'real',
+    'rect':     'vec4',
+    'vec2':     'vec2',
+    'vec3':     'vec3',
+    'vec4':     'vec4',
+    'float':    'float',
+    'int':      'int'
+  }
+
+  return ShaderBase;
 
 })();

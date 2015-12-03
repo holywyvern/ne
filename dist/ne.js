@@ -541,8 +541,7 @@ var _createClass = (function () { function defineProperties(target, props) { for
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 ne.ShaderBase = (function () {
-
-  return (function () {
+  var ShaderBase = (function () {
     function ShaderBase() {
       _classCallCheck(this, ShaderBase);
 
@@ -718,7 +717,7 @@ ne.ShaderBase = (function () {
         var result = '';
         for (var a in list) {
           if (list.hasOwnProperty(a)) {
-            var type = list[a];
+            var type = this.glType(list[a]);
             result += kind + " " + type + " " + a + ";";
           }
         }
@@ -767,10 +766,32 @@ ne.ShaderBase = (function () {
       value: function mainFunction(code) {
         return "void main(void) { " + code + " }";
       }
+    }, {
+      key: "glType",
+      value: function glType(type) {
+        return ShaderBase.TYPES[type];
+      }
     }]);
 
     return ShaderBase;
   })();
+
+  ShaderBase.TYPES = {
+    'point': 'vec2',
+    '3d-point': 'vec3',
+    'color': 'vec4',
+    'number': 'float',
+    'array': 'vec4',
+    'real': 'real',
+    'rect': 'vec4',
+    'vec2': 'vec2',
+    'vec3': 'vec3',
+    'vec4': 'vec4',
+    'float': 'float',
+    'int': 'int'
+  };
+
+  return ShaderBase;
 })();
 'use strict';
 
@@ -816,11 +837,21 @@ ne.Shader = (function () {
       key: '_getDefaultValue',
       value: function _getDefaultValue(type) {
         switch (type) {
-          case 'vec2':
+          case 'point':
             return new ne.Point(0, 0);
-          case 'vec3':
+          case '3d-point':
             return new ne.Point(0, 0, 0);
-          case 'vec4':
+          case 'color':
+            return new ne.Color(0, 0, 0);
+          case 'rect':
+            return new ne.Rect();
+          case 'number':case 'float':case 'real':
+            return 0;
+          case 'vec2':
+            return [0, 0];
+          case 'vec3':
+            return [0, 0, 0];
+          case 'array':case 'vec4':
             return [0, 0, 0, 0];
           default:
             return 0;
@@ -833,7 +864,23 @@ ne.Shader = (function () {
       }
     }, {
       key: 'updateUniforms',
-      value: function updateUniforms(gl) {}
+      value: function updateUniforms(gl) {
+        var _this3 = this;
+
+        var values = this.uniformValues;
+        var types = this.uniforms();
+        Object.keys(values).forEach(function (u) {
+          _this3.updateUniform(gl, u, types[u], values[u]);
+        });
+      }
+    }, {
+      key: 'updateUniform',
+      value: function updateUniform(gl, name, type, value) {
+        var location = this._glUniforms[name];
+        if (location) {
+          this.updateUniformByType(gl, location, value);
+        }
+      }
     }, {
       key: 'uniformValues',
       get: function get() {
