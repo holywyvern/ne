@@ -7,6 +7,10 @@ ne.Vec4 = (function () {
       this.w = w;
     }
 
+    get length() {
+      return 4;
+    }
+
     set(x, y, z, w=undefined) {
       if (typeof w !== 'undefined') {
         this.w = w;

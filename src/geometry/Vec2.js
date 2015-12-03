@@ -7,6 +7,22 @@ ne.Vec2 = (function () {
       this.y = y;
     }
 
+    [Symbol.iterator]() {
+      var index = -1;
+      var data  = [];
+      var length = this.length;
+      for (var i = 0; i < length; ++i) {
+        data.push(this[i]);
+      }
+      return {
+        next: () => ({ value: data[++index], done: index >= length })
+      };
+    };
+
+    get length() {
+      return 2;
+    }
+
     get ['0']() {
       return this.x;
     }

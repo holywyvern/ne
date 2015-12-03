@@ -7,6 +7,10 @@ ne.Vec3 = (function () {
       this.z = z;
     }
 
+    get length() {
+      return 3;
+    }
+
     get ['2']() {
       return this.z;
     }

@@ -13,6 +13,10 @@ ne.Point = (function () {
       this.z = typeof z == 'undefined' ? z : this.z;
     }
 
+    get length() {
+      return this.dimensions;
+    }
+
     get dimensions() {
       return z === null ? 2 : 3;
     }

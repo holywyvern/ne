@@ -29,5 +29,8 @@
     "gulp-concat": "^2.6.0",
     "gulp-minify": "0.0.5",
     "gulp-sourcemaps": "^1.6.0"
+  },
+  "dependencies": {
+    "babel-polyfill": "^6.2.0"
   }
 }

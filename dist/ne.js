@@ -245,6 +245,21 @@ ne.Vec2 = (function () {
     }
 
     _createClass(Vec2, [{
+      key: Symbol.iterator,
+      value: function value() {
+        var index = -1;
+        var data = [];
+        var length = this.length;
+        for (var i = 0; i < length; ++i) {
+          data.push(this[i]);
+        }
+        return {
+          next: function next() {
+            return { value: data[++index], done: index >= length };
+          }
+        };
+      }
+    }, {
       key: 'clone',
       value: function clone() {
         return new Vec2(this.x, this.y);
@@ -254,6 +269,11 @@ ne.Vec2 = (function () {
       value: function set(x, y) {
         this.x = x;
         this.y = y;
+      }
+    }, {
+      key: 'length',
+      get: function get() {
+        return 2;
       }
     }, {
       key: '0',
@@ -373,6 +393,11 @@ ne.Vec3 = (function () {
         _get(Object.getPrototypeOf(Vec3.prototype), 'set', this).call(this, x, y);
       }
     }, {
+      key: 'length',
+      get: function get() {
+        return 3;
+      }
+    }, {
       key: '2',
       get: function get() {
         return this.z;
@@ -444,6 +469,11 @@ ne.Vec4 = (function () {
         return new Vec4(this.x, this.y, this.z, this.w);
       }
     }, {
+      key: 'length',
+      get: function get() {
+        return 4;
+      }
+    }, {
       key: 'a',
       get: function get() {
         return this.w;
@@ -509,6 +539,11 @@ ne.Point = (function () {
       key: 'clone',
       value: function clone() {
         return new Point(this.x, this.y, this.z);
+      }
+    }, {
+      key: 'length',
+      get: function get() {
+        return this.dimensions;
       }
     }, {
       key: 'dimensions',
