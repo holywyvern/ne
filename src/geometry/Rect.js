@@ -1,6 +1,6 @@
 ne.Rect = (function () {
 
-  return class Rect {
+  class Rect {
 
     constructor(x=0, y=0, width=0, height=0) {
       this.set(x, y, width, height);
@@ -16,6 +16,22 @@ ne.Rect = (function () {
           return self.y;
         }
       };
+    }
+
+    get w() {
+      return this.width;
+    }
+
+    get h() {
+      return this.height;
+    }
+
+    set w(value) {
+      this.width = value;
+    }
+
+    set h(value) {
+      this.height = value;
     }
 
     get topRight() {
@@ -66,5 +82,8 @@ ne.Rect = (function () {
     }
 
   };
+
+  ne.tools.defineEscalarPorperties(Rect.prototype, 'x', 'y', 'w', 'h');
+  return Rect;
 
 })();

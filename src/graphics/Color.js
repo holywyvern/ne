@@ -1,9 +1,9 @@
 
 ne.Color = (function () {
 
-  return class Color {
+  class Color {
 
-    constructor(r, g, b, a=255) {
+    constructor(r=0, g=0, b=0, a=255) {
       this.set(r, g, b, a);
     }
 
@@ -122,7 +122,7 @@ ne.Color = (function () {
     }
 
     get a() {
-      this.alpha;
+      return this.alpha;
     }
 
     set r(value) {
@@ -279,5 +279,10 @@ ne.Color = (function () {
     }
 
   }
+
+  ne.tools.defineEscalarPorperties(Color.prototype, 'r', 'g', 'b', 'a');
+  ne.tools.defineEscalarPorperties(Color.prototype, 'h', 'l', 's', 'a');
+
+  return Color;
 
 })();

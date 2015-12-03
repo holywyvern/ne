@@ -11,8 +11,10 @@ var $SCRIPTS = [
   "src/tools.js",
   "src/tools/gl.js",
   "src/tools/Loader.js",
+  "src/tools/escalars.js",
   // Geometry
   "src/geometry/Point.js",
+  "src/geometry/Rect.js",
   // Graphics
   "src/graphics/Color.js",
   "src/graphics/ShaderBase.js",

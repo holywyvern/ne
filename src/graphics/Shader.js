@@ -52,7 +52,32 @@ ne.Shader = (function () {
     updateUniform(gl, name, type, value) {
       var location = this._glUniforms[name];
       if (location) {
-        this.updateUniformByType(gl, location, value);
+        this.updateUniformByType(gl, location, type, value);
+      }
+    }
+
+    updateUniformByType(gl, location, type, value) {
+      switch (type) {
+        case 'float': case 'number': case 'real':
+          gl.uniform1f(location, value);
+          break;
+        case 'vec2':
+          gl.uniform2f(location, value[0], value[1]);
+          break;
+        case 'vec3':
+          gl.uniform3f(location, value[0], value[1], value[2]);
+          break;
+        case 'vec4':
+          gl.uniform4f(location, value[0], value[1], value[2], value[3]);
+          break;
+        case 'rect':
+          gl.uniform4f(location, rect.x, rect.y, rect.width, rect.height);
+          break;
+        case 'color':
+          gl.uniform4f(location, color.red, color.green, color.blue, color.alpha);
+          break;
+        default:
+            break;
       }
     }
 

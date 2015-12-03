@@ -149,6 +149,82 @@ ne.Loader = (function () {
 })();
 'use strict';
 
+ne.tools.defineEscalarPorperties = (function () {
+
+  function permutator(inputArr) {
+    var results = [];
+
+    function permute(arr, memo) {
+      var cur,
+          memo = memo || [];
+
+      for (var i = 0; i < arr.length; i++) {
+        cur = arr.splice(i, 1);
+        if (arr.length === 0) {
+          results.push(memo.concat(cur));
+        }
+        permute(arr.slice(), memo.concat(cur));
+        arr.splice(i, 0, cur[0]);
+      }
+
+      return results;
+    }
+
+    return permute(inputArr);
+  }
+
+  function makePropertyAccessor(slice) {
+    return {
+
+      get: function get() {
+        var _this = this;
+
+        return slice.map(function (i) {
+          return _this[i];
+        });
+      },
+
+      set: function set(value) {
+        var _this2 = this;
+
+        slice.forEach(function (i, index) {
+          return _this2[i] = value[index];
+        });
+      },
+
+      configurable: true
+    };
+  }
+
+  function makePropertiesOfSize(result, permutations, length) {
+    permutations.forEach(function (i) {
+      var slice = i.slice(0, length + 1);
+      var name = slice.join('');
+      if (typeof result[name] == 'undefined') {
+        result[name] = makePropertyAccessor(slice);
+      }
+    });
+  }
+
+  function makeProperties(properties) {
+    var result = {};
+    var permutations = permutator(properties);
+    for (var length = 1; length <= properties.length; ++length) {
+      makePropertiesOfSize(result, permutations, length);
+    }
+    return result;
+  }
+
+  return function (object) {
+    for (var _len = arguments.length, properties = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+      properties[_key - 1] = arguments[_key];
+    }
+
+    Object.defineProperties(object, makeProperties(properties));
+  };
+})();
+'use strict';
+
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -189,6 +265,116 @@ ne.Point = (function () {
 })();
 'use strict';
 
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+ne.Rect = (function () {
+  var Rect = (function () {
+    function Rect() {
+      var x = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+      var y = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+      var width = arguments.length <= 2 || arguments[2] === undefined ? 0 : arguments[2];
+      var height = arguments.length <= 3 || arguments[3] === undefined ? 0 : arguments[3];
+
+      _classCallCheck(this, Rect);
+
+      this.set(x, y, width, height);
+    }
+
+    _createClass(Rect, [{
+      key: 'set',
+      value: function set(x, y, width, height) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+      }
+    }, {
+      key: 'clone',
+      value: function clone() {
+        return new Rect(this.x, this.y, this.width, this.height);
+      }
+    }, {
+      key: 'topLeft',
+      get: function get() {
+        var self = this;
+        return {
+          get x() {
+            return self.x;
+          },
+          get y() {
+            return self.y;
+          }
+        };
+      }
+    }, {
+      key: 'w',
+      get: function get() {
+        return this.width;
+      },
+      set: function set(value) {
+        this.width = value;
+      }
+    }, {
+      key: 'h',
+      get: function get() {
+        return this.height;
+      },
+      set: function set(value) {
+        this.height = value;
+      }
+    }, {
+      key: 'topRight',
+      get: function get() {
+        var self = this;
+        return {
+          get x() {
+            return self.x + self.width;
+          },
+          get y() {
+            return self.y;
+          }
+        };
+      }
+    }, {
+      key: 'bottomLeft',
+      get: function get() {
+        var self = this;
+        return {
+          get x() {
+            return self.x;
+          },
+          get y() {
+            return self.y + self.height;
+          }
+        };
+      }
+    }, {
+      key: 'bottomRight',
+      get: function get() {
+        var self = this;
+        return {
+          get x() {
+            return self.x + self.width;
+          },
+          get y() {
+            return self.y + self.height;
+          }
+        };
+      }
+    }]);
+
+    return Rect;
+  })();
+
+  ;
+
+  ne.tools.defineEscalarPorperties(Rect.prototype, 'x', 'y', 'w', 'h');
+  return Rect;
+})();
+'use strict';
+
 var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; })();
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -196,9 +382,11 @@ var _createClass = (function () { function defineProperties(target, props) { for
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 ne.Color = (function () {
-
-    return (function () {
-        function Color(r, g, b) {
+    var Color = (function () {
+        function Color() {
+            var r = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+            var g = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+            var b = arguments.length <= 2 || arguments[2] === undefined ? 0 : arguments[2];
             var a = arguments.length <= 3 || arguments[3] === undefined ? 255 : arguments[3];
 
             _classCallCheck(this, Color);
@@ -392,7 +580,7 @@ ne.Color = (function () {
         }, {
             key: 'a',
             get: function get() {
-                this.alpha;
+                return this.alpha;
             },
             set: function set(value) {
                 this.alpha = value;
@@ -533,6 +721,11 @@ ne.Color = (function () {
 
         return Color;
     })();
+
+    ne.tools.defineEscalarPorperties(Color.prototype, 'r', 'g', 'b', 'a');
+    ne.tools.defineEscalarPorperties(Color.prototype, 'h', 'l', 's', 'a');
+
+    return Color;
 })();
 "use strict";
 
@@ -878,7 +1071,33 @@ ne.Shader = (function () {
       value: function updateUniform(gl, name, type, value) {
         var location = this._glUniforms[name];
         if (location) {
-          this.updateUniformByType(gl, location, value);
+          this.updateUniformByType(gl, location, type, value);
+        }
+      }
+    }, {
+      key: 'updateUniformByType',
+      value: function updateUniformByType(gl, location, type, value) {
+        switch (type) {
+          case 'float':case 'number':case 'real':
+            gl.uniform1f(location, value);
+            break;
+          case 'vec2':
+            gl.uniform2f(location, value[0], value[1]);
+            break;
+          case 'vec3':
+            gl.uniform3f(location, value[0], value[1], value[2]);
+            break;
+          case 'vec4':
+            gl.uniform4f(location, value[0], value[1], value[2], value[3]);
+            break;
+          case 'rect':
+            gl.uniform4f(location, rect.x, rect.y, rect.width, rect.height);
+            break;
+          case 'color':
+            gl.uniform4f(location, color.red, color.green, color.blue, color.alpha);
+            break;
+          default:
+            break;
         }
       }
     }, {
