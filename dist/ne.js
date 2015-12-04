@@ -88,6 +88,8 @@ ne.Loader = (function () {
     return (function () {
         function Loader() {
             _classCallCheck(this, Loader);
+
+            this._whenDone = [];
         }
 
         _createClass(Loader, [{
@@ -126,6 +128,12 @@ ne.Loader = (function () {
         }, {
             key: 'font',
             value: function font(name) {}
+        }, {
+            key: 'done',
+            value: function done(callback) {
+                this._whenDone.push(callback);
+                return this;
+            }
         }], [{
             key: 'clear',
             value: function clear() {
@@ -738,6 +746,236 @@ ne.Rect = (function () {
   ;
 
   return Rect;
+})();
+'use strict';
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+ne.EventManager = (function () {
+
+  return (function () {
+    function EventManager() {
+      _classCallCheck(this, EventManager);
+
+      this._events = {};
+    }
+
+    _createClass(EventManager, [{
+      key: 'fire',
+      value: function fire(name) {
+        var event = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+        this._ensureEventType(name);
+        var result = true;
+        var _iteratorNormalCompletion = true;
+        var _didIteratorError = false;
+        var _iteratorError = undefined;
+
+        try {
+          for (var _iterator = this._events[name][Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+            var callback = _step.value;
+
+            var i = callback(event);
+            if (typeof i != 'undefined' && i === false) {
+              result = false;
+            }
+          }
+        } catch (err) {
+          _didIteratorError = true;
+          _iteratorError = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion && _iterator.return) {
+              _iterator.return();
+            }
+          } finally {
+            if (_didIteratorError) {
+              throw _iteratorError;
+            }
+          }
+        }
+
+        return result;
+      }
+    }, {
+      key: 'on',
+      value: function on(name, callback) {
+        this._ensureEventType(name);
+        this._events[name].push(callback);
+      }
+    }, {
+      key: 'off',
+      value: function off(name) {
+        var callback = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
+
+        if (callback === null) {
+          this._events[name] = [];
+          return;
+        }
+        this._ensureEventType(name);
+        var index = this._events[name].indexOf(callback);
+        if (index !== -1) {
+          this._events[name].splice(index, 1);
+        }
+      }
+    }, {
+      key: '_ensureEventType',
+      value: function _ensureEventType(name) {
+        if (typeof this._events[name] == 'undefined') {
+          this._events[name] = [];
+        }
+      }
+    }]);
+
+    return EventManager;
+  })();
+})();
+"use strict";
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+ne.SceneManager = (function () {
+
+  return (function (_ne$EventManager) {
+    _inherits(SceneManager, _ne$EventManager);
+
+    function SceneManager() {
+      _classCallCheck(this, SceneManager);
+
+      var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(SceneManager).call(this));
+
+      _this._sceneStack = [null];
+      _this._lastScene = null;
+      return _this;
+    }
+
+    _createClass(SceneManager, [{
+      key: "goto",
+      value: function goto(scene) {
+        this._sceneStack = [];
+        this.call(scene);
+      }
+    }, {
+      key: "call",
+      value: function call(scene) {
+        this._sceneStack.push(scene);
+      }
+    }, {
+      key: "back",
+      value: function back() {
+        this._sceneStack.pop();
+      }
+    }, {
+      key: "update",
+      value: function update(delta) {
+        if (this._lastScene !== this.scene) {
+          this.switchScene();
+          return;
+        }
+        this.updateScene(delta);
+      }
+    }, {
+      key: "updateScene",
+      value: function updateScene(delta) {
+        this.scene.act(delta);
+      }
+    }, {
+      key: "scene",
+      get: function get() {
+        return this._sceneStack[this._sceneStack.length];
+      }
+    }]);
+
+    return SceneManager;
+  })(ne.EventManager);
+})();
+"use strict";
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+ne.Game = (function () {
+
+  return (function (_ne$SceneManager) {
+    _inherits(Game, _ne$SceneManager);
+
+    function Game(id, width, height) {
+      _classCallCheck(this, Game);
+
+      var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Game).call(this));
+
+      _this.initMembers(id, width, height);
+      return _this;
+    }
+
+    _createClass(Game, [{
+      key: "initMembers",
+      value: function initMembers(id, width, height) {
+        this.createRenderer(width, height);
+        this.appendRenderer(id);
+      }
+    }, {
+      key: "createRenderer",
+      value: function createRenderer(width, height) {
+        this._renderer = new ne.WebGLRenderer(width, height);
+      }
+    }, {
+      key: "appendRenderer",
+      value: function appendRenderer(id) {
+        var e = document.getElementById(id);
+        e.appendChild(this._renderer.view);
+      }
+    }, {
+      key: "update",
+      value: function update(delta) {
+        _get(Object.getPrototypeOf(Game.prototype), "update", this).call(this, delta);
+      }
+    }, {
+      key: "switchScene",
+      value: function switchScene() {
+        this.renderer.destroy(this._lastScene);
+        this._lastScene = this.scene;
+        var loader = new ne.Loader();
+        this.prepareLoad(loader);
+        this.scene.load();
+      }
+    }, {
+      key: "prepareLoad",
+      value: function prepareLoad(loader) {
+        var _this2 = this;
+
+        loader.done(function () {
+          return _this2.afterLoad(loader);
+        });
+      }
+    }, {
+      key: "endLoad",
+      value: function endLoad() {}
+    }, {
+      key: "afterLoad",
+      value: function afterLoad(loader) {
+        this.endLoad();
+        this.scene.start(loader);
+      }
+    }]);
+
+    return Game;
+  })(ne.SceneManager);
 })();
 'use strict';
 
@@ -1700,126 +1938,66 @@ ne.Pixmap = (function () {
     return Pixmap;
   })();
 })();
-'use strict';
+"use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 ne.Drawable = (function () {
 
-  return (function () {
-    function Drawable() {
-      _classCallCheck(this, Drawable);
+    return (function (_ne$EventManager) {
+        _inherits(Drawable, _ne$EventManager);
 
-      this.initMembers();
-    }
+        function Drawable() {
+            _classCallCheck(this, Drawable);
 
-    _createClass(Drawable, [{
-      key: 'initMembers',
-      value: function initMembers() {
-        this._parent = null;
-        this._events = {};
-        this.z = 0;
-      }
-    }, {
-      key: 'render',
-      value: function render(gl) {}
-    }, {
-      key: 'act',
-      value: function act(delta) {}
-    }, {
-      key: 'destroy',
-      value: function destroy(gl) {}
-    }, {
-      key: 'fire',
-      value: function fire(name) {
-        var event = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+            var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Drawable).call(this));
 
-        this._ensureEventType(name);
-        var result = true;
-        var _iteratorNormalCompletion = true;
-        var _didIteratorError = false;
-        var _iteratorError = undefined;
+            _this.initMembers();
+            return _this;
+        }
 
-        try {
-          for (var _iterator = this._events[name][Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-            var callback = _step.value;
-
-            var i = callback(event);
-            if (typeof i != 'undefined' && i === false) {
-              result = false;
+        _createClass(Drawable, [{
+            key: "initMembers",
+            value: function initMembers() {
+                this._parent = null;
+                this.z = 0;
             }
-          }
-        } catch (err) {
-          _didIteratorError = true;
-          _iteratorError = err;
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion && _iterator.return) {
-              _iterator.return();
+        }, {
+            key: "render",
+            value: function render(gl) {}
+        }, {
+            key: "destroy",
+            value: function destroy(gl) {}
+        }, {
+            key: "render2D",
+            value: function render2D(context) {}
+        }, {
+            key: "parent",
+            get: function get() {
+                return this._parent;
             }
-          } finally {
-            if (_didIteratorError) {
-              throw _iteratorError;
+        }, {
+            key: "z",
+            get: function get() {
+                return this._z;
+            },
+            set: function set(value) {
+                this._z = value;
+                var parent = this.parent;
+                if (parent) {
+                    parent.zUpdate();
+                }
             }
-          }
-        }
+        }]);
 
-        return result;
-      }
-    }, {
-      key: 'on',
-      value: function on(name, callback) {
-        this._ensureEventType(name);
-        this._events[name].push(callback);
-      }
-    }, {
-      key: 'off',
-      value: function off(name) {
-        var callback = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
-
-        if (callback === null) {
-          this._events[name] = [];
-          return;
-        }
-        this._ensureEventType(name);
-        var index = this._events[name].indexOf(callback);
-        if (index !== -1) {
-          this._events[name].splice(index, 1);
-        }
-      }
-    }, {
-      key: '_ensureEventType',
-      value: function _ensureEventType(name) {
-        if (typeof this._events[name] == 'undefined') {
-          this._events[name] = [];
-        }
-      }
-    }, {
-      key: 'render2D',
-      value: function render2D(context) {}
-    }, {
-      key: 'parent',
-      get: function get() {
-        return this._parent;
-      }
-    }, {
-      key: 'z',
-      get: function get() {
-        return this._z;
-      },
-      set: function set(value) {
-        this._z = value;
-        var parent = this.parent;
-        if (parent) {
-          parent.zUpdate();
-        }
-      }
-    }]);
-
-    return Drawable;
-  })();
+        return Drawable;
+    })(ne.EventManager);
 })();
 "use strict";
 
@@ -1849,6 +2027,9 @@ ne.Actor = (function () {
         _get(Object.getPrototypeOf(Actor.prototype), "initMembers", this).call(this);
         this._twigs = [];
       }
+    }, {
+      key: "act",
+      value: function act(delta) {}
     }, {
       key: "twig",
       value: function twig(props, time) {

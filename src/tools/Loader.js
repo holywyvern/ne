@@ -11,7 +11,7 @@ ne.Loader = (function () {
   return class Loader {
 
     constructor() {
-
+      this._whenDone = [];
     }
 
     loadPixmaps(name, url) {
@@ -56,6 +56,11 @@ ne.Loader = (function () {
 
     font(name) {
 
+    }
+
+    done(callback) {
+      this._whenDone.push(callback);
+      return this;
     }
 
     static clear() {

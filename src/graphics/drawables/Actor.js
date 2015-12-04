@@ -7,6 +7,10 @@ ne.Actor = (function () {
       this._twigs = [];
     }
 
+    act(delta) {
+
+    }
+
     twig(props, time, type=null) {
       if (!type) {
         type = this.defaultTwigMode();

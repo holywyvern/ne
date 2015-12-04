@@ -19,6 +19,10 @@ var $SCRIPTS = [
   "src/geometry/Point.js",
   "src/geometry/RectBase.js",
   "src/geometry/Rect.js",
+  // General classes
+  "src/EventManager.js",
+  "src/SceneManager.js",
+  "src/Game.js",
   // Graphics
   "src/graphics/ColorBase.js",
   "src/graphics/Color.js",

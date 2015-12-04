@@ -16,6 +16,10 @@ ne.WebGLRenderer = (function () {
       object.render(this._gl);
     }
 
+    destroy(object) {
+      object.destroy(this._gl);
+    }
+
   };
 
 })();
