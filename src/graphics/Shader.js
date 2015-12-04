@@ -34,7 +34,7 @@ ne.Shader = (function () {
         case 'vec3':                              return new ne.Vec3();
         case 'vec4':                              return new ne.Vec4();
         case 'array':                             return  [0, 0, 0, 0];
-        default:                                  return 0;
+        default:                                  return null;
       }
     }
 
@@ -52,7 +52,7 @@ ne.Shader = (function () {
 
     updateUniform(gl, name, type, value) {
       var location = this._glUniforms[name];
-      if (typeof location != 'undefined') {
+      if (typeof location != 'undefined' && value !== null) {
         this.updateUniformByType(gl, location, type, value);
       }
     }

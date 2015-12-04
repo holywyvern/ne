@@ -17,6 +17,10 @@ ne.Container = (function () {
       return this._children;
     }
 
+    get length() {
+      return this._children.length;
+    }
+
     act(delta) {
       super.act(delta);
       this._refreshZ();
@@ -57,6 +61,7 @@ ne.Container = (function () {
 
     add(child) {
       if ( !this.contains(child) ) {
+        child._parent = this;
         this.children.push(child);
         this.zUpdate();
       }
@@ -64,8 +69,13 @@ ne.Container = (function () {
 
     remove(child) {
       var index = this.indexOf(child);
-      if ( index !== -1 ) {
-        this.children.splice(index, 1);
+      this.removeAt(index);
+    }
+
+    removeAt(index) {
+      if ( index >= 0 && index <= this.length ) {
+        var deleted = this.children.splice(index, 1);
+        deleted.forEach( (c) => c._parent = null );
       }
     }
 
@@ -74,6 +84,7 @@ ne.Container = (function () {
     }
 
     clear() {
+      this.children.forEach( (child) => child._parent = null );
       this.children = [];
     }
 

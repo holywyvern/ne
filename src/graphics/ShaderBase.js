@@ -147,7 +147,7 @@ ne.ShaderBase = (function () {
       for (var a in list) {
         if (list.hasOwnProperty(a)) {
           let type = this.glType(list[a]);
-          result += `${kind} ${type} ${a};`;
+          result += `${kind} ${type} ${a};\n`;
         }
       }
       return result;
@@ -180,11 +180,11 @@ ne.ShaderBase = (function () {
     }
 
     precision() {
-      return 'precision mediump float;';
+      return 'precision mediump float;\n';
     }
 
     mainFunction(code) {
-      return `void main(void) { ${code} }`;
+      return `void main(void) {\n ${code} \n}`;
     }
 
     glType(type) {
@@ -205,6 +205,9 @@ ne.ShaderBase = (function () {
     'vec3':     'vec3',
     'vec4':     'vec4',
     'float':    'float',
+    'sampler2D': 'sampler2D',
+    'sampler1D': 'sampler1D',
+    'sampler3D': 'sampler3D',
     'int':      'int'
   }
 

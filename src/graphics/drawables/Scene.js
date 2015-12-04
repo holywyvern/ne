@@ -16,12 +16,21 @@ ne.Scene = (function () {
       ]);
     }
 
-    load(loader) {
+    load(game, loader) {
 
     }
 
-    start(loader) {
+    start(game, loader) {
+      this.startGlData(game);
+    }
 
+    startGlData(game) {
+      var data = this._glData;
+      data[0] = data[4] = data[6] = 0; // x
+      data[1] = data[3] = data[9] = 0; // x
+      data[2] = data[8] = data[10] = game.width; // width
+      data[5] = data[7] = data[11] = game.height; // height
+      this.shader.uniformValues.u_resolution.set(game.width, game.height);
     }
 
     get bgColor() {
@@ -29,17 +38,24 @@ ne.Scene = (function () {
     }
 
     render(gl) {
-      this.shader.generate(gl);
-      this.shader.use(gl);
-      this.useBuffer(gl);
-      this.updateShader(gl);
-      ne.tools.gl.draw(gl);
+      if (this.visible) {
+        this.useShader(gl);
+        this.useBuffer(gl);
+        this.updateShader(gl);
+        ne.tools.gl.draw(gl);
+        super.render(gl);
+      }
     }
 
     destroy(gl) {
       super.destroy(gl);
       this.destroyBuffer(gl);
       this.shader.destroy(gl);
+    }
+
+    useShader(gl) {
+      this.shader.generate(gl);
+      this.shader.use(gl);
     }
 
     useBuffer(gl) {
@@ -62,6 +78,14 @@ ne.Scene = (function () {
       if (!this._glBuffer) {
         this._glBuffer = gl.createBuffer();
       }
+    }
+
+    get parentWidth() {
+      return this.parent ? this.parent.width : this._glData[2];
+    }
+
+    get parentHeight() {
+      return this.parent ? this.parent.height : this._glData[5];
     }
 
   };

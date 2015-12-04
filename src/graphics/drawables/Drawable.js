@@ -11,6 +11,7 @@ ne.Drawable = (function () {
     initMembers() {
       this._parent = null;
       this.z = 0;
+      this.visible = true;
     }
 
     get parent() {
@@ -39,6 +40,14 @@ ne.Drawable = (function () {
 
     render2D(context) {
 
+    }
+
+    get parentWidth() {
+      return this.parent ? this.parent.width : 1;
+    }
+
+    get parentHeight() {
+      return this.parent ? this.parent.height : 1;
     }
 
   };

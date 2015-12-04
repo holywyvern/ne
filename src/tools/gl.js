@@ -14,8 +14,10 @@ ne.tools.gl = (function () {
 
   $.bindTexture = function (gl, texture) {
     gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
   }
 
   $.bindBuffer = function (gl, buffer, data) {
@@ -27,11 +29,12 @@ ne.tools.gl = (function () {
     gl.drawArrays(gl.TRIANGLES, 0, 6);
   }
 
-  $.checkShader = function (gl, shader) {
+  $.checkShader = function (gl, shader, source=null) {
     var success = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
     if (!success) {
       let log = gl.getShaderInfoLog(shader);
-      let e = "Could not compile shader:" + log + ".\nSource was:\n" + source;
+      let txt = source ? ".\nSource was:\n" + source : '';
+      let e = "Could not compile shader:" + log + txt;
       gl.deleteShader(shader);
       throw e;
     }
@@ -41,7 +44,7 @@ ne.tools.gl = (function () {
     var shader = gl.createShader(type);
     gl.shaderSource(shader, source);
     gl.compileShader(shader);
-    this.checkShader(gl, shader);
+    this.checkShader(gl, shader, source);
     return shader;
   }
 

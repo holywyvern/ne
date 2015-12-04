@@ -43,7 +43,7 @@ ne.SceneManager = (function () {
       this._lastScene = this.scene;
       var loader = new ne.Loader();
       this.prepareLoad(loader);
-      this.scene.load(loader);
+      this.scene.load(this, loader);
     }
 
     destroyScene(scene) {
@@ -59,7 +59,7 @@ ne.SceneManager = (function () {
 
     afterLoad(loader) {
       this.endLoad();
-      this.scene.start(loader);
+      this.scene.start(this, loader);
     }
 
     updateScene(delta) {

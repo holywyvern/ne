@@ -56,6 +56,18 @@ ne.Game = (function () {
       }
     }
 
+    get width() {
+      return this._renderer.width;
+    }
+
+    get height() {
+      return this._renderer.height;
+    }
+
+    resize(width, height) {
+      this._renderer.resize(width, height);
+    }
+
   };
 
 })();

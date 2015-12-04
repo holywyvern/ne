@@ -69,6 +69,10 @@ ne.Color = (function () {
       return `rgba(${this.red}, ${this.green}, ${this.blue}, ${a})`;
     }
 
+    toStyle() {
+      return this.toCss();
+    }
+
     toArgb() {
       return this.alpha << 24 + this.red << 16 + this.green << 8 + this.blue;
     }
@@ -142,6 +146,70 @@ ne.Color = (function () {
     invert(alpha=false) {
       var a = alpha ? 255 - this.alpha : this.alpha;
       return this.set(255 - this.red, 255 - this.green, 255 - this.blue, a);
+    }
+
+    static get WHITE() {
+      return new ne.Color(255, 255, 255);
+    }
+
+    static get BLACK() {
+      return new ne.Color();
+    }
+
+    static get RED() {
+      return new ne.Color(255, 0, 0);
+    }
+
+    static get GREEN() {
+      return new ne.Color(0, 128, 0);
+    }
+
+    static get BLUE() {
+      return new ne.Color(0, 0, 255);
+    }
+
+    static get YELLOW() {
+      return new ne.Color(255, 255, 0);
+    }
+
+    static get MAGENTA() {
+      return new ne.Color(255, 0, 255);
+    }
+
+    static get CYAN() {
+      return new ne.Color(0, 255, 255);
+    }
+
+    static get GRAY() {
+      return new ne.Color(128, 128, 128);
+    }
+
+    static get DARK_GRAY() {
+      return new ne.Color(169, 169, 169);
+    }
+
+    static get LIGHT_GRAY() {
+      return new ne.Color(211, 211, 211);
+    }
+
+    static get ORANGE() {
+      return new ne.Color(255, 165, 0);
+    }
+
+    static get BROWN() {
+      return new ne.Color(165, 42, 42);
+    }
+
+    static get LIME() {
+      return new ne.Color(0, 255, 0);
+    }
+
+    static get LIGHT_BLUE() {
+      return new ne.Color(173, 216, 230);
+    }
+
+    static get PINK() {
+      return new ne.Color(255, 192, 203);
     }
 
   }

@@ -8,10 +8,21 @@ ne.Sprite = (function () {
 
     initMembers() {
       super.initMembers();
-      this.position = new ne.Point();
-      this.scale    = new ne.Point(1, 1);
-      this.offset   = new ne.Point();
       this.shader   = new ne.SpriteShader();
+      this.texture  = null;
+      this.scale.set(1, 1);
+    }
+
+    get scale() {
+      return this.shader.uniformValues.u_scale;
+    }
+
+    get offset() {
+      return this.shader.uniformValues.u_scale;
+    }
+
+    get position() {
+      return this.shader.uniformValues.u_scale;
     }
 
     get x() {
@@ -32,6 +43,31 @@ ne.Sprite = (function () {
 
     move(x, y, time=0, mode=null) {
       this.twig({x: x, y: y}, time, mode);
+    }
+
+    render(gl) {
+      if (this.visible && this.texture) {
+        this.useShader(gl);
+        this.useTexture(gl);
+        ne.tools.gl.draw(gl);
+      }
+    }
+
+    useShader(gl) {
+      this.shader.generate(gl);
+      this.shader.use(gl);
+      this.shader.updateAttribute(gl, 'a_position');
+    }
+
+    useTexture(gl) {
+      this.texture.bind(gl, this.texture.rect);
+      this.updateShader(gl);
+    }
+
+    updateShader(gl) {
+      this.shader.updateAttribute(gl, 'a_texCoord');
+      this.shader.uniformValues.u_resolution = this.parent.shader.uniformValues.u_resolution;
+      this.shader.update(gl);
     }
 
   }

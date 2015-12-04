@@ -52,8 +52,10 @@ ne.tools.gl = (function () {
 
   $.bindTexture = function (gl, texture) {
     gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
   };
 
   $.bindBuffer = function (gl, buffer, data) {
@@ -66,10 +68,13 @@ ne.tools.gl = (function () {
   };
 
   $.checkShader = function (gl, shader) {
+    var source = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
+
     var success = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
     if (!success) {
       var log = gl.getShaderInfoLog(shader);
-      var e = "Could not compile shader:" + log + ".\nSource was:\n" + source;
+      var txt = source ? ".\nSource was:\n" + source : '';
+      var e = "Could not compile shader:" + log + txt;
       gl.deleteShader(shader);
       throw e;
     }
@@ -79,7 +84,7 @@ ne.tools.gl = (function () {
     var shader = gl.createShader(type);
     gl.shaderSource(shader, source);
     gl.compileShader(shader);
-    this.checkShader(gl, shader);
+    this.checkShader(gl, shader, source);
     return shader;
   };
 
@@ -925,7 +930,7 @@ ne.SceneManager = (function () {
                 this._lastScene = this.scene;
                 var loader = new ne.Loader();
                 this.prepareLoad(loader);
-                this.scene.load(loader);
+                this.scene.load(this, loader);
             }
         }, {
             key: "destroyScene",
@@ -946,7 +951,7 @@ ne.SceneManager = (function () {
             key: "afterLoad",
             value: function afterLoad(loader) {
                 this.endLoad();
-                this.scene.start(loader);
+                this.scene.start(this, loader);
             }
         }, {
             key: "updateScene",
@@ -1052,6 +1057,21 @@ ne.Game = (function () {
         if (scene) {
           this._renderer.destroy(scene);
         }
+      }
+    }, {
+      key: 'resize',
+      value: function resize(width, height) {
+        this._renderer.resize(width, height);
+      }
+    }, {
+      key: 'width',
+      get: function get() {
+        return this._renderer.width;
+      }
+    }, {
+      key: 'height',
+      get: function get() {
+        return this._renderer.height;
       }
     }]);
 
@@ -1237,6 +1257,11 @@ ne.Color = (function () {
                 return "rgba(" + this.red + ", " + this.green + ", " + this.blue + ", " + a + ")";
             }
         }, {
+            key: "toStyle",
+            value: function toStyle() {
+                return this.toCss();
+            }
+        }, {
             key: "toArgb",
             value: function toArgb() {
                 return this.alpha << 24 + this.red << 16 + this.green << 8 + this.blue;
@@ -1414,6 +1439,86 @@ ne.Color = (function () {
                 var l = _hsl[2];
 
                 return this._hslToRgb(h, s, l, 255);
+            }
+        }, {
+            key: "WHITE",
+            get: function get() {
+                return new ne.Color(255, 255, 255);
+            }
+        }, {
+            key: "BLACK",
+            get: function get() {
+                return new ne.Color();
+            }
+        }, {
+            key: "RED",
+            get: function get() {
+                return new ne.Color(255, 0, 0);
+            }
+        }, {
+            key: "GREEN",
+            get: function get() {
+                return new ne.Color(0, 128, 0);
+            }
+        }, {
+            key: "BLUE",
+            get: function get() {
+                return new ne.Color(0, 0, 255);
+            }
+        }, {
+            key: "YELLOW",
+            get: function get() {
+                return new ne.Color(255, 255, 0);
+            }
+        }, {
+            key: "MAGENTA",
+            get: function get() {
+                return new ne.Color(255, 0, 255);
+            }
+        }, {
+            key: "CYAN",
+            get: function get() {
+                return new ne.Color(0, 255, 255);
+            }
+        }, {
+            key: "GRAY",
+            get: function get() {
+                return new ne.Color(128, 128, 128);
+            }
+        }, {
+            key: "DARK_GRAY",
+            get: function get() {
+                return new ne.Color(169, 169, 169);
+            }
+        }, {
+            key: "LIGHT_GRAY",
+            get: function get() {
+                return new ne.Color(211, 211, 211);
+            }
+        }, {
+            key: "ORANGE",
+            get: function get() {
+                return new ne.Color(255, 165, 0);
+            }
+        }, {
+            key: "BROWN",
+            get: function get() {
+                return new ne.Color(165, 42, 42);
+            }
+        }, {
+            key: "LIME",
+            get: function get() {
+                return new ne.Color(0, 255, 0);
+            }
+        }, {
+            key: "LIGHT_BLUE",
+            get: function get() {
+                return new ne.Color(173, 216, 230);
+            }
+        }, {
+            key: "PINK",
+            get: function get() {
+                return new ne.Color(255, 192, 203);
             }
         }]);
 
@@ -1606,7 +1711,7 @@ ne.ShaderBase = (function () {
         for (var a in list) {
           if (list.hasOwnProperty(a)) {
             var type = this.glType(list[a]);
-            result += kind + " " + type + " " + a + ";";
+            result += kind + " " + type + " " + a + ";\n";
           }
         }
         return result;
@@ -1647,12 +1752,12 @@ ne.ShaderBase = (function () {
     }, {
       key: "precision",
       value: function precision() {
-        return 'precision mediump float;';
+        return 'precision mediump float;\n';
       }
     }, {
       key: "mainFunction",
       value: function mainFunction(code) {
-        return "void main(void) { " + code + " }";
+        return "void main(void) {\n " + code + " \n}";
       }
     }, {
       key: "glType",
@@ -1676,6 +1781,9 @@ ne.ShaderBase = (function () {
     'vec3': 'vec3',
     'vec4': 'vec4',
     'float': 'float',
+    'sampler2D': 'sampler2D',
+    'sampler1D': 'sampler1D',
+    'sampler3D': 'sampler3D',
     'int': 'int'
   };
 
@@ -1746,7 +1854,7 @@ ne.Shader = (function () {
           case 'array':
             return [0, 0, 0, 0];
           default:
-            return 0;
+            return null;
         }
       }
     }, {
@@ -1769,7 +1877,7 @@ ne.Shader = (function () {
       key: 'updateUniform',
       value: function updateUniform(gl, name, type, value) {
         var location = this._glUniforms[name];
-        if (typeof location != 'undefined') {
+        if (typeof location != 'undefined' && value !== null) {
           this.updateUniformByType(gl, location, type, value);
         }
       }
@@ -1898,6 +2006,7 @@ ne.Texture = (function () {
     }, {
       key: "bind",
       value: function bind(gl, rect) {
+        this.generate(gl);
         this.bindBuffer(gl, rect);
         this.bindTexture(gl);
       }
@@ -1928,6 +2037,21 @@ ne.Texture = (function () {
       key: "bindTexture",
       value: function bindTexture(gl) {
         ne.tools.gl.bindTexture(gl, this._glTexture);
+      }
+    }, {
+      key: "rect",
+      get: function get() {
+        return this._pixmap.rect;
+      }
+    }, {
+      key: "width",
+      get: function get() {
+        return this._pixmap.width;
+      }
+    }, {
+      key: "height",
+      get: function get() {
+        return this._pixmap.height;
       }
     }]);
 
@@ -1998,6 +2122,35 @@ ne.Pixmap = (function () {
         return ne.tools.gl.textureFromCanvas(gl, this._canvas);
       }
     }, {
+      key: 'strokeRect',
+      value: function strokeRect(rect, style) {
+        var width = arguments.length <= 2 || arguments[2] === undefined ? 1 : arguments[2];
+
+        var state = this._context.save();
+        this._context.strokeStyle = style.toStyle();
+        this._context.lineWidth = width;
+        this._context.strokeRect(rect.x, rect.y, rect.width, rect.height);
+        this._context.restore(state);
+      }
+    }, {
+      key: 'fillRect',
+      value: function fillRect(rect, style) {
+        var state = this._context.save();
+        this._context.fillStyle = style.toStyle();
+        this._context.fillRect(rect.x, rect.y, rect.width, rect.height);
+        this._context.restore(state);
+      }
+    }, {
+      key: 'clearRect',
+      value: function clearRect(rect) {
+        this._context.clearRect(rect.x, rect.y, rect.width, rect.height);
+      }
+    }, {
+      key: 'clear',
+      value: function clear() {
+        this._context.clearRect(0, 0, this.width, this.height);
+      }
+    }, {
       key: 'width',
       get: function get() {
         return this._canvas.width;
@@ -2006,6 +2159,11 @@ ne.Pixmap = (function () {
       key: 'height',
       get: function get() {
         return this._canvas.height;
+      }
+    }, {
+      key: 'rect',
+      get: function get() {
+        return new ne.Rect(0, 0, this.width, this.height);
       }
     }], [{
       key: 'fromImage',
@@ -2180,6 +2338,7 @@ ne.Drawable = (function () {
             value: function initMembers() {
                 this._parent = null;
                 this.z = 0;
+                this.visible = true;
             }
         }, {
             key: "render",
@@ -2206,6 +2365,16 @@ ne.Drawable = (function () {
                 if (parent) {
                     parent.zUpdate();
                 }
+            }
+        }, {
+            key: "parentWidth",
+            get: function get() {
+                return this.parent ? this.parent.width : 1;
+            }
+        }, {
+            key: "parentHeight",
+            get: function get() {
+                return this.parent ? this.parent.height : 1;
             }
         }]);
 
@@ -2496,6 +2665,7 @@ ne.Container = (function () {
       key: "add",
       value: function add(child) {
         if (!this.contains(child)) {
+          child._parent = this;
           this.children.push(child);
           this.zUpdate();
         }
@@ -2504,8 +2674,16 @@ ne.Container = (function () {
       key: "remove",
       value: function remove(child) {
         var index = this.indexOf(child);
-        if (index !== -1) {
-          this.children.splice(index, 1);
+        this.removeAt(index);
+      }
+    }, {
+      key: "removeAt",
+      value: function removeAt(index) {
+        if (index >= 0 && index <= this.length) {
+          var deleted = this.children.splice(index, 1);
+          deleted.forEach(function (c) {
+            return c._parent = null;
+          });
         }
       }
     }, {
@@ -2516,6 +2694,9 @@ ne.Container = (function () {
     }, {
       key: "clear",
       value: function clear() {
+        this.children.forEach(function (child) {
+          return child._parent = null;
+        });
         this.children = [];
       }
     }, {
@@ -2539,12 +2720,17 @@ ne.Container = (function () {
       get: function get() {
         return this._children;
       }
+    }, {
+      key: "length",
+      get: function get() {
+        return this._children.length;
+      }
     }]);
 
     return Container;
   })(ne.Actor);
 })();
-"use strict";
+'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
@@ -2568,16 +2754,15 @@ ne.Sprite = (function () {
     }
 
     _createClass(Sprite, [{
-      key: "initMembers",
+      key: 'initMembers',
       value: function initMembers() {
-        _get(Object.getPrototypeOf(Sprite.prototype), "initMembers", this).call(this);
-        this.position = new ne.Point();
-        this.scale = new ne.Point(1, 1);
-        this.offset = new ne.Point();
+        _get(Object.getPrototypeOf(Sprite.prototype), 'initMembers', this).call(this);
         this.shader = new ne.SpriteShader();
+        this.texture = null;
+        this.scale.set(1, 1);
       }
     }, {
-      key: "move",
+      key: 'move',
       value: function move(x, y) {
         var time = arguments.length <= 2 || arguments[2] === undefined ? 0 : arguments[2];
         var mode = arguments.length <= 3 || arguments[3] === undefined ? null : arguments[3];
@@ -2585,7 +2770,51 @@ ne.Sprite = (function () {
         this.twig({ x: x, y: y }, time, mode);
       }
     }, {
-      key: "x",
+      key: 'render',
+      value: function render(gl) {
+        if (this.visible && this.texture) {
+          this.useShader(gl);
+          this.useTexture(gl);
+          ne.tools.gl.draw(gl);
+        }
+      }
+    }, {
+      key: 'useShader',
+      value: function useShader(gl) {
+        this.shader.generate(gl);
+        this.shader.use(gl);
+        this.shader.updateAttribute(gl, 'a_position');
+      }
+    }, {
+      key: 'useTexture',
+      value: function useTexture(gl) {
+        this.texture.bind(gl, this.texture.rect);
+        this.updateShader(gl);
+      }
+    }, {
+      key: 'updateShader',
+      value: function updateShader(gl) {
+        this.shader.updateAttribute(gl, 'a_texCoord');
+        this.shader.uniformValues.u_resolution = this.parent.shader.uniformValues.u_resolution;
+        this.shader.update(gl);
+      }
+    }, {
+      key: 'scale',
+      get: function get() {
+        return this.shader.uniformValues.u_scale;
+      }
+    }, {
+      key: 'offset',
+      get: function get() {
+        return this.shader.uniformValues.u_scale;
+      }
+    }, {
+      key: 'position',
+      get: function get() {
+        return this.shader.uniformValues.u_scale;
+      }
+    }, {
+      key: 'x',
       get: function get() {
         return this.position.x;
       },
@@ -2593,7 +2822,7 @@ ne.Sprite = (function () {
         this.position.x = value;
       }
     }, {
-      key: "y",
+      key: 'y',
       get: function get() {
         return this.position.y;
       },
@@ -2638,18 +2867,32 @@ ne.Scene = (function () {
       }
     }, {
       key: 'load',
-      value: function load(loader) {}
+      value: function load(game, loader) {}
     }, {
       key: 'start',
-      value: function start(loader) {}
+      value: function start(game, loader) {
+        this.startGlData(game);
+      }
+    }, {
+      key: 'startGlData',
+      value: function startGlData(game) {
+        var data = this._glData;
+        data[0] = data[4] = data[6] = 0; // x
+        data[1] = data[3] = data[9] = 0; // x
+        data[2] = data[8] = data[10] = game.width; // width
+        data[5] = data[7] = data[11] = game.height; // height
+        this.shader.uniformValues.u_resolution.set(game.width, game.height);
+      }
     }, {
       key: 'render',
       value: function render(gl) {
-        this.shader.generate(gl);
-        this.shader.use(gl);
-        this.useBuffer(gl);
-        this.updateShader(gl);
-        ne.tools.gl.draw(gl);
+        if (this.visible) {
+          this.useShader(gl);
+          this.useBuffer(gl);
+          this.updateShader(gl);
+          ne.tools.gl.draw(gl);
+          _get(Object.getPrototypeOf(Scene.prototype), 'render', this).call(this, gl);
+        }
       }
     }, {
       key: 'destroy',
@@ -2657,6 +2900,12 @@ ne.Scene = (function () {
         _get(Object.getPrototypeOf(Scene.prototype), 'destroy', this).call(this, gl);
         this.destroyBuffer(gl);
         this.shader.destroy(gl);
+      }
+    }, {
+      key: 'useShader',
+      value: function useShader(gl) {
+        this.shader.generate(gl);
+        this.shader.use(gl);
       }
     }, {
       key: 'useBuffer',
@@ -2689,6 +2938,16 @@ ne.Scene = (function () {
       get: function get() {
         return this.shader.uniformValues.u_bgColor;
       }
+    }, {
+      key: 'parentWidth',
+      get: function get() {
+        return this.parent ? this.parent.width : this._glData[2];
+      }
+    }, {
+      key: 'parentHeight',
+      get: function get() {
+        return this.parent ? this.parent.height : this._glData[5];
+      }
     }]);
 
     return Scene;
@@ -2718,29 +2977,44 @@ ne.SpriteShader = (function () {
     _createClass(SpriteShader, [{
       key: "vertex",
       value: function vertex() {
-        return "gl_Position = vec4(a_position, 0, 1);";
+        return [
+        // convert the rectangle from pixels to 0.0 to 1.0
+        "vec2 zeroToOne = a_position / u_resolution;",
+        // convert from 0->1 to 0->2
+        "vec2 zeroToTwo = zeroToOne * 2.0;",
+        // convert from 0->2 to -1->+1 (clipspace)
+        "vec2 clipSpace = zeroToTwo - 1.0;", "v_texCoord = a_texCoord;", "gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);"].join('\n');
       }
     }, {
       key: "fragment",
       value: function fragment() {
-        return "gl_FragColor = vec4(0, 1, 0, 1);";
+        return "gl_FragColor = texture2D(u_texture, v_texCoord);";
       }
     }, {
       key: "attributes",
       value: function attributes() {
         return {
-          a_position: 'vec2'
+          a_position: 'vec2',
+          a_texCoord: 'point'
         };
       }
     }, {
       key: "uniforms",
       value: function uniforms() {
-        return {};
+        return {
+          u_texture: 'sampler2D',
+          u_position: 'point',
+          u_scale: 'point',
+          u_offset: 'point',
+          u_resolution: 'point'
+        };
       }
     }, {
       key: "varying",
       value: function varying() {
-        return {};
+        return {
+          v_texCoord: 'point'
+        };
       }
     }]);
 
@@ -2771,7 +3045,13 @@ ne.SceneShader = (function () {
     _createClass(SceneShader, [{
       key: "vertex",
       value: function vertex() {
-        return "gl_Position = vec4(a_position, 0, 1);";
+        return [
+        // convert the rectangle from pixels to 0.0 to 1.0
+        "vec2 zeroToOne = a_position / u_resolution;",
+        // convert from 0->1 to 0->2
+        "vec2 zeroToTwo = zeroToOne * 2.0;",
+        // convert from 0->2 to -1->+1 (clipspace)
+        "vec2 clipSpace = zeroToTwo - 1.0;", "gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);"].join('\n');
       }
     }, {
       key: "fragment",
@@ -2789,7 +3069,8 @@ ne.SceneShader = (function () {
       key: "uniforms",
       value: function uniforms() {
         return {
-          u_bgColor: 'color'
+          u_bgColor: 'color',
+          u_resolution: 'point'
         };
       }
     }]);

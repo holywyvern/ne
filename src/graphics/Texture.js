@@ -14,6 +14,18 @@ ne.Texture = (function () {
       this._isDirty = false;
     }
 
+    get rect() {
+      return this._pixmap.rect;
+    }
+
+    get width() {
+      return this._pixmap.width;
+    }
+
+    get height() {
+      return this._pixmap.height;
+    }
+
     generate(gl) {
       if (this._isDirty) {
         this._isDirty = false;
@@ -68,6 +80,7 @@ ne.Texture = (function () {
     }
 
     bind(gl, rect) {
+      this.generate(gl);
       this.bindBuffer(gl, rect);
       this.bindTexture(gl);
     }

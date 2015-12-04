@@ -46,6 +46,33 @@ ne.Pixmap = (function () {
       return this._canvas.height;
     }
 
+    get rect() {
+      return new ne.Rect(0, 0, this.width, this.height);
+    }
+
+    strokeRect(rect, style, width=1) {
+      var state = this._context.save();
+      this._context.strokeStyle = style.toStyle();
+      this._context.lineWidth   = width;
+      this._context.strokeRect(rect.x, rect.y, rect.width, rect.height);
+      this._context.restore(state);
+    }
+
+    fillRect(rect, style) {
+      var state = this._context.save();
+      this._context.fillStyle = style.toStyle();
+      this._context.fillRect(rect.x, rect.y, rect.width, rect.height);
+      this._context.restore(state);
+    }
+
+    clearRect(rect) {
+      this._context.clearRect(rect.x, rect.y, rect.width, rect.height);
+    }
+
+    clear() {
+      this._context.clearRect(0, 0, this.width, this.height);
+    }
+
   }
 
 })();
