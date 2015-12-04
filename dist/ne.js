@@ -875,87 +875,95 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 ne.SceneManager = (function () {
 
-  return (function (_ne$EventManager) {
-    _inherits(SceneManager, _ne$EventManager);
+    return (function (_ne$EventManager) {
+        _inherits(SceneManager, _ne$EventManager);
 
-    function SceneManager() {
-      _classCallCheck(this, SceneManager);
+        function SceneManager() {
+            _classCallCheck(this, SceneManager);
 
-      var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(SceneManager).call(this));
+            var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(SceneManager).call(this));
 
-      _this._sceneStack = [null];
-      _this._lastScene = null;
-      return _this;
-    }
-
-    _createClass(SceneManager, [{
-      key: "goto",
-      value: function goto(scene) {
-        this._sceneStack = [];
-        this.call(scene);
-      }
-    }, {
-      key: "call",
-      value: function call(scene) {
-        this._sceneStack.push(scene);
-      }
-    }, {
-      key: "back",
-      value: function back() {
-        this._sceneStack.pop();
-      }
-    }, {
-      key: "update",
-      value: function update(delta) {
-        if (this._lastScene !== this.scene) {
-          this.switchScene();
-          return;
+            _this._sceneStack = [null];
+            _this._lastScene = null;
+            return _this;
         }
-        this.updateScene(delta);
-      }
-    }, {
-      key: "switchScene",
-      value: function switchScene() {
-        this.renderer.destroy(this._lastScene);
-        this._lastScene = this.scene;
-        var loader = new ne.Loader();
-        this.prepareLoad(loader);
-        this.scene.load(loader);
-      }
-    }, {
-      key: "prepareLoad",
-      value: function prepareLoad(loader) {
-        var _this2 = this;
 
-        loader.done(function () {
-          return _this2.afterLoad(loader);
-        });
-      }
-    }, {
-      key: "endLoad",
-      value: function endLoad() {}
-    }, {
-      key: "afterLoad",
-      value: function afterLoad(loader) {
-        this.endLoad();
-        this.scene.start(loader);
-      }
-    }, {
-      key: "updateScene",
-      value: function updateScene(delta) {
-        if (this.scene) {
-          this.scene.act(delta);
-        }
-      }
-    }, {
-      key: "scene",
-      get: function get() {
-        return this._sceneStack[this._sceneStack.length - 1];
-      }
-    }]);
+        _createClass(SceneManager, [{
+            key: "goto",
+            value: function goto(scene) {
+                this.clearSceneStack();
+                this.call(scene);
+            }
+        }, {
+            key: "clearSceneStack",
+            value: function clearSceneStack() {
+                this._sceneStack = [null];
+            }
+        }, {
+            key: "call",
+            value: function call(scene) {
+                this._sceneStack.push(scene);
+            }
+        }, {
+            key: "back",
+            value: function back() {
+                this._sceneStack.pop();
+            }
+        }, {
+            key: "update",
+            value: function update(delta) {
+                if (this._lastScene !== this.scene) {
+                    this.switchScene();
+                    return;
+                }
+                this.updateScene(delta);
+            }
+        }, {
+            key: "switchScene",
+            value: function switchScene() {
+                this.destroyScene(this._lastScene);
+                this._lastScene = this.scene;
+                var loader = new ne.Loader();
+                this.prepareLoad(loader);
+                this.scene.load(loader);
+            }
+        }, {
+            key: "destroyScene",
+            value: function destroyScene(scene) {}
+        }, {
+            key: "prepareLoad",
+            value: function prepareLoad(loader) {
+                var _this2 = this;
 
-    return SceneManager;
-  })(ne.EventManager);
+                loader.done(function () {
+                    return _this2.afterLoad(loader);
+                });
+            }
+        }, {
+            key: "endLoad",
+            value: function endLoad() {}
+        }, {
+            key: "afterLoad",
+            value: function afterLoad(loader) {
+                this.endLoad();
+                this.scene.start(loader);
+            }
+        }, {
+            key: "updateScene",
+            value: function updateScene(delta) {
+                if (this.scene) {
+                    this.scene.act(delta);
+                }
+            }
+        }, {
+            key: "scene",
+            get: function get() {
+                return this._sceneStack[this._sceneStack.length - 1];
+            }
+        }]);
+
+        return SceneManager;
+    })(ne.EventManager);
 })();
 'use strict';
 
@@ -1020,7 +1028,7 @@ ne.Game = (function () {
       key: 'render',
       value: function render() {
         if (this.scene) {
-          this.renderer.render(this.scene);
+          this._renderer.render(this.scene);
         }
       }
     }, {
@@ -1037,6 +1045,13 @@ ne.Game = (function () {
         var delta = t - this._time;
         this._time = t;
         return delta;
+      }
+    }, {
+      key: 'destroyScene',
+      value: function destroyScene(scene) {
+        if (scene) {
+          this._renderer.destroy(scene);
+        }
       }
     }]);
 
@@ -1492,7 +1507,7 @@ ne.ShaderBase = (function () {
       value: function generateUniforms(gl) {
         var _this2 = this;
 
-        var uniforms = this.attributes();
+        var uniforms = this.uniforms();
         Object.keys(uniforms).forEach(function (u) {
           _this2._glUniforms[u] = gl.getUniformLocation(_this2._glProgram, u);
         });
@@ -1568,7 +1583,7 @@ ne.ShaderBase = (function () {
       key: "generateProgram",
       value: function generateProgram(gl) {
         try {
-          this._glProgram = ne.tools.gl.generateProgram(gl, this._glVertex, this._glFragment);
+          this._glProgram = ne.tools.gl.makeProgram(gl, this._glVertex, this._glFragment);
         } catch (e) {
           this.destroy(gl);
           throw e;
@@ -1609,7 +1624,7 @@ ne.ShaderBase = (function () {
       key: "updateAttribute",
       value: function updateAttribute(gl, name) {
         var location = this._glAttributes[name];
-        if (location) {
+        if (typeof location !== 'undefined') {
           gl.enableVertexAttribArray(location);
           gl.vertexAttribPointer(location, 2, gl.FLOAT, false, 0, 0);
         }
@@ -1754,7 +1769,7 @@ ne.Shader = (function () {
       key: 'updateUniform',
       value: function updateUniform(gl, name, type, value) {
         var location = this._glUniforms[name];
-        if (location) {
+        if (typeof location != 'undefined') {
           this.updateUniformByType(gl, location, type, value);
         }
       }
@@ -1775,13 +1790,13 @@ ne.Shader = (function () {
             gl.uniform4f(location, value[0], value[1], value[2], value[3]);
             break;
           case 'point':
-            gl.uniform2f(location, rect.x, rect.y);
+            gl.uniform2f(location, value.x, value.y);
             break;
           case 'rect':
-            gl.uniform4f(location, rect.x, rect.y, rect.width, rect.height);
+            gl.uniform4f(location, value.x, value.y, value.width, value.height);
             break;
           case 'color':
-            gl.uniform4f(location, color.red, color.green, color.blue, color.alpha);
+            gl.uniform4f(location, value.red / 255, value.green / 255, value.blue / 255, value.alpha / 255);
             break;
           case 'array':
             gl['uniform' + value.length + 'f'].apply(gl, [location].concat(_toConsumableArray(value)));
@@ -2590,6 +2605,95 @@ ne.Sprite = (function () {
     return Sprite;
   })(ne.Actor);
 })();
+'use strict';
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+ne.Scene = (function () {
+
+  return (function (_ne$Container) {
+    _inherits(Scene, _ne$Container);
+
+    function Scene() {
+      _classCallCheck(this, Scene);
+
+      return _possibleConstructorReturn(this, Object.getPrototypeOf(Scene).call(this));
+    }
+
+    _createClass(Scene, [{
+      key: 'initMembers',
+      value: function initMembers() {
+        _get(Object.getPrototypeOf(Scene.prototype), 'initMembers', this).call(this);
+        this.shader = new ne.SceneShader();
+        this._glBuffer = null;
+        this._glData = new Float32Array([-1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0]);
+      }
+    }, {
+      key: 'load',
+      value: function load(loader) {}
+    }, {
+      key: 'start',
+      value: function start(loader) {}
+    }, {
+      key: 'render',
+      value: function render(gl) {
+        this.shader.generate(gl);
+        this.shader.use(gl);
+        this.useBuffer(gl);
+        this.updateShader(gl);
+        ne.tools.gl.draw(gl);
+      }
+    }, {
+      key: 'destroy',
+      value: function destroy(gl) {
+        _get(Object.getPrototypeOf(Scene.prototype), 'destroy', this).call(this, gl);
+        this.destroyBuffer(gl);
+        this.shader.destroy(gl);
+      }
+    }, {
+      key: 'useBuffer',
+      value: function useBuffer(gl) {
+        this.generateBuffer(gl);
+        ne.tools.gl.bindBuffer(gl, this._glBuffer, this._glData);
+      }
+    }, {
+      key: 'updateShader',
+      value: function updateShader(gl) {
+        this.shader.updateAttribute(gl, 'a_position');
+        this.shader.update(gl);
+      }
+    }, {
+      key: 'destroyBuffer',
+      value: function destroyBuffer(gl) {
+        if (this._glBuffer) {
+          gl.deleteBuffer(this._glBuffer);
+        }
+      }
+    }, {
+      key: 'generateBuffer',
+      value: function generateBuffer(gl) {
+        if (!this._glBuffer) {
+          this._glBuffer = gl.createBuffer();
+        }
+      }
+    }, {
+      key: 'bgColor',
+      get: function get() {
+        return this.shader.uniformValues.u_bgColor;
+      }
+    }]);
+
+    return Scene;
+  })(ne.Container);
+})();
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -2641,6 +2745,56 @@ ne.SpriteShader = (function () {
     }]);
 
     return SpriteShader;
+  })(ne.Shader);
+})();
+"use strict";
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+ne.SceneShader = (function () {
+
+  return (function (_ne$Shader) {
+    _inherits(SceneShader, _ne$Shader);
+
+    function SceneShader() {
+      _classCallCheck(this, SceneShader);
+
+      return _possibleConstructorReturn(this, Object.getPrototypeOf(SceneShader).apply(this, arguments));
+    }
+
+    _createClass(SceneShader, [{
+      key: "vertex",
+      value: function vertex() {
+        return "gl_Position = vec4(a_position, 0, 1);";
+      }
+    }, {
+      key: "fragment",
+      value: function fragment() {
+        return "gl_FragColor = u_bgColor;";
+      }
+    }, {
+      key: "attributes",
+      value: function attributes() {
+        return {
+          a_position: 'vec2'
+        };
+      }
+    }, {
+      key: "uniforms",
+      value: function uniforms() {
+        return {
+          u_bgColor: 'color'
+        };
+      }
+    }]);
+
+    return SceneShader;
   })(ne.Shader);
 })();
 //# sourceMappingURL=ne.js.map

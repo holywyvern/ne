@@ -52,7 +52,7 @@ ne.Shader = (function () {
 
     updateUniform(gl, name, type, value) {
       var location = this._glUniforms[name];
-      if (location) {
+      if (typeof location != 'undefined') {
         this.updateUniformByType(gl, location, type, value);
       }
     }
@@ -72,13 +72,13 @@ ne.Shader = (function () {
           gl.uniform4f(location, value[0], value[1], value[2], value[3]);
           break;
         case 'point':
-          gl.uniform2f(location, rect.x, rect.y);
+          gl.uniform2f(location, value.x, value.y);
           break;
         case 'rect':
-          gl.uniform4f(location, rect.x, rect.y, rect.width, rect.height);
+          gl.uniform4f(location, value.x, value.y, value.width, value.height);
           break;
         case 'color':
-          gl.uniform4f(location, color.red, color.green, color.blue, color.alpha);
+          gl.uniform4f(location, value.red / 255, value.green / 255, value.blue / 255, value.alpha / 255);
           break;
         case 'array':
           gl['uniform' + value.length + 'f'](location, ...value);

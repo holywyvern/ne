@@ -14,8 +14,12 @@ ne.SceneManager = (function () {
     }
 
     goto(scene) {
-      this._sceneStack = [];
+      this.clearSceneStack();
       this.call(scene);
+    }
+
+    clearSceneStack() {
+      this._sceneStack = [null];
     }
 
     call(scene) {
@@ -35,11 +39,14 @@ ne.SceneManager = (function () {
     }
 
     switchScene() {
-      this.renderer.destroy(this._lastScene);
+      this.destroyScene(this._lastScene);
       this._lastScene = this.scene;
       var loader = new ne.Loader();
       this.prepareLoad(loader);
       this.scene.load(loader);
+    }
+
+    destroyScene(scene) {
     }
 
     prepareLoad(loader) {

@@ -21,7 +21,7 @@ ne.Scene = (function () {
     }
 
     start(loader) {
-      
+
     }
 
     get bgColor() {
@@ -49,6 +49,7 @@ ne.Scene = (function () {
 
     updateShader(gl) {
       this.shader.updateAttribute(gl, 'a_position');
+      this.shader.update(gl);
     }
 
     destroyBuffer(gl) {

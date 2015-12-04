@@ -1,8 +1,10 @@
-var gulp = require("gulp");
+var gulp       = require("gulp");
 var sourcemaps = require("gulp-sourcemaps");
-var babel = require("gulp-babel");
-var concat = require("gulp-concat");
-var minify = require("gulp-minify");
+var babel      = require("gulp-babel");
+var concat     = require("gulp-concat");
+var minify     = require("gulp-minify");
+var remember   = require('gulp-remember');
+var cached     = require('gulp-cached');
 
 var $SCRIPTS = [
   // Polyfill
@@ -41,14 +43,18 @@ var $SCRIPTS = [
   "src/graphics/drawables/Actor.js",
   "src/graphics/drawables/Container.js",
   "src/graphics/drawables/Sprite.js",
+  "src/graphics/drawables/Scene.js",
   // Shader collection
-  "src/graphics/shaders/SpriteShader.js"
+  "src/graphics/shaders/SpriteShader.js",
+  "src/graphics/shaders/SceneShader.js"
 ];
 
 gulp.task("compile", function () {
   return gulp.src($SCRIPTS)
+    .pipe(cached('babel-precompiled'))
     .pipe(sourcemaps.init())
     .pipe(babel())
+    .pipe(remember('babel-precompiled'))
     .pipe(concat("ne.js"))
     .pipe(sourcemaps.write("."))
     .pipe(gulp.dest("dist"));
@@ -62,4 +68,8 @@ gulp.task("default", ["compile"], function () {
     .pipe(minify())
     .pipe(sourcemaps.write("."))
     .pipe(gulp.dest("dist"));
+});
+
+gulp.task('watch', function(){
+  gulp.watch('src/**/*.js', ['compile', 'default']);
 });

@@ -60,7 +60,7 @@ ne.ShaderBase = (function () {
     }
 
     generateUniforms(gl) {
-      var uniforms = this.attributes();
+      var uniforms = this.uniforms();
       Object.keys(uniforms).forEach( (u) => {
         this._glUniforms[u] = gl.getUniformLocation(this._glProgram, u);
       } );
@@ -127,7 +127,7 @@ ne.ShaderBase = (function () {
 
     generateProgram(gl) {
       try {
-        this._glProgram = ne.tools.gl.generateProgram(gl, this._glVertex, this._glFragment);
+        this._glProgram = ne.tools.gl.makeProgram(gl, this._glVertex, this._glFragment);
       } catch (e) {
         this.destroy(gl);
         throw e;
@@ -161,7 +161,7 @@ ne.ShaderBase = (function () {
 
     updateAttribute(gl, name) {
       var location = this._glAttributes[name];
-      if (location) {
+      if (typeof location !== 'undefined') {
         gl.enableVertexAttribArray(location);
         gl.vertexAttribPointer(location, 2, gl.FLOAT, false, 0, 0);
       }

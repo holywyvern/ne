@@ -3,7 +3,7 @@ ne.Color = (function () {
 
   class Color extends ne.ColorBase {
 
-    static _hue2rgb(p, q, t){
+    static _hue2rgb (p, q, t) {
         if(t < 0) t += 1;
         if(t > 1) t -= 1;
         if(t < 1/6) return p + (q - p) * 6 * t;
@@ -15,7 +15,7 @@ ne.Color = (function () {
     static _hslToRgb(h, s, l, a) {
       var r, g, b;
 
-      if(s == 0){
+      if (s == 0) {
         r = g = b = l; // achromatic
       } else {
         var q = l < 0.5 ? l * (1 + s) : l + s - l * s;

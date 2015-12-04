@@ -33,7 +33,7 @@ ne.Game = (function () {
 
     render() {
       if (this.scene) {
-        this.renderer.render(this.scene);
+        this._renderer.render(this.scene);
       }
     }
 
@@ -48,6 +48,12 @@ ne.Game = (function () {
       var delta = t - this._time;
       this._time = t;
       return delta;
+    }
+
+    destroyScene(scene) {
+      if (scene) {
+        this._renderer.destroy(scene);
+      }
     }
 
   };
