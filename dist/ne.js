@@ -30,7 +30,7 @@ ne.tools.gl = (function () {
     gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
   };
 
-  $.draw = function () {
+  $.draw = function (gl) {
     gl.drawArrays(gl.TRIANGLES, 0, 6);
   };
 
@@ -1712,17 +1712,25 @@ ne.Drawable = (function () {
     function Drawable() {
       _classCallCheck(this, Drawable);
 
-      this._parent = null;
-      this._events = {};
-      this.z = 0;
+      this.initMembers();
     }
 
     _createClass(Drawable, [{
+      key: 'initMembers',
+      value: function initMembers() {
+        this._parent = null;
+        this._events = {};
+        this.z = 0;
+      }
+    }, {
       key: 'render',
       value: function render(gl) {}
     }, {
       key: 'act',
       value: function act(delta) {}
+    }, {
+      key: 'destroy',
+      value: function destroy(gl) {}
     }, {
       key: 'fire',
       value: function fire(name) {
@@ -1789,6 +1797,9 @@ ne.Drawable = (function () {
         }
       }
     }, {
+      key: 'render2D',
+      value: function render2D(context) {}
+    }, {
       key: 'parent',
       get: function get() {
         return this._parent;
@@ -1814,6 +1825,201 @@ ne.Drawable = (function () {
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+ne.Actor = (function () {
+  var Actor = (function (_ne$Drawable) {
+    _inherits(Actor, _ne$Drawable);
+
+    function Actor() {
+      _classCallCheck(this, Actor);
+
+      return _possibleConstructorReturn(this, Object.getPrototypeOf(Actor).apply(this, arguments));
+    }
+
+    _createClass(Actor, [{
+      key: "initMembers",
+      value: function initMembers() {
+        _get(Object.getPrototypeOf(Actor.prototype), "initMembers", this).call(this);
+        this._twigs = [];
+      }
+    }, {
+      key: "twig",
+      value: function twig(props, time) {
+        var type = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
+
+        if (!type) {
+          type = this.defaultTwigMode();
+        }
+        if (time <= 0) {
+          this._setProperties(props);
+          return;
+        }
+        this._twigs.push(new Twig(this, props, time, type));
+      }
+    }, {
+      key: "defaultTwigMode",
+      value: function defaultTwigMode() {
+        return Twig.LINEAR;
+      }
+    }, {
+      key: "act",
+      value: function act(delta) {
+        this.updateTwigs(delta);
+      }
+    }, {
+      key: "updateTwigs",
+      value: function updateTwigs(delta) {
+        var toRemove = this._twigs.filter(function (twig) {
+          return twig.update(delta);
+        });
+        this.removeTwigs(toRemove);
+      }
+    }, {
+      key: "removeTwigs",
+      value: function removeTwigs(toRemove) {
+        var _this2 = this;
+
+        toRemove.forEach(function (twig) {
+          var index = _this2._twigs.indexOf(twig);
+          _this2._setProperties(twig.properties);
+          _this2._twigs.splice(index, 1);
+        });
+      }
+    }, {
+      key: "_setProperties",
+      value: function _setProperties(props) {
+        var _this3 = this;
+
+        Object.keys(props).forEach(function (i) {
+          _this3[i] = props[i];
+        });
+      }
+    }]);
+
+    return Actor;
+  })(ne.Drawable);
+
+  var Twig = (function () {
+    function Twig(subject, props, time, type) {
+      _classCallCheck(this, Twig);
+
+      this.initMembers(subject, props, time, type);
+    }
+
+    _createClass(Twig, [{
+      key: "initMembers",
+      value: function initMembers(subject, props, time, type) {
+        this._properties = props;
+        this._time = time;
+        this._totalTime = time;
+        this._type = type;
+        this._subject = subject;
+        this._initialValues = this.createInitialValues(subject, props);
+      }
+    }, {
+      key: "createInitialValues",
+      value: function createInitialValues(subject, props) {
+        var result = {};
+        var _iteratorNormalCompletion = true;
+        var _didIteratorError = false;
+        var _iteratorError = undefined;
+
+        try {
+          for (var _iterator = Object.keys(props)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+            var k = _step.value;
+
+            result[k] = subject[k];
+          }
+        } catch (err) {
+          _didIteratorError = true;
+          _iteratorError = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion && _iterator.return) {
+              _iterator.return();
+            }
+          } finally {
+            if (_didIteratorError) {
+              throw _iteratorError;
+            }
+          }
+        }
+
+        return result;
+      }
+    }, {
+      key: "update",
+      value: function update(delta) {
+        this._time = this._time - delta;
+        if (this._time > 0) {
+          this.updateFunctions();
+          return false;
+        }
+        return true;
+      }
+    }, {
+      key: "updateFunctions",
+      value: function updateFunctions() {
+        var _iteratorNormalCompletion2 = true;
+        var _didIteratorError2 = false;
+        var _iteratorError2 = undefined;
+
+        try {
+          for (var _iterator2 = Object.keys(this._properties)[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+            var k = _step2.value;
+
+            var init = this._initialValues[k];
+            var final = this._properties[k];
+            var current = this._subject[k];
+            var v = this._type(init, final, current, this._totalTime, this._time);
+            this._subject[k] = v;
+          }
+        } catch (err) {
+          _didIteratorError2 = true;
+          _iteratorError2 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion2 && _iterator2.return) {
+              _iterator2.return();
+            }
+          } finally {
+            if (_didIteratorError2) {
+              throw _iteratorError2;
+            }
+          }
+        }
+      }
+    }, {
+      key: "properties",
+      get: function get() {
+        return this._properties;
+      }
+    }]);
+
+    return Twig;
+  })();
+
+  Actor.Twig = Twig;
+
+  Twig.LINEAR = function (originalValue, finalValue, currentValue, totalTime, timeLeft) {
+    return (currentValue * (timeLeft - 1) + finalValue) / timeLeft;
+  };
+
+  return Actor;
+})();
+"use strict";
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -1822,22 +2028,26 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 ne.Container = (function () {
 
-  return (function (_ne$Drawable) {
-    _inherits(Container, _ne$Drawable);
+  return (function (_ne$Actor) {
+    _inherits(Container, _ne$Actor);
 
     function Container() {
       _classCallCheck(this, Container);
 
-      var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Container).call(this));
-
-      _this._children = [];
-      _this._zRefresh = false;
-      return _this;
+      return _possibleConstructorReturn(this, Object.getPrototypeOf(Container).call(this));
     }
 
     _createClass(Container, [{
+      key: "initMembers",
+      value: function initMembers() {
+        _get(Object.getPrototypeOf(Container.prototype), "initMembers", this).call(this);
+        this._children = [];
+        this._zRefresh = false;
+      }
+    }, {
       key: "act",
       value: function act(delta) {
+        _get(Object.getPrototypeOf(Container.prototype), "act", this).call(this, delta);
         this._refreshZ();
         this._makeChildrenAct(delta);
       }
@@ -1845,6 +2055,12 @@ ne.Container = (function () {
       key: "render",
       value: function render(gl) {
         this._renderChildren(gl);
+      }
+    }, {
+      key: "destroy",
+      value: function destroy(gl) {
+        _get(Object.getPrototypeOf(Container.prototype), "destroy", this).call(this, gl);
+        this.destroyChildren(gl);
       }
     }, {
       key: "zUpdate",
@@ -1860,6 +2076,13 @@ ne.Container = (function () {
           });
           this._zRefresh = false;
         }
+      }
+    }, {
+      key: "destroyChildren",
+      value: function destroyChildren(gl) {
+        this.children.forEach(function (child) {
+          return child.destroy(gl);
+        });
       }
     }, {
       key: "_makeChildrenAct",
@@ -1925,9 +2148,13 @@ ne.Container = (function () {
     }]);
 
     return Container;
-  })(ne.Drawable);
+  })(ne.Actor);
 })();
 "use strict";
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -1937,23 +2164,52 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 ne.Sprite = (function () {
 
-  return (function (_ne$Drawable) {
-    _inherits(Sprite, _ne$Drawable);
+  return (function (_ne$Actor) {
+    _inherits(Sprite, _ne$Actor);
 
     function Sprite() {
       _classCallCheck(this, Sprite);
 
-      var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Sprite).call(this));
-
-      _this.position = new ne.Point();
-      _this.scale = new ne.Point(1, 1);
-      _this.offset = new ne.Point();
-      _this.shader = new ne.SpriteShader();
-      return _this;
+      return _possibleConstructorReturn(this, Object.getPrototypeOf(Sprite).call(this));
     }
 
+    _createClass(Sprite, [{
+      key: "initMembers",
+      value: function initMembers() {
+        _get(Object.getPrototypeOf(Sprite.prototype), "initMembers", this).call(this);
+        this.position = new ne.Point();
+        this.scale = new ne.Point(1, 1);
+        this.offset = new ne.Point();
+        this.shader = new ne.SpriteShader();
+      }
+    }, {
+      key: "move",
+      value: function move(x, y) {
+        var time = arguments.length <= 2 || arguments[2] === undefined ? 0 : arguments[2];
+        var mode = arguments.length <= 3 || arguments[3] === undefined ? null : arguments[3];
+
+        this.twig({ x: x, y: y }, time, mode);
+      }
+    }, {
+      key: "x",
+      get: function get() {
+        return this.position.x;
+      },
+      set: function set(value) {
+        this.position.x = value;
+      }
+    }, {
+      key: "y",
+      get: function get() {
+        return this.position.y;
+      },
+      set: function set(value) {
+        this.position.y = value;
+      }
+    }]);
+
     return Sprite;
-  })(ne.Drawable);
+  })(ne.Actor);
 })();
 "use strict";
 

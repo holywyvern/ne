@@ -23,7 +23,7 @@ ne.tools.gl = (function () {
     gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
   }
 
-  $.draw = function () {
+  $.draw = function (gl) {
     gl.drawArrays(gl.TRIANGLES, 0, 6);
   }
 

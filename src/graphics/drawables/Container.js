@@ -1,10 +1,14 @@
 
 ne.Container = (function () {
 
-  return class Container extends ne.Drawable {
+  return class Container extends ne.Actor {
 
     constructor() {
       super();
+    }
+
+    initMembers() {
+      super.initMembers();
       this._children = [];
       this._zRefresh = false;
     }
@@ -14,12 +18,18 @@ ne.Container = (function () {
     }
 
     act(delta) {
+      super.act(delta);
       this._refreshZ();
       this._makeChildrenAct(delta);
     }
 
     render(gl) {
       this._renderChildren(gl);
+    }
+
+    destroy(gl) {
+      super.destroy(gl);
+      this.destroyChildren(gl);
     }
 
     zUpdate() {
@@ -31,6 +41,10 @@ ne.Container = (function () {
         this.children.sort( (a, b) => a.z - b.z );
         this._zRefresh = false;
       }
+    }
+
+    destroyChildren(gl) {
+      this.children.forEach( (child) => child.destroy(gl) );
     }
 
     _makeChildrenAct(delta) {

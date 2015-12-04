@@ -26,8 +26,13 @@ var $SCRIPTS = [
   "src/graphics/Shader.js",
   "src/graphics/Texture.js",
   "src/graphics/Pixmap.js",
+  // Renderers
+  "src/graphic/Renderer.js",
+  "src/graphic/WebGLRenderer.js",
+  "src/graphic/Canvas2DRenderer.js",
   // Drawable objects
   "src/graphics/drawables/Drawable.js",
+  "src/graphics/drawables/Actor.js",
   "src/graphics/drawables/Container.js",
   "src/graphics/drawables/Sprite.js",
   // Shader collection

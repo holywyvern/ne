@@ -4,9 +4,13 @@ ne.Drawable = (function () {
   return class Drawable {
 
     constructor() {
+      this.initMembers();
+    }
+
+    initMembers() {
       this._parent = null;
       this._events = {};
-      this.z = 0;
+      this.z = 0;      
     }
 
     get parent() {
@@ -30,6 +34,10 @@ ne.Drawable = (function () {
     }
 
     act(delta) {
+
+    }
+
+    destroy(gl) {
 
     }
 
@@ -68,6 +76,9 @@ ne.Drawable = (function () {
       }
     }
 
+    render2D(context) {
+
+    }
 
   };
 
