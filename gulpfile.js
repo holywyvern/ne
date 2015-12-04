@@ -31,9 +31,9 @@ var $SCRIPTS = [
   "src/graphics/Texture.js",
   "src/graphics/Pixmap.js",
   // Renderers
-  "src/graphic/Renderer.js",
-  "src/graphic/WebGLRenderer.js",
-  "src/graphic/Canvas2DRenderer.js",
+  "src/graphics/Renderer.js",
+  "src/graphics/WebGLRenderer.js",
+  "src/graphics/Canvas2DRenderer.js",
   // Drawable objects
   "src/graphics/drawables/Drawable.js",
   "src/graphics/drawables/Actor.js",

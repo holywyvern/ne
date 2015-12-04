@@ -6,11 +6,18 @@ ne.Game = (function () {
     constructor(id, width, height) {
       super();
       this.initMembers(id, width, height);
+      this.initEventHandlers();
     }
 
     initMembers(id, width, height) {
       this.createRenderer(width, height);
       this.appendRenderer(id);
+    }
+
+    initEventHandlers() {
+      window.addEventListener('resize', (evt) => this.fire('resize', evt));
+      window.addEventListener('unload', (evt) => this.fire('unload', evt));
+      window.addEventListener('beforeunload', (evt) => this.fire('beforeunload', evt));
     }
 
     createRenderer(width, height) {

@@ -1938,6 +1938,132 @@ ne.Pixmap = (function () {
     return Pixmap;
   })();
 })();
+'use strict';
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+ne.Renderer = (function () {
+
+    return (function () {
+        function Renderer(width, height) {
+            _classCallCheck(this, Renderer);
+
+            this.initMembers(width, height);
+        }
+
+        _createClass(Renderer, [{
+            key: 'initMembers',
+            value: function initMembers(width, height) {
+                this.createCanvas(width, height);
+                this.createContext();
+            }
+        }, {
+            key: 'createCanvas',
+            value: function createCanvas(width, height) {
+                this._canvas = document.createElement('canvas');
+                this._canvas.width = width;
+                this._canvas.height = height;
+            }
+        }, {
+            key: 'createContext',
+            value: function createContext() {}
+        }, {
+            key: 'render',
+            value: function render(object) {}
+        }, {
+            key: 'destroy',
+            value: function destroy(object) {}
+        }, {
+            key: 'view',
+            get: function get() {
+                return this._canvas;
+            }
+        }, {
+            key: 'width',
+            get: function get() {
+                return this._canvas.width;
+            }
+        }, {
+            key: 'height',
+            get: function get() {
+                return this._canvas.height;
+            }
+        }]);
+
+        return Renderer;
+    })();
+})();
+'use strict';
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+ne.WebGLRenderer = (function () {
+
+  return (function (_ne$Renderer) {
+    _inherits(WebGLRenderer, _ne$Renderer);
+
+    function WebGLRenderer() {
+      _classCallCheck(this, WebGLRenderer);
+
+      return _possibleConstructorReturn(this, Object.getPrototypeOf(WebGLRenderer).apply(this, arguments));
+    }
+
+    _createClass(WebGLRenderer, [{
+      key: 'createContext',
+      value: function createContext() {
+        this._gl = this.view.getContext('webgl');
+        if (!this._gl) {
+          this._gl = this.view.getContext('exerimental-webgl');
+        }
+        if (!this._gl) {
+          throw "Your browser doesn't support webgl.";
+        }
+      }
+    }, {
+      key: 'render',
+      value: function render(object) {
+        object.render(this._gl);
+      }
+    }, {
+      key: 'destroy',
+      value: function destroy(object) {
+        object.destroy(this._gl);
+      }
+    }]);
+
+    return WebGLRenderer;
+  })(ne.Renderer);
+})();
+"use strict";
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+ne.Canvas2DRenderer = (function () {
+
+  return (function (_ne$Renderer) {
+    _inherits(Canvas2DRenderer, _ne$Renderer);
+
+    function Canvas2DRenderer() {
+      _classCallCheck(this, Canvas2DRenderer);
+
+      return _possibleConstructorReturn(this, Object.getPrototypeOf(Canvas2DRenderer).apply(this, arguments));
+    }
+
+    return Canvas2DRenderer;
+  })(ne.Renderer);
+})();
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
