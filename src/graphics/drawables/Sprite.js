@@ -41,6 +41,14 @@ ne.Sprite = (function () {
       this.position.y = value;
     }
 
+    get width() {
+      return this.texture ? this.texture.width : 0;
+    }
+
+    get height() {
+      return this.texture ? this.texture.height : 0;
+    }
+
     move(x, y, time=0, mode=null) {
       this.twig({x: x, y: y}, time, mode);
     }

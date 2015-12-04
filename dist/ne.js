@@ -2019,10 +2019,10 @@ ne.Texture = (function () {
     }, {
       key: "refreshData",
       value: function refreshData(rect) {
-        var x1 = this.clamp(rect.x / this._pixmap.width);
-        var y1 = this.clamp(rect.y / this._pixmap.height);
-        var x2 = this.clamp((rect.x + rect.width) / this._pixmap.width);
-        var y2 = this.clamp((rect.y + rect.height) / this._pixmap.height);
+        var x1 = this.clamp(0, rect.width, rect.x);
+        var y1 = this.clamp(0, rect.height, rect.y);
+        var x2 = this.clamp(0, rect.width - x1, rect.x + rect.width);
+        var y2 = this.clamp(0, rect.height - y1, rect.y + rect.height);
         this._data[0] = this._data[4] = this._data[6] = x1;
         this._data[1] = this._data[3] = this._data[9] = y1;
         this._data[2] = this._data[8] = this._data[10] = x2;
@@ -2030,8 +2030,8 @@ ne.Texture = (function () {
       }
     }, {
       key: "clamp",
-      value: function clamp(value) {
-        return Math.max(0, Math.min(1, value));
+      value: function clamp(min, max, value) {
+        return Math.max(min, Math.min(max, value));
       }
     }, {
       key: "bindTexture",
@@ -2828,6 +2828,16 @@ ne.Sprite = (function () {
       },
       set: function set(value) {
         this.position.y = value;
+      }
+    }, {
+      key: 'width',
+      get: function get() {
+        return this.texture ? this.texture.width : 0;
+      }
+    }, {
+      key: 'height',
+      get: function get() {
+        return this.texture ? this.texture.height : 0;
       }
     }]);
 
