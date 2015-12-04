@@ -5,6 +5,8 @@ var concat = require("gulp-concat");
 var minify = require("gulp-minify");
 
 var $SCRIPTS = [
+  // Polyfill
+  "src/polyfill.js",
   // Base script
   "src/ne.js",
   // Tools

@@ -1,3 +1,34 @@
+'use strict';
+
+// http://paulirish.com/2011/requestanimationframe-for-smart-animating/
+// http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
+
+// requestAnimationFrame polyfill by Erik Möller. fixes from Paul Irish and Tino Zijdel
+
+// MIT license
+
+(function () {
+    var lastTime = 0;
+    var vendors = ['ms', 'moz', 'webkit', 'o'];
+    for (var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+        window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
+        window.cancelAnimationFrame = window[vendors[x] + 'CancelAnimationFrame'] || window[vendors[x] + 'CancelRequestAnimationFrame'];
+    }
+
+    if (!window.requestAnimationFrame) window.requestAnimationFrame = function (callback, element) {
+        var currTime = new Date().getTime();
+        var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+        var id = window.setTimeout(function () {
+            callback(currTime + timeToCall);
+        }, timeToCall);
+        lastTime = currTime + timeToCall;
+        return id;
+    };
+
+    if (!window.cancelAnimationFrame) window.cancelAnimationFrame = function (id) {
+        clearTimeout(id);
+    };
+})();
 "use strict";
 
 window.ne = {};
@@ -883,76 +914,13 @@ ne.SceneManager = (function () {
         this.updateScene(delta);
       }
     }, {
-      key: "updateScene",
-      value: function updateScene(delta) {
-        this.scene.act(delta);
-      }
-    }, {
-      key: "scene",
-      get: function get() {
-        return this._sceneStack[this._sceneStack.length];
-      }
-    }]);
-
-    return SceneManager;
-  })(ne.EventManager);
-})();
-"use strict";
-
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-ne.Game = (function () {
-
-  return (function (_ne$SceneManager) {
-    _inherits(Game, _ne$SceneManager);
-
-    function Game(id, width, height) {
-      _classCallCheck(this, Game);
-
-      var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Game).call(this));
-
-      _this.initMembers(id, width, height);
-      return _this;
-    }
-
-    _createClass(Game, [{
-      key: "initMembers",
-      value: function initMembers(id, width, height) {
-        this.createRenderer(width, height);
-        this.appendRenderer(id);
-      }
-    }, {
-      key: "createRenderer",
-      value: function createRenderer(width, height) {
-        this._renderer = new ne.WebGLRenderer(width, height);
-      }
-    }, {
-      key: "appendRenderer",
-      value: function appendRenderer(id) {
-        var e = document.getElementById(id);
-        e.appendChild(this._renderer.view);
-      }
-    }, {
-      key: "update",
-      value: function update(delta) {
-        _get(Object.getPrototypeOf(Game.prototype), "update", this).call(this, delta);
-      }
-    }, {
       key: "switchScene",
       value: function switchScene() {
         this.renderer.destroy(this._lastScene);
         this._lastScene = this.scene;
         var loader = new ne.Loader();
         this.prepareLoad(loader);
-        this.scene.load();
+        this.scene.load(loader);
       }
     }, {
       key: "prepareLoad",
@@ -971,6 +939,104 @@ ne.Game = (function () {
       value: function afterLoad(loader) {
         this.endLoad();
         this.scene.start(loader);
+      }
+    }, {
+      key: "updateScene",
+      value: function updateScene(delta) {
+        if (this.scene) {
+          this.scene.act(delta);
+        }
+      }
+    }, {
+      key: "scene",
+      get: function get() {
+        return this._sceneStack[this._sceneStack.length - 1];
+      }
+    }]);
+
+    return SceneManager;
+  })(ne.EventManager);
+})();
+'use strict';
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+ne.Game = (function () {
+
+  return (function (_ne$SceneManager) {
+    _inherits(Game, _ne$SceneManager);
+
+    function Game(id, width, height) {
+      _classCallCheck(this, Game);
+
+      var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Game).call(this));
+
+      _this.initMembers(id, width, height);
+      _this.initEventHandlers();
+      _this.processFrame();
+      return _this;
+    }
+
+    _createClass(Game, [{
+      key: 'initMembers',
+      value: function initMembers(id, width, height) {
+        this.createRenderer(width, height);
+        this.appendRenderer(id);
+        this._time = Date.now();
+      }
+    }, {
+      key: 'initEventHandlers',
+      value: function initEventHandlers() {
+        var _this2 = this;
+
+        window.addEventListener('resize', function (evt) {
+          return _this2.fire('resize', evt);
+        });
+        window.addEventListener('unload', function (evt) {
+          return _this2.fire('unload', evt);
+        });
+        window.addEventListener('beforeunload', function (evt) {
+          return _this2.fire('beforeunload', evt);
+        });
+      }
+    }, {
+      key: 'createRenderer',
+      value: function createRenderer(width, height) {
+        this._renderer = new ne.WebGLRenderer(width, height);
+      }
+    }, {
+      key: 'appendRenderer',
+      value: function appendRenderer(id) {
+        var e = document.getElementById(id);
+        e.appendChild(this._renderer.view);
+      }
+    }, {
+      key: 'render',
+      value: function render() {
+        if (this.scene) {
+          this.renderer.render(this.scene);
+        }
+      }
+    }, {
+      key: 'processFrame',
+      value: function processFrame() {
+        this.update(this.calculateDelta());
+        this.render();
+        window.requestAnimationFrame(this.processFrame.bind(this));
+      }
+    }, {
+      key: 'calculateDelta',
+      value: function calculateDelta() {
+        var t = Date.now();
+        var delta = t - this._time;
+        this._time = t;
+        return delta;
       }
     }]);
 
@@ -1975,6 +2041,12 @@ ne.Renderer = (function () {
         }, {
             key: 'destroy',
             value: function destroy(object) {}
+        }, {
+            key: 'resize',
+            value: function resize(width, height) {
+                this._canvas.width = width;
+                this._canvas.height = height;
+            }
         }, {
             key: 'view',
             get: function get() {

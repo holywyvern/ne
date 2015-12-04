@@ -16,6 +16,14 @@ ne.Scene = (function () {
       ]);
     }
 
+    load(loader) {
+
+    }
+
+    start(loader) {
+      
+    }
+
     get bgColor() {
       return this.shader.uniformValues.u_bgColor;
     }
@@ -25,7 +33,7 @@ ne.Scene = (function () {
       this.shader.use(gl);
       this.useBuffer(gl);
       this.updateShader(gl);
-      ne.tools.gl.draw(gl); 
+      ne.tools.gl.draw(gl);
     }
 
     destroy(gl) {

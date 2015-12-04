@@ -7,11 +7,13 @@ ne.Game = (function () {
       super();
       this.initMembers(id, width, height);
       this.initEventHandlers();
+      this.processFrame();
     }
 
     initMembers(id, width, height) {
       this.createRenderer(width, height);
       this.appendRenderer(id);
+      this._time = Date.now();
     }
 
     initEventHandlers() {
@@ -29,29 +31,23 @@ ne.Game = (function () {
       e.appendChild(this._renderer.view);
     }
 
-    update(delta) {
-      super.update(delta);
+    render() {
+      if (this.scene) {
+        this.renderer.render(this.scene);
+      }
     }
 
-    switchScene() {
-      this.renderer.destroy(this._lastScene);
-      this._lastScene = this.scene;
-      var loader = new ne.Loader();
-      this.prepareLoad(loader);
-      this.scene.load();
+    processFrame() {
+      this.update(this.calculateDelta());
+      this.render();
+      window.requestAnimationFrame(this.processFrame.bind(this));
     }
 
-    prepareLoad(loader) {
-      loader.done(() => this.afterLoad(loader));
-    }
-
-    endLoad() {
-
-    }
-
-    afterLoad(loader) {
-      this.endLoad();
-      this.scene.start(loader);
+    calculateDelta() {
+      var t = Date.now();
+      var delta = t - this._time;
+      this._time = t;
+      return delta;
     }
 
   };

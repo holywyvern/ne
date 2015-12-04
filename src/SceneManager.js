@@ -10,7 +10,7 @@ ne.SceneManager = (function () {
     }
 
     get scene() {
-      return this._sceneStack[this._sceneStack.length];
+      return this._sceneStack[this._sceneStack.length - 1];
     }
 
     goto(scene) {
@@ -34,8 +34,31 @@ ne.SceneManager = (function () {
       this.updateScene(delta);
     }
 
+    switchScene() {
+      this.renderer.destroy(this._lastScene);
+      this._lastScene = this.scene;
+      var loader = new ne.Loader();
+      this.prepareLoad(loader);
+      this.scene.load(loader);
+    }
+
+    prepareLoad(loader) {
+      loader.done(() => this.afterLoad(loader));
+    }
+
+    endLoad() {
+
+    }
+
+    afterLoad(loader) {
+      this.endLoad();
+      this.scene.start(loader);
+    }
+
     updateScene(delta) {
-      this.scene.act(delta);
+      if (this.scene) {
+          this.scene.act(delta);
+      }
     }
 
   }

@@ -39,6 +39,11 @@ ne.Renderer = (function () {
     destroy(object) {
     }
 
+    resize(width, height) {
+      this._canvas.width  = width;
+      this._canvas.height = height;
+    }
+
   };
 
 })();
