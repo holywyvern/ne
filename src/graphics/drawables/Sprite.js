@@ -74,7 +74,8 @@ ne.Sprite = (function () {
 
     updateShader(gl) {
       this.shader.updateAttribute(gl, 'a_texCoord');
-      this.shader.uniformValues.u_resolution = this.parent.shader.uniformValues.u_resolution;
+      this.shader.uniformValues.u_resolution  = this.parent.shader.uniformValues.u_resolution;
+      this.shader.uniformValues.u_textureSize = this.texture.rect.wh;
       this.shader.update(gl);
     }
 

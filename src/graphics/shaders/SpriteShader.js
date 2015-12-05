@@ -5,7 +5,7 @@ ne.SpriteShader = (function () {
     vertex() {
       return [
         // convert the rectangle from pixels to 0.0 to 1.0
-        "vec2 zeroToOne = a_position / u_resolution;",
+        "vec2 zeroToOne = a_texCoord * u_textureSize / u_resolution;",
         // convert from 0->1 to 0->2
         "vec2 zeroToTwo = zeroToOne * 2.0;",
         // convert from 0->2 to -1->+1 (clipspace)
@@ -32,7 +32,8 @@ ne.SpriteShader = (function () {
         u_position: 'point',
         u_scale: 'point',
         u_offset: 'point',
-        u_resolution: 'point'
+        u_resolution: 'point',
+        u_textureSize: 'vec2'
       };
     }
 

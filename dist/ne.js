@@ -2019,10 +2019,10 @@ ne.Texture = (function () {
     }, {
       key: "refreshData",
       value: function refreshData(rect) {
-        var x1 = this.clamp(0, rect.width, rect.x);
-        var y1 = this.clamp(0, rect.height, rect.y);
-        var x2 = this.clamp(0, rect.width - x1, rect.x + rect.width);
-        var y2 = this.clamp(0, rect.height - y1, rect.y + rect.height);
+        var x1 = this.clamp(0, rect.width, rect.x) / rect.width;
+        var y1 = this.clamp(0, rect.height, rect.y) / rect.height;
+        var x2 = this.clamp(0, rect.width - x1, rect.x + rect.width) / rect.width;
+        var y2 = this.clamp(0, rect.height - y1, rect.y + rect.height) / rect.height;
         this._data[0] = this._data[4] = this._data[6] = x1;
         this._data[1] = this._data[3] = this._data[9] = y1;
         this._data[2] = this._data[8] = this._data[10] = x2;
@@ -2796,6 +2796,7 @@ ne.Sprite = (function () {
       value: function updateShader(gl) {
         this.shader.updateAttribute(gl, 'a_texCoord');
         this.shader.uniformValues.u_resolution = this.parent.shader.uniformValues.u_resolution;
+        this.shader.uniformValues.u_textureSize = this.texture.rect.wh;
         this.shader.update(gl);
       }
     }, {
@@ -2989,7 +2990,7 @@ ne.SpriteShader = (function () {
       value: function vertex() {
         return [
         // convert the rectangle from pixels to 0.0 to 1.0
-        "vec2 zeroToOne = a_position / u_resolution;",
+        "vec2 zeroToOne = a_texCoord * u_textureSize / u_resolution;",
         // convert from 0->1 to 0->2
         "vec2 zeroToTwo = zeroToOne * 2.0;",
         // convert from 0->2 to -1->+1 (clipspace)
@@ -3016,7 +3017,8 @@ ne.SpriteShader = (function () {
           u_position: 'point',
           u_scale: 'point',
           u_offset: 'point',
-          u_resolution: 'point'
+          u_resolution: 'point',
+          u_textureSize: 'vec2'
         };
       }
     }, {
