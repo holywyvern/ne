@@ -10,7 +10,7 @@ var length = randomInt(10, 20);
 
 for (var i = 0; i < length; ++i) {
   var spr = new ne.Sprite();
-
+  spr.angle = randomInt(0, 360);
   var pixmap = new ne.Pixmap(100, 100);
   var c1 = ne.Color.RANDOM;
   var c2 = c1.clone().complement();
@@ -24,6 +24,7 @@ for (var i = 0; i < length; ++i) {
   spr.texture = texture;
   spr.position.x = randomInt(0, 380);
   spr.position.y = randomInt(0, 220);
+  spr.twig({angle: spr.angle + 3600}, 10000);
   scene.add(spr);
 }
 

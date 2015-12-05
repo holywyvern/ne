@@ -1191,7 +1191,7 @@ ne.ColorBase = (function () {
       set: function set(value) {
         var hsla = this.toHsla();
         hsla[0] = value;
-        var c = Color.fromHsla(hsla);
+        var c = ne.Color.fromHsla(hsla);
         this.set(c.red, c.green, c.blue, c.alpha);
       }
     }, {
@@ -1249,6 +1249,12 @@ ne.Color = (function () {
             key: "clone",
             value: function clone() {
                 return new Color(this.red, this.green, this.blue, this.alpha);
+            }
+        }, {
+            key: "complement",
+            value: function complement() {
+                this.hue = 1 - this.hue;
+                return this;
             }
         }, {
             key: "toCss",
@@ -1519,6 +1525,14 @@ ne.Color = (function () {
             key: "PINK",
             get: function get() {
                 return new ne.Color(255, 192, 203);
+            }
+        }, {
+            key: "RANDOM",
+            get: function get() {
+                var r = Math.floor(Math.random() * 255);
+                var g = Math.floor(Math.random() * 255);
+                var b = Math.floor(Math.random() * 255);
+                return new ne.Color(r, g, b);
             }
         }]);
 
@@ -2574,6 +2588,10 @@ ne.Actor = (function () {
   Actor.Twig = Twig;
 
   Twig.LINEAR = function (originalValue, finalValue, currentValue, totalTime, timeLeft) {
+    return originalValue + (finalValue - originalValue) * (totalTime - timeLeft) / totalTime;
+  };
+
+  Twig.EASE_IN = function (originalValue, finalValue, currentValue, totalTime, timeLeft) {
     return (currentValue * (timeLeft - 1) + finalValue) / timeLeft;
   };
 
@@ -2825,6 +2843,14 @@ ne.Sprite = (function () {
         return this.shader.uniformValues.u_position;
       }
     }, {
+      key: 'angle',
+      get: function get() {
+        return this.shader.uniformValues.u_rotation * 180 / Math.PI;
+      },
+      set: function set(value) {
+        this.shader.uniformValues.u_rotation = value * Math.PI / 180;
+      }
+    }, {
       key: 'x',
       get: function get() {
         return this.position.x;
@@ -3007,8 +3033,10 @@ ne.SpriteShader = (function () {
       key: "vertex",
       value: function vertex() {
         return [
+        // rotates the texture
+        "float rx = sin(u_rotation);", "float ry = cos(u_rotation);", "vec2 rotation = vec2(", "a_texCoord.x * ry + a_texCoord.y * rx,", "a_texCoord.y * ry - a_texCoord.x * rx", ");",
         // convert the rectangle from pixels to 0.0 to 1.0
-        "vec2 zeroToOne = (a_texCoord * u_textureSize  + u_position) / u_resolution;",
+        "vec2 zeroToOne = (rotation * u_textureSize  + u_position) / u_resolution;",
         // convert from 0->1 to 0->2
         "vec2 zeroToTwo = zeroToOne * 2.0;",
         // convert from 0->2 to -1->+1 (clipspace)
@@ -3036,7 +3064,8 @@ ne.SpriteShader = (function () {
           u_scale: 'point',
           u_offset: 'point',
           u_resolution: 'point',
-          u_textureSize: 'vec2'
+          u_textureSize: 'vec2',
+          u_rotation: 'float'
         };
       }
     }, {

@@ -25,6 +25,14 @@ ne.Sprite = (function () {
       return this.shader.uniformValues.u_position;
     }
 
+    get angle() {
+      return this.shader.uniformValues.u_rotation * 180 / Math.PI;
+    }
+
+    set angle(value) {
+      this.shader.uniformValues.u_rotation = value * Math.PI / 180;
+    }
+
     get x() {
       return this.position.x;
     }
@@ -66,7 +74,7 @@ ne.Sprite = (function () {
       gl.enable( gl.BLEND );
       gl.blendEquation( gl.FUNC_ADD );
       gl.blendFunc( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA );
-    } 
+    }
 
     useShader(gl) {
       this.shader.generate(gl);

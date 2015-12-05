@@ -102,6 +102,10 @@ ne.Actor = (function () {
   Actor.Twig = Twig;
 
   Twig.LINEAR = function (originalValue, finalValue, currentValue, totalTime, timeLeft) {
+    return originalValue + (finalValue - originalValue) * (totalTime - timeLeft) / totalTime;
+  };
+
+  Twig.EASE_IN = function (originalValue, finalValue, currentValue, totalTime, timeLeft) {
     return (currentValue * (timeLeft - 1) + finalValue) / timeLeft;
   };
 
