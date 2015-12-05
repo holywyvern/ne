@@ -208,8 +208,44 @@ ne.ShaderBase = (function () {
     'sampler2D': 'sampler2D',
     'sampler1D': 'sampler1D',
     'sampler3D': 'sampler3D',
-    'int':      'int'
+    'int':      'int',
+    'mat2':     'mat2',
+    'mat3':     'mat3',
+    'mat4':     'mat4'
   }
+
+    ShaderBase.VALUES = {
+      'point':     () => new ne.Point(0, 0),
+      '3d-point':  () => new ne.Point(0, 0, 0),
+      'color':     () => new ne.Color(0, 0, 0),
+      'rect':      () => new ne.Rect(),
+      'number':    () => 0 ,
+      'float':     () => 0 ,
+      'real':      () => 0 ,
+      'vec2':      () => new ne.Vec2(),
+      'vec3':      () => new ne.Vec3(),
+      'vec4':      () => new ne.Vec4(),
+      'array':     () => [0, 0, 0, 0],
+      'mat2':      () => [ 0, 0, 0, 0 ],
+      'mat3':      () => [ 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+      'mat4':      () => [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]
+    }
+
+    ShaderBase.UNIFORM_SET = {
+      'float':  (gl, location, value) => gl.uniform1f(location, value),
+      'number': (gl, location, value) => gl.uniform1f(location, value),
+      'real':   (gl, location, value) => gl.uniform1f(location, value),
+      'vec2':   (gl, location, value) => gl.uniform2f(location, value[0], value[1]),
+      'vec3':   (gl, location, value) => gl.uniform3f(location, value[0], value[1], value[2]),
+      'vec4':   (gl, location, value) => gl.uniform4f(location, value[0], value[1], value[2], value[3]),
+      'point':  (gl, location, value) => gl.uniform2f(location, value.x, value.y),
+      'rect':   (gl, location, value) => gl.uniform4f(location, value.x, value.y, value.width, value.height),
+      'color':  (gl, location, value) => gl.uniform4f(location, value.red / 255, value.green / 255, value.blue / 255, value.alpha / 255),
+      'array':  (gl, location, value) => gl['uniform' + value.length + 'f'](location, ...value),
+      'mat2':   (gl, location, value) => gl.uniformMatrix3fv(location, false, value),
+      'mat3':   (gl, location, value) => gl.uniformMatrix3fv(location, false, value),
+      'mat4':   (gl, location, value) => gl.uniformMatrix3fv(location, false, value)
+    }
 
   return ShaderBase;
 

@@ -91,10 +91,10 @@ ne.Texture = (function () {
     }
 
     refreshData(rect) {
-      var x1 = this.clamp(0, rect.width,             rect.x           ) / rect.width;
-      var y1 = this.clamp(0, rect.height,            rect.y           ) / rect.height;
-      var x2 = this.clamp(0, rect.width  - x1, (rect.x + rect.width)  ) / rect.width;
-      var y2 = this.clamp(0, rect.height - y1, (rect.y + rect.height) ) / rect.height;
+      var x1 = this.clamp(0, rect.w,             rect.x           ) / rect.w;
+      var y1 = this.clamp(0, rect.h,            rect.y           ) / rect.h;
+      var x2 = this.clamp(0, rect.w  - x1, (rect.x + rect.w)  ) / rect.w;
+      var y2 = this.clamp(0, rect.h - y1, (rect.y + rect.h) ) / rect.h;
       this._data[0] = this._data[4] = this._data[ 6] = x1;
       this._data[1] = this._data[3] = this._data[ 9] = y1;
       this._data[2] = this._data[8] = this._data[10] = x2;

@@ -24,18 +24,10 @@ ne.Shader = (function () {
     }
 
     _getDefaultValue(type) {
-      switch (type) {
-        case 'point':                             return new ne.Point(0, 0);
-        case '3d-point':                          return new ne.Point(0, 0, 0);
-        case 'color':                             return new ne.Color(0, 0, 0);
-        case 'rect':                              return new ne.Rect();
-        case 'number': case 'float': case 'real': return 0;
-        case 'vec2':                              return new ne.Vec2();
-        case 'vec3':                              return new ne.Vec3();
-        case 'vec4':                              return new ne.Vec4();
-        case 'array':                             return  [0, 0, 0, 0];
-        default:                                  return null;
+      if (typeof ne.ShaderBase.VALUES[type] == 'undefined') {
+        return null;
       }
+      return ne.ShaderBase.VALUES[type]();
     }
 
     update(gl) {
@@ -53,7 +45,9 @@ ne.Shader = (function () {
     updateUniform(gl, name, type, value) {
       var location = this._glUniforms[name];
       if (typeof location != 'undefined' && value !== null) {
-        this.updateUniformByType(gl, location, type, value);
+        if (typeof ne.ShaderBase.UNIFORM_SET[type] !== 'undefined') {
+          ne.ShaderBase.UNIFORM_SET[type](gl, location, value)
+        }
       }
     }
 

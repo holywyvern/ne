@@ -10,27 +10,11 @@ ne.Sprite = (function () {
       super.initMembers();
       this.shader   = new ne.SpriteShader();
       this.texture  = null;
-      this.scale.set(1, 1);
-    }
-
-    get scale() {
-      return this.shader.uniformValues.u_scale;
-    }
-
-    get offset() {
-      return this.shader.uniformValues.u_offset;
-    }
-
-    get position() {
-      return this.shader.uniformValues.u_position;
-    }
-
-    get angle() {
-      return this.shader.uniformValues.u_rotation * 180 / Math.PI;
-    }
-
-    set angle(value) {
-      this.shader.uniformValues.u_rotation = value * Math.PI / 180;
+      this.scale    = new ne.Point(1, 1);
+      this.position = new ne.Point();
+      this.offset   = new ne.Point();
+      this.origin   = new ne.Point();
+      this.angle    = 0;
     }
 
     get x() {
@@ -65,6 +49,7 @@ ne.Sprite = (function () {
       if (this.visible && this.texture) {
         this.useShader(gl);
         this.applyBlendMode(gl);
+        this.updateParent(gl);
         this.useTexture(gl);
         ne.tools.gl.draw(gl);
       }
@@ -79,7 +64,11 @@ ne.Sprite = (function () {
     useShader(gl) {
       this.shader.generate(gl);
       this.shader.use(gl);
-      //this.shader.updateAttribute(gl, 'a_position');
+    }
+
+    updateParent(gl) {
+      this.parent.useBuffer(gl);
+      this.shader.updateAttribute(gl, 'a_position');
     }
 
     useTexture(gl) {
@@ -89,9 +78,26 @@ ne.Sprite = (function () {
 
     updateShader(gl) {
       this.shader.updateAttribute(gl, 'a_texCoord');
-      this.shader.uniformValues.u_resolution  = this.parent.shader.uniformValues.u_resolution;
+      this.shader.uniformValues.u_resolution.set(this.parent.parentWidth, this.parent.parentHeight);
       this.shader.uniformValues.u_textureSize = this.texture.rect.wh;
+      this.shader.uniformValues.u_matrix      = this.generateMatrix(gl);
       this.shader.update(gl);
+    }
+
+    generateMatrix(gl) {
+      var $ = ne.tools.gl;
+
+      var mat =  $.makeTranslation(
+        -this.offset.x * this.parent.parentWidth / this.texture.width,
+        -this.offset.y * this.parent.parentHeight / this.texture.height
+      );
+      mat = $.matrixMultiply(mat, $.makeScale(this.scale.x, this.scale.y));
+      mat = $.matrixMultiply(mat, $.makeRotation(this.angle * Math.PI / 180) );
+      mat = $.matrixMultiply(mat, $.makeTranslation(
+        this.position.x * this.parent.parentWidth / this.texture.width,
+        this.position.y * this.parent.parentHeight  / this.texture.width
+      ) );
+      return mat;
     }
 
   }

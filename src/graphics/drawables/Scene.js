@@ -30,7 +30,7 @@ ne.Scene = (function () {
       data[1] = data[3] = data[9] = 0; // x
       data[2] = data[8] = data[10] = game.width; // width
       data[5] = data[7] = data[11] = game.height; // height
-      this.shader.uniformValues.u_resolution.set(game.width, game.height);
+      this.shader.uniformValues.u_matrix = ne.tools.gl.make2DProjection(game.width, game.height);
     }
 
     get bgColor() {

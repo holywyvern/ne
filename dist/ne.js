@@ -104,6 +104,51 @@ ne.tools.gl = (function () {
     return program;
   };
 
+  $.makeTranslation = function (tx, ty) {
+    return [1, 0, 0, 0, 1, 0, tx, ty, 1];
+  };
+
+  $.makeRotation = function (angleInRadians) {
+    var c = Math.cos(angleInRadians);
+    var s = Math.sin(angleInRadians);
+    return [c, -s, 0, s, c, 0, 0, 0, 1];
+  };
+
+  $.makeScale = function (sx, sy) {
+    return [sx, 0, 0, 0, sy, 0, 0, 0, 1];
+  };
+
+  $.makeIdentity = function () {
+    return [1, 0, 0, 0, 1, 0, 0, 0, 1];
+  };
+
+  $.matrixMultiply = function (a, b) {
+    var a00 = a[0 * 3 + 0];
+    var a01 = a[0 * 3 + 1];
+    var a02 = a[0 * 3 + 2];
+    var a10 = a[1 * 3 + 0];
+    var a11 = a[1 * 3 + 1];
+    var a12 = a[1 * 3 + 2];
+    var a20 = a[2 * 3 + 0];
+    var a21 = a[2 * 3 + 1];
+    var a22 = a[2 * 3 + 2];
+    var b00 = b[0 * 3 + 0];
+    var b01 = b[0 * 3 + 1];
+    var b02 = b[0 * 3 + 2];
+    var b10 = b[1 * 3 + 0];
+    var b11 = b[1 * 3 + 1];
+    var b12 = b[1 * 3 + 2];
+    var b20 = b[2 * 3 + 0];
+    var b21 = b[2 * 3 + 1];
+    var b22 = b[2 * 3 + 2];
+    return [a00 * b00 + a01 * b10 + a02 * b20, a00 * b01 + a01 * b11 + a02 * b21, a00 * b02 + a01 * b12 + a02 * b22, a10 * b00 + a11 * b10 + a12 * b20, a10 * b01 + a11 * b11 + a12 * b21, a10 * b02 + a11 * b12 + a12 * b22, a20 * b00 + a21 * b10 + a22 * b20, a20 * b01 + a21 * b11 + a22 * b21, a20 * b02 + a21 * b12 + a22 * b22];
+  };
+
+  $.make2DProjection = function (width, height) {
+    // Note: This matrix flips the Y axis so that 0 is at the top.
+    return [2 / width, 0, 0, 0, -2 / height, 0, -1, 1, 1];
+  };
+
   return $;
 })();
 'use strict';
@@ -1545,6 +1590,8 @@ ne.Color = (function () {
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 ne.ShaderBase = (function () {
@@ -1798,7 +1845,97 @@ ne.ShaderBase = (function () {
     'sampler2D': 'sampler2D',
     'sampler1D': 'sampler1D',
     'sampler3D': 'sampler3D',
-    'int': 'int'
+    'int': 'int',
+    'mat2': 'mat2',
+    'mat3': 'mat3',
+    'mat4': 'mat4'
+  };
+
+  ShaderBase.VALUES = {
+    'point': function point() {
+      return new ne.Point(0, 0);
+    },
+    '3d-point': function dPoint() {
+      return new ne.Point(0, 0, 0);
+    },
+    'color': function color() {
+      return new ne.Color(0, 0, 0);
+    },
+    'rect': function rect() {
+      return new ne.Rect();
+    },
+    'number': function number() {
+      return 0;
+    },
+    'float': function float() {
+      return 0;
+    },
+    'real': function real() {
+      return 0;
+    },
+    'vec2': function vec2() {
+      return new ne.Vec2();
+    },
+    'vec3': function vec3() {
+      return new ne.Vec3();
+    },
+    'vec4': function vec4() {
+      return new ne.Vec4();
+    },
+    'array': function array() {
+      return [0, 0, 0, 0];
+    },
+    'mat2': function mat2() {
+      return [0, 0, 0, 0];
+    },
+    'mat3': function mat3() {
+      return [0, 0, 0, 0, 0, 0, 0, 0, 0];
+    },
+    'mat4': function mat4() {
+      return [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    }
+  };
+
+  ShaderBase.UNIFORM_SET = {
+    'float': function float(gl, location, value) {
+      return gl.uniform1f(location, value);
+    },
+    'number': function number(gl, location, value) {
+      return gl.uniform1f(location, value);
+    },
+    'real': function real(gl, location, value) {
+      return gl.uniform1f(location, value);
+    },
+    'vec2': function vec2(gl, location, value) {
+      return gl.uniform2f(location, value[0], value[1]);
+    },
+    'vec3': function vec3(gl, location, value) {
+      return gl.uniform3f(location, value[0], value[1], value[2]);
+    },
+    'vec4': function vec4(gl, location, value) {
+      return gl.uniform4f(location, value[0], value[1], value[2], value[3]);
+    },
+    'point': function point(gl, location, value) {
+      return gl.uniform2f(location, value.x, value.y);
+    },
+    'rect': function rect(gl, location, value) {
+      return gl.uniform4f(location, value.x, value.y, value.width, value.height);
+    },
+    'color': function color(gl, location, value) {
+      return gl.uniform4f(location, value.red / 255, value.green / 255, value.blue / 255, value.alpha / 255);
+    },
+    'array': function array(gl, location, value) {
+      return gl['uniform' + value.length + 'f'].apply(gl, [location].concat(_toConsumableArray(value)));
+    },
+    'mat2': function mat2(gl, location, value) {
+      return gl.uniformMatrix3fv(location, false, value);
+    },
+    'mat3': function mat3(gl, location, value) {
+      return gl.uniformMatrix3fv(location, false, value);
+    },
+    'mat4': function mat4(gl, location, value) {
+      return gl.uniformMatrix3fv(location, false, value);
+    }
   };
 
   return ShaderBase;
@@ -1848,28 +1985,10 @@ ne.Shader = (function () {
     }, {
       key: '_getDefaultValue',
       value: function _getDefaultValue(type) {
-        switch (type) {
-          case 'point':
-            return new ne.Point(0, 0);
-          case '3d-point':
-            return new ne.Point(0, 0, 0);
-          case 'color':
-            return new ne.Color(0, 0, 0);
-          case 'rect':
-            return new ne.Rect();
-          case 'number':case 'float':case 'real':
-            return 0;
-          case 'vec2':
-            return new ne.Vec2();
-          case 'vec3':
-            return new ne.Vec3();
-          case 'vec4':
-            return new ne.Vec4();
-          case 'array':
-            return [0, 0, 0, 0];
-          default:
-            return null;
+        if (typeof ne.ShaderBase.VALUES[type] == 'undefined') {
+          return null;
         }
+        return ne.ShaderBase.VALUES[type]();
       }
     }, {
       key: 'update',
@@ -1892,7 +2011,9 @@ ne.Shader = (function () {
       value: function updateUniform(gl, name, type, value) {
         var location = this._glUniforms[name];
         if (typeof location != 'undefined' && value !== null) {
-          this.updateUniformByType(gl, location, type, value);
+          if (typeof ne.ShaderBase.UNIFORM_SET[type] !== 'undefined') {
+            ne.ShaderBase.UNIFORM_SET[type](gl, location, value);
+          }
         }
       }
     }, {
@@ -2033,10 +2154,10 @@ ne.Texture = (function () {
     }, {
       key: "refreshData",
       value: function refreshData(rect) {
-        var x1 = this.clamp(0, rect.width, rect.x) / rect.width;
-        var y1 = this.clamp(0, rect.height, rect.y) / rect.height;
-        var x2 = this.clamp(0, rect.width - x1, rect.x + rect.width) / rect.width;
-        var y2 = this.clamp(0, rect.height - y1, rect.y + rect.height) / rect.height;
+        var x1 = this.clamp(0, rect.w, rect.x) / rect.w;
+        var y1 = this.clamp(0, rect.h, rect.y) / rect.h;
+        var x2 = this.clamp(0, rect.w - x1, rect.x + rect.w) / rect.w;
+        var y2 = this.clamp(0, rect.h - y1, rect.y + rect.h) / rect.h;
         this._data[0] = this._data[4] = this._data[6] = x1;
         this._data[1] = this._data[3] = this._data[9] = y1;
         this._data[2] = this._data[8] = this._data[10] = x2;
@@ -2779,7 +2900,11 @@ ne.Sprite = (function () {
         _get(Object.getPrototypeOf(Sprite.prototype), 'initMembers', this).call(this);
         this.shader = new ne.SpriteShader();
         this.texture = null;
-        this.scale.set(1, 1);
+        this.scale = new ne.Point(1, 1);
+        this.position = new ne.Point();
+        this.offset = new ne.Point();
+        this.origin = new ne.Point();
+        this.angle = 0;
       }
     }, {
       key: 'move',
@@ -2795,6 +2920,7 @@ ne.Sprite = (function () {
         if (this.visible && this.texture) {
           this.useShader(gl);
           this.applyBlendMode(gl);
+          this.updateParent(gl);
           this.useTexture(gl);
           ne.tools.gl.draw(gl);
         }
@@ -2811,7 +2937,12 @@ ne.Sprite = (function () {
       value: function useShader(gl) {
         this.shader.generate(gl);
         this.shader.use(gl);
-        //this.shader.updateAttribute(gl, 'a_position');
+      }
+    }, {
+      key: 'updateParent',
+      value: function updateParent(gl) {
+        this.parent.useBuffer(gl);
+        this.shader.updateAttribute(gl, 'a_position');
       }
     }, {
       key: 'useTexture',
@@ -2823,32 +2954,21 @@ ne.Sprite = (function () {
       key: 'updateShader',
       value: function updateShader(gl) {
         this.shader.updateAttribute(gl, 'a_texCoord');
-        this.shader.uniformValues.u_resolution = this.parent.shader.uniformValues.u_resolution;
+        this.shader.uniformValues.u_resolution.set(this.parent.parentWidth, this.parent.parentHeight);
         this.shader.uniformValues.u_textureSize = this.texture.rect.wh;
+        this.shader.uniformValues.u_matrix = this.generateMatrix(gl);
         this.shader.update(gl);
       }
     }, {
-      key: 'scale',
-      get: function get() {
-        return this.shader.uniformValues.u_scale;
-      }
-    }, {
-      key: 'offset',
-      get: function get() {
-        return this.shader.uniformValues.u_offset;
-      }
-    }, {
-      key: 'position',
-      get: function get() {
-        return this.shader.uniformValues.u_position;
-      }
-    }, {
-      key: 'angle',
-      get: function get() {
-        return this.shader.uniformValues.u_rotation * 180 / Math.PI;
-      },
-      set: function set(value) {
-        this.shader.uniformValues.u_rotation = value * Math.PI / 180;
+      key: 'generateMatrix',
+      value: function generateMatrix(gl) {
+        var $ = ne.tools.gl;
+
+        var mat = $.makeTranslation(-this.offset.x * this.parent.parentWidth / this.texture.width, -this.offset.y * this.parent.parentHeight / this.texture.height);
+        mat = $.matrixMultiply(mat, $.makeScale(this.scale.x, this.scale.y));
+        mat = $.matrixMultiply(mat, $.makeRotation(this.angle * Math.PI / 180));
+        mat = $.matrixMultiply(mat, $.makeTranslation(this.position.x * this.parent.parentWidth / this.texture.width, this.position.y * this.parent.parentHeight / this.texture.width));
+        return mat;
       }
     }, {
       key: 'x',
@@ -2928,7 +3048,7 @@ ne.Scene = (function () {
         data[1] = data[3] = data[9] = 0; // x
         data[2] = data[8] = data[10] = game.width; // width
         data[5] = data[7] = data[11] = game.height; // height
-        this.shader.uniformValues.u_resolution.set(game.width, game.height);
+        this.shader.uniformValues.u_matrix = ne.tools.gl.make2DProjection(game.width, game.height);
       }
     }, {
       key: 'render',
@@ -3034,9 +3154,9 @@ ne.SpriteShader = (function () {
       value: function vertex() {
         return [
         // rotates the texture
-        "float rx = sin(u_rotation);", "float ry = cos(u_rotation);", "vec2 rotation = vec2(", "a_texCoord.x * ry + a_texCoord.y * rx,", "a_texCoord.y * ry - a_texCoord.x * rx", ");",
+        "vec2 point = a_position;", "vec2 size = u_resolution * (u_resolution / u_textureSize);", "vec2 position = (u_matrix * vec3(a_position, 1)).xy / size;",
         // convert the rectangle from pixels to 0.0 to 1.0
-        "vec2 zeroToOne = (rotation * u_textureSize  + u_position) / u_resolution;",
+        "vec2 zeroToOne = position;",
         // convert from 0->1 to 0->2
         "vec2 zeroToTwo = zeroToOne * 2.0;",
         // convert from 0->2 to -1->+1 (clipspace)
@@ -3060,12 +3180,9 @@ ne.SpriteShader = (function () {
       value: function uniforms() {
         return {
           u_texture: 'sampler2D',
-          u_position: 'point',
-          u_scale: 'point',
-          u_offset: 'point',
-          u_resolution: 'point',
           u_textureSize: 'vec2',
-          u_rotation: 'float'
+          u_resolution: 'vec2',
+          u_matrix: 'mat3'
         };
       }
     }, {
@@ -3104,13 +3221,7 @@ ne.SceneShader = (function () {
     _createClass(SceneShader, [{
       key: "vertex",
       value: function vertex() {
-        return [
-        // convert the rectangle from pixels to 0.0 to 1.0
-        "vec2 zeroToOne = a_position / u_resolution;",
-        // convert from 0->1 to 0->2
-        "vec2 zeroToTwo = zeroToOne * 2.0;",
-        // convert from 0->2 to -1->+1 (clipspace)
-        "vec2 clipSpace = zeroToTwo - 1.0;", "gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);"].join('\n');
+        return ["gl_Position = vec4((u_matrix * vec3(a_position, 1)).xy, 0, 1);"].join('\n');
       }
     }, {
       key: "fragment",
@@ -3129,7 +3240,7 @@ ne.SceneShader = (function () {
       value: function uniforms() {
         return {
           u_bgColor: 'color',
-          u_resolution: 'point'
+          u_matrix: 'mat3'
         };
       }
     }]);

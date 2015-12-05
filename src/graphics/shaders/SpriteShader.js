@@ -5,14 +5,11 @@ ne.SpriteShader = (function () {
     vertex() {
       return [
         // rotates the texture
-        "float rx = sin(u_rotation);",
-        "float ry = cos(u_rotation);",
-        "vec2 rotation = vec2(",
-          "a_texCoord.x * ry + a_texCoord.y * rx,",
-          "a_texCoord.y * ry - a_texCoord.x * rx",
-        ");",
+        "vec2 point = a_position;",
+        "vec2 size = u_resolution * (u_resolution / u_textureSize);",
+        "vec2 position = (u_matrix * vec3(a_position, 1)).xy / size;",
         // convert the rectangle from pixels to 0.0 to 1.0
-        "vec2 zeroToOne = (rotation * u_textureSize  + u_position) / u_resolution;",
+        "vec2 zeroToOne = position;",
         // convert from 0->1 to 0->2
         "vec2 zeroToTwo = zeroToOne * 2.0;",
         // convert from 0->2 to -1->+1 (clipspace)
@@ -36,12 +33,9 @@ ne.SpriteShader = (function () {
     uniforms() {
       return {
         u_texture: 'sampler2D',
-        u_position: 'point',
-        u_scale: 'point',
-        u_offset: 'point',
-        u_resolution: 'point',
         u_textureSize: 'vec2',
-        u_rotation: 'float'
+        u_resolution:  'vec2',
+        u_matrix: 'mat3'
       };
     }
 
