@@ -88,7 +88,7 @@ ne.ColorBase = (function () {
     set hue(value) {
       var hsla = this.toHsla();
       hsla[0] = value;
-      var c = Color.fromHsla(hsla);
+      var c = ne.Color.fromHsla(hsla);
       this.set(c.red, c.green, c.blue, c.alpha);
     }
 

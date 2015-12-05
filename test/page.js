@@ -4,30 +4,32 @@ var scene = new ne.Scene();
 
 game.goto(scene);
 
-var pixmap = new ne.Pixmap(100, 100);
+sprites = [];
 
-pixmap.fillRect(pixmap.rect, new ne.Color(255, 255, 255, 128));
-pixmap.strokeRect(pixmap.rect, new ne.Color(255, 0, 0, 128), 10 );
+var length = randomInt(10, 20);
 
-var texture = new ne.Texture(pixmap);
+for (var i = 0; i < length; ++i) {
+  var spr = new ne.Sprite();
 
-var sprite1 = new ne.Sprite();
+  var pixmap = new ne.Pixmap(100, 100);
+  var c1 = ne.Color.RANDOM;
+  var c2 = c1.clone().complement();
+  c1.alpha = randomInt(128, 255);
+  c2.alpha = randomInt(128, 255);
+  pixmap.fillRect(pixmap.rect, c1);
+  pixmap.strokeRect(pixmap.rect, c2, randomInt(5, 10) );
 
-sprite1.texture = texture;
+  var texture = new ne.Texture(pixmap);
 
-sprite1.x += 100;
-sprite1.y += 100;
+  spr.texture = texture;
+  spr.position.x = randomInt(0, 380);
+  spr.position.y = randomInt(0, 220);
+  scene.add(spr);
+}
 
-scene.add(sprite1);
-
-var sprite2 = new ne.Sprite();
-
-sprite2.texture = texture;
-
-sprite2.x += 50;
-sprite2.y += 50;
-
-scene.add(sprite2);
+function randomInt(min, max) {
+  return Math.floor( Math.random() * (max - min) + min);
+}
 
 //TODO: automatically start from loader
 scene.start(game, null);

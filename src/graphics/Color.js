@@ -64,6 +64,11 @@ ne.Color = (function () {
       return new Color(this.red, this.green, this.blue, this.alpha);
     }
 
+    complement() {
+      this.hue = 1 - this.hue;
+      return this;
+    }
+
     toCss() {
       var a = this.alpha / 255;
       return `rgba(${this.red}, ${this.green}, ${this.blue}, ${a})`;
@@ -210,6 +215,13 @@ ne.Color = (function () {
 
     static get PINK() {
       return new ne.Color(255, 192, 203);
+    }
+
+    static get RANDOM() {
+      var r = Math.floor(Math.random() * 255);
+      var g = Math.floor(Math.random() * 255);
+      var b = Math.floor(Math.random() * 255);
+      return new ne.Color(r, g, b);
     }
 
   }
