@@ -39,12 +39,19 @@ ne.Scene = (function () {
 
     render(gl) {
       if (this.visible) {
+        this.glClear(gl);
         this.useShader(gl);
         this.useBuffer(gl);
         this.updateShader(gl);
         ne.tools.gl.draw(gl);
         super.render(gl);
       }
+    }
+
+    glClear(gl) {
+      gl.clearColor(1, 1, 1, 1);
+      gl.colorMask(true, true, true, true);
+      gl.clear(gl.COLOR_BUFFER_BIT);
     }
 
     destroy(gl) {

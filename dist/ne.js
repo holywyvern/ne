@@ -2774,6 +2774,7 @@ ne.Sprite = (function () {
       value: function render(gl) {
         if (this.visible && this.texture) {
           this.useShader(gl);
+          gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
           this.useTexture(gl);
           ne.tools.gl.draw(gl);
         }
@@ -2898,12 +2899,20 @@ ne.Scene = (function () {
       key: 'render',
       value: function render(gl) {
         if (this.visible) {
+          this.glClear(gl);
           this.useShader(gl);
           this.useBuffer(gl);
           this.updateShader(gl);
           ne.tools.gl.draw(gl);
           _get(Object.getPrototypeOf(Scene.prototype), 'render', this).call(this, gl);
         }
+      }
+    }, {
+      key: 'glClear',
+      value: function glClear(gl) {
+        gl.clearColor(1, 1, 1, 1);
+        gl.colorMask(true, true, true, true);
+        gl.clear(gl.COLOR_BUFFER_BIT);
       }
     }, {
       key: 'destroy',

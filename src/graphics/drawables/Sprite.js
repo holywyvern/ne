@@ -56,6 +56,7 @@ ne.Sprite = (function () {
     render(gl) {
       if (this.visible && this.texture) {
         this.useShader(gl);
+        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
         this.useTexture(gl);
         ne.tools.gl.draw(gl);
       }
