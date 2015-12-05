@@ -19,7 +19,7 @@ for (var i = 0; i < length; ++i) {
   var c1 = ne.Color.RANDOM;
   var c2 = c1.clone().complement();
   c1.alpha = randomInt(128, 255);
-  c2.alpha = randomInt(128, 255);
+  //c2.alpha = randomInt(128, 255);
   var rect = pixmap.rect;
   pixmap.fillRect(rect, c1);
   pixmap.strokeRect(rect, c2, randomInt(5, 10) );

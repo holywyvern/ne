@@ -5,7 +5,7 @@ ne.SpriteShader = (function () {
     vertex() {
       return [
         // rotates the texture
-        "vec2 point = a_position;",
+        "vec2 point = a_texCoord;",
         "vec2 size = u_resolution * (u_resolution / u_textureSize);",
         "vec2 position = (u_matrix * vec3(a_position, 1)).xy / size;",
         // convert the rectangle from pixels to 0.0 to 1.0

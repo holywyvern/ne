@@ -1298,7 +1298,7 @@ ne.Color = (function () {
         }, {
             key: "complement",
             value: function complement() {
-                this.hue = 1 - this.hue;
+                this.hue = (0.5 + this.hue) % 1;
                 return this;
             }
         }, {
@@ -3154,7 +3154,7 @@ ne.SpriteShader = (function () {
       value: function vertex() {
         return [
         // rotates the texture
-        "vec2 point = a_position;", "vec2 size = u_resolution * (u_resolution / u_textureSize);", "vec2 position = (u_matrix * vec3(a_position, 1)).xy / size;",
+        "vec2 point = a_texCoord;", "vec2 size = u_resolution * (u_resolution / u_textureSize);", "vec2 position = (u_matrix * vec3(a_position, 1)).xy / size;",
         // convert the rectangle from pixels to 0.0 to 1.0
         "vec2 zeroToOne = position;",
         // convert from 0->1 to 0->2

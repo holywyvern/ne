@@ -65,7 +65,7 @@ ne.Color = (function () {
     }
 
     complement() {
-      this.hue = 1 - this.hue;
+      this.hue = (0.5 + this.hue) % 1;
       return this;
     }
 
