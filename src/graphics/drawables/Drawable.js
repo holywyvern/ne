@@ -23,10 +23,12 @@ ne.Drawable = (function () {
     }
 
     set z(value) {
-      this._z = value;
-      var parent = this.parent;
-      if (parent) {
-        parent.zUpdate();
+      if (this._z !== value) {
+        this._z = value;
+        var parent = this.parent;
+        if (parent) {
+          parent.zUpdate();
+        }        
       }
     }
 

@@ -2360,10 +2360,12 @@ ne.Drawable = (function () {
                 return this._z;
             },
             set: function set(value) {
-                this._z = value;
-                var parent = this.parent;
-                if (parent) {
-                    parent.zUpdate();
+                if (this._z !== value) {
+                    this._z = value;
+                    var parent = this.parent;
+                    if (parent) {
+                        parent.zUpdate();
+                    }
                 }
             }
         }, {
@@ -2774,10 +2776,17 @@ ne.Sprite = (function () {
       value: function render(gl) {
         if (this.visible && this.texture) {
           this.useShader(gl);
-          gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+          this.applyBlendMode(gl);
           this.useTexture(gl);
           ne.tools.gl.draw(gl);
         }
+      }
+    }, {
+      key: 'applyBlendMode',
+      value: function applyBlendMode(gl) {
+        gl.enable(gl.BLEND);
+        gl.blendEquation(gl.FUNC_ADD);
+        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
       }
     }, {
       key: 'useShader',

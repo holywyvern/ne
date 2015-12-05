@@ -56,11 +56,17 @@ ne.Sprite = (function () {
     render(gl) {
       if (this.visible && this.texture) {
         this.useShader(gl);
-        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+        this.applyBlendMode(gl);
         this.useTexture(gl);
         ne.tools.gl.draw(gl);
       }
     }
+
+    applyBlendMode(gl) {
+      gl.enable( gl.BLEND );
+      gl.blendEquation( gl.FUNC_ADD );
+      gl.blendFunc( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA );
+    } 
 
     useShader(gl) {
       this.shader.generate(gl);
