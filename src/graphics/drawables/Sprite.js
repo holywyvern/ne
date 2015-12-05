@@ -18,11 +18,11 @@ ne.Sprite = (function () {
     }
 
     get offset() {
-      return this.shader.uniformValues.u_scale;
+      return this.shader.uniformValues.u_offset;
     }
 
     get position() {
-      return this.shader.uniformValues.u_scale;
+      return this.shader.uniformValues.u_position;
     }
 
     get x() {
@@ -64,7 +64,7 @@ ne.Sprite = (function () {
     useShader(gl) {
       this.shader.generate(gl);
       this.shader.use(gl);
-      this.shader.updateAttribute(gl, 'a_position');
+      //this.shader.updateAttribute(gl, 'a_position');
     }
 
     useTexture(gl) {

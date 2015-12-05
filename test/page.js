@@ -14,6 +14,9 @@ var sprite = new ne.Sprite();
 
 sprite.texture = texture;
 
+sprite.x += 100;
+sprite.y += 100;
+
 scene.add(sprite);
 
 //TODO: automatically start from loader
