@@ -1,11 +1,13 @@
 ne.SpriteShader = (function () {
 
+  var instance = null;
+
   return class SpriteShader extends ne.Shader {
 
     vertex() {
       return [
         // rotates the texture
-        "vec2 point = a_texCoord;",
+        "vec2 point = a_position;",
         "vec2 size = u_resolution * (u_resolution / u_textureSize);",
         "vec2 position = (u_matrix * vec3(a_position, 1)).xy / size;",
         // convert the rectangle from pixels to 0.0 to 1.0
@@ -43,6 +45,13 @@ ne.SpriteShader = (function () {
       return {
         v_texCoord: 'point'
       };
+    }
+
+    static get INSTANCE() {
+      if (instance === null) {
+        instance = new ne.SpriteShader();
+      }
+      return instance;
     }
 
   }

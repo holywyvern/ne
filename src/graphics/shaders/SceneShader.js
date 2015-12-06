@@ -1,5 +1,7 @@
 ne.SceneShader = (function () {
 
+  var instance = null;
+
   return class SceneShader extends ne.Shader {
 
     vertex() {
@@ -23,6 +25,13 @@ ne.SceneShader = (function () {
         u_bgColor: 'color',
         u_matrix:  'mat3'
       };
+    }
+
+    static get INSTANCE() {
+      if (instance === null) {
+        instance = new ne.SceneShader();
+      }
+      return instance;
     }
 
   }

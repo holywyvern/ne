@@ -8,12 +8,13 @@ ne.Sprite = (function () {
 
     initMembers() {
       super.initMembers();
-      this.shader   = new ne.SpriteShader();
+      this.shader   = ne.SpriteShader.INSTANCE;
       this.texture  = null;
       this.scale    = new ne.Point(1, 1);
       this.position = new ne.Point();
       this.offset   = new ne.Point();
       this.origin   = new ne.Point();
+      this.frame    = new ne.Rect();
       this.angle    = 0;
     }
 
@@ -34,11 +35,24 @@ ne.Sprite = (function () {
     }
 
     get width() {
-      return this.texture ? this.texture.width : 0;
+      return this.frame.width;
     }
 
     get height() {
-      return this.texture ? this.texture.height : 0;
+      return this.frame.height;
+    }
+
+    get texture() {
+      return this._texture;
+    }
+
+    set texture(value) {
+      if (this._texture !== value) {
+        this._texture = value;
+      }
+      if (value !== null) {
+        this.frame = value.rect;
+      }
     }
 
     move(x, y, time=0, mode=null) {
@@ -72,14 +86,14 @@ ne.Sprite = (function () {
     }
 
     useTexture(gl) {
-      this.texture.bind(gl, this.texture.rect);
-      this.updateShader(gl);
+      var rect = this.texture.bind(gl, this.frame);
+      this.updateShader(gl, rect);
     }
 
-    updateShader(gl) {
+    updateShader(gl, rect) {
       this.shader.updateAttribute(gl, 'a_texCoord');
       this.shader.uniformValues.u_resolution.set(this.parent.parentWidth, this.parent.parentHeight);
-      this.shader.uniformValues.u_textureSize = this.texture.rect.wh;
+      this.shader.uniformValues.u_textureSize.set(this.frame.w, this.frame.h);
       this.shader.uniformValues.u_matrix      = this.generateMatrix(gl);
       this.shader.update(gl);
     }

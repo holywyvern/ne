@@ -19,7 +19,7 @@ for (var i = 0; i < length; ++i) {
   var c1 = ne.Color.RANDOM;
   var c2 = c1.clone().complement();
   c1.alpha = randomInt(128, 255);
-  //c2.alpha = randomInt(128, 255);
+  c2.alpha = randomInt(128, 255);
   var rect = pixmap.rect;
   pixmap.fillRect(rect, c1);
   pixmap.strokeRect(rect, c2, randomInt(5, 10) );
@@ -30,9 +30,10 @@ for (var i = 0; i < length; ++i) {
   spr.texture = texture;
   spr.offset.x = spr.texture.width / 2;
   spr.offset.y = spr.texture.height / 2;
-  spr.position.x = randomInt(0, 380);
-  spr.position.y = randomInt(0, 220);
+  spr.position.x = randomInt(50, 430);
+  spr.position.y = randomInt(50, 270);
   spr.twig({angle: spr.angle + 36000}, 100000);
+  spr.frame.set(0, 0, spr.texture.width, spr.texture.height);
   scene.add(spr);
 }
 

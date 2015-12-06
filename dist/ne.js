@@ -1595,6 +1595,9 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 ne.ShaderBase = (function () {
+
+  var shaderUsed = null;
+
   var ShaderBase = (function () {
     function ShaderBase() {
       _classCallCheck(this, ShaderBase);
@@ -1650,7 +1653,10 @@ ne.ShaderBase = (function () {
     }, {
       key: "use",
       value: function use(gl) {
-        gl.useProgram(this._glProgram);
+        if (shaderUsed !== this) {
+          shaderUsed = this;
+          gl.useProgram(this._glProgram);
+        }
       }
     }, {
       key: "generateVariables",
@@ -2142,26 +2148,26 @@ ne.Texture = (function () {
       key: "bind",
       value: function bind(gl, rect) {
         this.generate(gl);
-        this.bindBuffer(gl, rect);
+        var r = this.bindBuffer(gl, rect);
         this.bindTexture(gl);
+        return r;
       }
     }, {
       key: "bindBuffer",
       value: function bindBuffer(gl, rect) {
-        this.refreshData(rect);
+        var r = this.refreshData(rect);
         ne.tools.gl.bindBuffer(gl, this._buffer, this._data);
+        return r;
       }
     }, {
       key: "refreshData",
       value: function refreshData(rect) {
-        var x1 = this.clamp(0, rect.w, rect.x) / rect.w;
-        var y1 = this.clamp(0, rect.h, rect.y) / rect.h;
-        var x2 = this.clamp(0, rect.w - x1, rect.x + rect.w) / rect.w;
-        var y2 = this.clamp(0, rect.h - y1, rect.y + rect.h) / rect.h;
-        this._data[0] = this._data[4] = this._data[6] = x1;
-        this._data[1] = this._data[3] = this._data[9] = y1;
-        this._data[2] = this._data[8] = this._data[10] = x2;
-        this._data[5] = this._data[7] = this._data[11] = y2;
+        var r = this.textureRect(rect);
+        this._data[0] = this._data[4] = this._data[6] = r.x;
+        this._data[1] = this._data[3] = this._data[9] = r.y;
+        this._data[2] = this._data[8] = this._data[10] = r.w;
+        this._data[5] = this._data[7] = this._data[11] = r.h;
+        return r;
       }
     }, {
       key: "clamp",
@@ -2172,6 +2178,15 @@ ne.Texture = (function () {
       key: "bindTexture",
       value: function bindTexture(gl) {
         ne.tools.gl.bindTexture(gl, this._glTexture);
+      }
+    }, {
+      key: "textureRect",
+      value: function textureRect(rect) {
+        var x1 = this.clamp(0, rect.w, rect.x) / this.width;
+        var y1 = this.clamp(0, rect.h, rect.y) / this.height;
+        var x2 = this.clamp(0, rect.w - x1, rect.x + rect.w) / this.width;
+        var y2 = this.clamp(0, rect.h - y1, rect.y + rect.h) / this.height;
+        return new ne.Rect(x1, y1, x2, y2);
       }
     }, {
       key: "rect",
@@ -2898,12 +2913,13 @@ ne.Sprite = (function () {
       key: 'initMembers',
       value: function initMembers() {
         _get(Object.getPrototypeOf(Sprite.prototype), 'initMembers', this).call(this);
-        this.shader = new ne.SpriteShader();
+        this.shader = ne.SpriteShader.INSTANCE;
         this.texture = null;
         this.scale = new ne.Point(1, 1);
         this.position = new ne.Point();
         this.offset = new ne.Point();
         this.origin = new ne.Point();
+        this.frame = new ne.Rect();
         this.angle = 0;
       }
     }, {
@@ -2947,15 +2963,15 @@ ne.Sprite = (function () {
     }, {
       key: 'useTexture',
       value: function useTexture(gl) {
-        this.texture.bind(gl, this.texture.rect);
-        this.updateShader(gl);
+        var rect = this.texture.bind(gl, this.frame);
+        this.updateShader(gl, rect);
       }
     }, {
       key: 'updateShader',
-      value: function updateShader(gl) {
+      value: function updateShader(gl, rect) {
         this.shader.updateAttribute(gl, 'a_texCoord');
         this.shader.uniformValues.u_resolution.set(this.parent.parentWidth, this.parent.parentHeight);
-        this.shader.uniformValues.u_textureSize = this.texture.rect.wh;
+        this.shader.uniformValues.u_textureSize.set(this.frame.w, this.frame.h);
         this.shader.uniformValues.u_matrix = this.generateMatrix(gl);
         this.shader.update(gl);
       }
@@ -2989,12 +3005,25 @@ ne.Sprite = (function () {
     }, {
       key: 'width',
       get: function get() {
-        return this.texture ? this.texture.width : 0;
+        return this.frame.width;
       }
     }, {
       key: 'height',
       get: function get() {
-        return this.texture ? this.texture.height : 0;
+        return this.frame.height;
+      }
+    }, {
+      key: 'texture',
+      get: function get() {
+        return this._texture;
+      },
+      set: function set(value) {
+        if (this._texture !== value) {
+          this._texture = value;
+        }
+        if (value !== null) {
+          this.frame = value.rect;
+        }
       }
     }]);
 
@@ -3028,7 +3057,7 @@ ne.Scene = (function () {
       key: 'initMembers',
       value: function initMembers() {
         _get(Object.getPrototypeOf(Scene.prototype), 'initMembers', this).call(this);
-        this.shader = new ne.SceneShader();
+        this.shader = ne.SceneShader.INSTANCE;
         this._glBuffer = null;
         this._glData = new Float32Array([-1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0]);
       }
@@ -3140,6 +3169,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 ne.SpriteShader = (function () {
 
+  var instance = null;
+
   return (function (_ne$Shader) {
     _inherits(SpriteShader, _ne$Shader);
 
@@ -3154,7 +3185,7 @@ ne.SpriteShader = (function () {
       value: function vertex() {
         return [
         // rotates the texture
-        "vec2 point = a_texCoord;", "vec2 size = u_resolution * (u_resolution / u_textureSize);", "vec2 position = (u_matrix * vec3(a_position, 1)).xy / size;",
+        "vec2 point = a_position;", "vec2 size = u_resolution * (u_resolution / u_textureSize);", "vec2 position = (u_matrix * vec3(a_position, 1)).xy / size;",
         // convert the rectangle from pixels to 0.0 to 1.0
         "vec2 zeroToOne = position;",
         // convert from 0->1 to 0->2
@@ -3192,6 +3223,14 @@ ne.SpriteShader = (function () {
           v_texCoord: 'point'
         };
       }
+    }], [{
+      key: "INSTANCE",
+      get: function get() {
+        if (instance === null) {
+          instance = new ne.SpriteShader();
+        }
+        return instance;
+      }
     }]);
 
     return SpriteShader;
@@ -3208,6 +3247,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 ne.SceneShader = (function () {
+
+  var instance = null;
 
   return (function (_ne$Shader) {
     _inherits(SceneShader, _ne$Shader);
@@ -3242,6 +3283,14 @@ ne.SceneShader = (function () {
           u_bgColor: 'color',
           u_matrix: 'mat3'
         };
+      }
+    }], [{
+      key: "INSTANCE",
+      get: function get() {
+        if (instance === null) {
+          instance = new ne.SceneShader();
+        }
+        return instance;
       }
     }]);
 

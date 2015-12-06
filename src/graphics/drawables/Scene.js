@@ -8,7 +8,7 @@ ne.Scene = (function () {
 
     initMembers() {
       super.initMembers();
-      this.shader = new ne.SceneShader();
+      this.shader = ne.SceneShader.INSTANCE;
       this._glBuffer = null;
       this._glData = new Float32Array([
         -1.0, -1.0, 1.0, -1.0, -1.0,  1.0,

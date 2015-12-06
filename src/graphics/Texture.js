@@ -81,24 +81,24 @@ ne.Texture = (function () {
 
     bind(gl, rect) {
       this.generate(gl);
-      this.bindBuffer(gl, rect);
+      var r = this.bindBuffer(gl, rect);
       this.bindTexture(gl);
+      return r;
     }
 
     bindBuffer(gl, rect) {
-      this.refreshData(rect);
+      var r = this.refreshData(rect);
       ne.tools.gl.bindBuffer(gl, this._buffer, this._data);
+      return r;
     }
 
     refreshData(rect) {
-      var x1 = this.clamp(0, rect.w,             rect.x           ) / rect.w;
-      var y1 = this.clamp(0, rect.h,            rect.y           ) / rect.h;
-      var x2 = this.clamp(0, rect.w  - x1, (rect.x + rect.w)  ) / rect.w;
-      var y2 = this.clamp(0, rect.h - y1, (rect.y + rect.h) ) / rect.h;
-      this._data[0] = this._data[4] = this._data[ 6] = x1;
-      this._data[1] = this._data[3] = this._data[ 9] = y1;
-      this._data[2] = this._data[8] = this._data[10] = x2;
-      this._data[5] = this._data[7] = this._data[11] = y2;
+      var r = this.textureRect(rect);
+      this._data[0] = this._data[4] = this._data[ 6] = r.x;
+      this._data[1] = this._data[3] = this._data[ 9] = r.y;
+      this._data[2] = this._data[8] = this._data[10] = r.w;
+      this._data[5] = this._data[7] = this._data[11] = r.h;
+      return r;
     }
 
     clamp(min, max, value) {
@@ -107,6 +107,14 @@ ne.Texture = (function () {
 
     bindTexture(gl) {
       ne.tools.gl.bindTexture(gl, this._glTexture);
+    }
+
+    textureRect(rect) {
+      var x1 = this.clamp(0, rect.w,             rect.x           ) / this.width;
+      var y1 = this.clamp(0, rect.h,            rect.y           ) / this.height;
+      var x2 = this.clamp(0, rect.w  - x1, (rect.x + rect.w)  ) / this.width;
+      var y2 = this.clamp(0, rect.h - y1, (rect.y + rect.h) ) / this.height;
+      return new ne.Rect(x1, y1, x2, y2)
     }
 
   };

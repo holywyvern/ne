@@ -1,5 +1,7 @@
 ne.ShaderBase = (function () {
 
+  var shaderUsed = null;
+
   class ShaderBase {
     constructor() {
       this.initMembers();
@@ -44,7 +46,10 @@ ne.ShaderBase = (function () {
     }
 
     use(gl) {
-      gl.useProgram(this._glProgram);
+      if (shaderUsed !== this) {
+        shaderUsed = this;
+        gl.useProgram(this._glProgram);
+      }
     }
 
     generateVariables(gl) {
