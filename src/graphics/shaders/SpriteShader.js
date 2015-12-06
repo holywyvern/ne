@@ -8,12 +8,10 @@ ne.SpriteShader = (function () {
       return `
         // rotates the texture
         vec2 point = a_position;
-        vec2 size = u_resolution * (u_resolution / u_textureSize);
+        vec2 size = u_resolution * u_resolution / u_textureSize;
         vec2 position = (u_matrix * vec3(a_position, 1.0)).xy / size;
-        // convert the rectangle from pixels to 0.0 to 1.0
-        vec2 zeroToOne = position;
         // convert from 0->1 to 0->2
-        vec2 zeroToTwo = zeroToOne * 2.0;
+        vec2 zeroToTwo = position * 2.0;
         // convert from 0->2 to -1->+1 (clipspace)
         vec2 clipSpace = zeroToTwo - 1.0;
         v_texCoord = a_texCoord;

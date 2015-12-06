@@ -3415,7 +3415,7 @@ ne.SpriteShader = (function () {
     _createClass(SpriteShader, [{
       key: 'vertex',
       value: function vertex() {
-        return '\n        // rotates the texture\n        vec2 point = a_position;\n        vec2 size = u_resolution * (u_resolution / u_textureSize);\n        vec2 position = (u_matrix * vec3(a_position, 1.0)).xy / size;\n        // convert the rectangle from pixels to 0.0 to 1.0\n        vec2 zeroToOne = position;\n        // convert from 0->1 to 0->2\n        vec2 zeroToTwo = zeroToOne * 2.0;\n        // convert from 0->2 to -1->+1 (clipspace)\n        vec2 clipSpace = zeroToTwo - 1.0;\n        v_texCoord = a_texCoord;\n        gl_Position = vec4(clipSpace * vec2(1, -1.0), 0, 1.0);\n      ';
+        return '\n        // rotates the texture\n        vec2 point = a_position;\n        vec2 size = u_resolution * u_resolution / u_textureSize;\n        vec2 position = (u_matrix * vec3(a_position, 1.0)).xy / size;\n        // convert from 0->1 to 0->2\n        vec2 zeroToTwo = position * 2.0;\n        // convert from 0->2 to -1->+1 (clipspace)\n        vec2 clipSpace = zeroToTwo - 1.0;\n        v_texCoord = a_texCoord;\n        gl_Position = vec4(clipSpace * vec2(1, -1.0), 0, 1.0);\n      ';
       }
     }, {
       key: 'fragment',
