@@ -232,9 +232,9 @@ ne.ShaderBase = (function () {
       'vec3':      () => new ne.Vec3(),
       'vec4':      () => new ne.Vec4(),
       'array':     () => [0, 0, 0, 0],
-      'mat2':      () => [ 0, 0, 0, 0 ],
-      'mat3':      () => [ 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
-      'mat4':      () => [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+      'mat2':      () => new ne.Mat2(),
+      'mat3':      () => new ne.Mat3(),
+      'mat4':      () => new ne.Mat4(),
       'tone':      () => new ne.Tone()
     }
 
@@ -249,9 +249,9 @@ ne.ShaderBase = (function () {
       'rect':   (gl, location, value) => gl.uniform4f(location, value.x, value.y, value.width, value.height),
       'color':  (gl, location, value) => gl.uniform4f(location, value.red / 255, value.green / 255, value.blue / 255, value.alpha / 255),
       'array':  (gl, location, value) => gl['uniform' + value.length + 'f'](location, ...value),
-      'mat2':   (gl, location, value) => gl.uniformMatrix3fv(location, false, value),
-      'mat3':   (gl, location, value) => gl.uniformMatrix3fv(location, false, value),
-      'mat4':   (gl, location, value) => gl.uniformMatrix3fv(location, false, value),
+      'mat2':   (gl, location, value) => gl.uniformMatrix3fv(location, false, value.data),
+      'mat3':   (gl, location, value) => gl.uniformMatrix3fv(location, false, value.data),
+      'mat4':   (gl, location, value) => gl.uniformMatrix3fv(location, false, value.data),
       'tone':   (gl, location, value) => gl.uniform4f(location, value.red / 255, value.green / 255, value.blue / 255, value.gray / 255)
     }
 

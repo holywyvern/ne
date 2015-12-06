@@ -73,15 +73,13 @@ ne.SpriteBase = (function () {
     }
 
     generateMatrix(gl) {
-      var $ = ne.tools.gl;
-
-      var mat =  $.makeTranslation(
+      var mat =  ne.Mat3.translation(
         -this.offset.x * this.parent.parentWidth / this.texture.width,
         -this.offset.y * this.parent.parentHeight / this.texture.height
       );
-      mat = $.matrixMultiply(mat, $.makeScale(this.scale.x, this.scale.y));
-      mat = $.matrixMultiply(mat, $.makeRotation(this.angle * Math.PI / 180) );
-      mat = $.matrixMultiply(mat, $.makeTranslation(
+      mat.multiply(ne.Mat3.scale(this.scale.x, this.scale.y));
+      mat.multiply(ne.Mat3.rotation(this.angle * Math.PI / 180) );
+      mat.multiply(ne.Mat3.translation(
         this.position.x * this.parent.parentWidth / this.texture.width,
         this.position.y * this.parent.parentHeight  / this.texture.width
       ) );

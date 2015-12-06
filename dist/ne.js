@@ -104,51 +104,6 @@ ne.tools.gl = (function () {
     return program;
   };
 
-  $.makeTranslation = function (tx, ty) {
-    return [1, 0, 0, 0, 1, 0, tx, ty, 1];
-  };
-
-  $.makeRotation = function (angleInRadians) {
-    var c = Math.cos(angleInRadians);
-    var s = Math.sin(angleInRadians);
-    return [c, -s, 0, s, c, 0, 0, 0, 1];
-  };
-
-  $.makeScale = function (sx, sy) {
-    return [sx, 0, 0, 0, sy, 0, 0, 0, 1];
-  };
-
-  $.makeIdentity = function () {
-    return [1, 0, 0, 0, 1, 0, 0, 0, 1];
-  };
-
-  $.matrixMultiply = function (a, b) {
-    var a00 = a[0 * 3 + 0];
-    var a01 = a[0 * 3 + 1];
-    var a02 = a[0 * 3 + 2];
-    var a10 = a[1 * 3 + 0];
-    var a11 = a[1 * 3 + 1];
-    var a12 = a[1 * 3 + 2];
-    var a20 = a[2 * 3 + 0];
-    var a21 = a[2 * 3 + 1];
-    var a22 = a[2 * 3 + 2];
-    var b00 = b[0 * 3 + 0];
-    var b01 = b[0 * 3 + 1];
-    var b02 = b[0 * 3 + 2];
-    var b10 = b[1 * 3 + 0];
-    var b11 = b[1 * 3 + 1];
-    var b12 = b[1 * 3 + 2];
-    var b20 = b[2 * 3 + 0];
-    var b21 = b[2 * 3 + 1];
-    var b22 = b[2 * 3 + 2];
-    return [a00 * b00 + a01 * b10 + a02 * b20, a00 * b01 + a01 * b11 + a02 * b21, a00 * b02 + a01 * b12 + a02 * b22, a10 * b00 + a11 * b10 + a12 * b20, a10 * b01 + a11 * b11 + a12 * b21, a10 * b02 + a11 * b12 + a12 * b22, a20 * b00 + a21 * b10 + a22 * b20, a20 * b01 + a21 * b11 + a22 * b21, a20 * b02 + a21 * b12 + a22 * b22];
-  };
-
-  $.make2DProjection = function (width, height) {
-    // Note: This matrix flips the Y axis so that 0 is at the top.
-    return [2 / width, 0, 0, 0, -2 / height, 0, -1, 1, 1];
-  };
-
   return $;
 })();
 'use strict';
@@ -654,7 +609,7 @@ ne.Mat2 = (function () {
     }, {
       key: 'data',
       get: function get() {
-        return this.data;
+        return this._data;
       }
     }, {
       key: '0',
@@ -759,6 +714,55 @@ ne.Mat3 = (function () {
         return this.copyTo(new Mat3());
       }
     }, {
+      key: 'multiply',
+      value: function multiply(other) {
+        var a = this.data;
+        var b = other.data;
+        var a00 = a[0],
+            a01 = a[1],
+            a02 = a[2];
+        var a10 = a[3],
+            a11 = a[4],
+            a12 = a[5];
+        var a20 = a[6],
+            a21 = a[7],
+            a22 = a[8];
+        var b00 = b[0],
+            b01 = b[1],
+            b02 = b[2];
+        var b10 = b[3],
+            b11 = b[4],
+            b12 = b[5];
+        var b20 = b[6],
+            b21 = b[7],
+            b22 = b[8];
+        a[0] = a00 * b00 + a01 * b10 + a02 * b20;
+        a[1] = a00 * b01 + a01 * b11 + a02 * b21;
+        a[2] = a00 * b02 + a01 * b12 + a02 * b22;
+        a[3] = a10 * b00 + a11 * b10 + a12 * b20;
+        a[4] = a10 * b01 + a11 * b11 + a12 * b21;
+        a[5] = a10 * b02 + a11 * b12 + a12 * b22;
+        a[6] = a20 * b00 + a21 * b10 + a22 * b20;
+        a[7] = a20 * b01 + a21 * b11 + a22 * b21;
+        a[8] = a20 * b02 + a21 * b12 + a22 * b22;
+        return this;
+      }
+    }, {
+      key: 'translate',
+      value: function translate(x, y) {
+        return this.multiply(Mat3.translation(x, y));
+      }
+    }, {
+      key: 'rotate',
+      value: function rotate(angle) {
+        return this.multiply(Mat3.rotation(angle));
+      }
+    }, {
+      key: 'scale',
+      value: function scale(x, y) {
+        return this.multiply(Mat3.scale(x, y));
+      }
+    }, {
       key: 'width',
       get: function get() {
         return 3;
@@ -801,12 +805,55 @@ ne.Mat3 = (function () {
         this.data[7] = value;
       }
     }], [{
+      key: 'translation',
+      value: function translation(x, y) {
+        var mat = new Mat3();
+        var data = mat.data;
+        data[0] = data[4] = data[8] = 1;
+        data[6] = x;
+        data[7] = y;
+        return mat;
+      }
+    }, {
+      key: 'rotation',
+      value: function rotation(angle) {
+        var mat = new Mat3();
+        var data = mat.data;
+        var c = Math.cos(angle);
+        var s = Math.sin(angle);
+        data[0] = data[4] = c;
+        data[1] = -s;
+        data[3] = s;
+        data[8] = 1;
+        return mat;
+      }
+    }, {
+      key: 'scale',
+      value: function scale(x, y) {
+        var mat = new Mat3();
+        var data = mat.data;
+        data[0] = x;
+        data[4] = y;
+        data[8] = 1;
+        return mat;
+      }
+    }, {
+      key: 'projection',
+      value: function projection(w, h) {
+        var mat = new Mat3();
+        var data = mat.data;
+        data[0] = 2 / w;
+        data[4] = -2 / h;
+        data[6] = -1;
+        data[7] = mat[8] = 1;
+        return mat;
+      }
+    }, {
       key: 'IDENTITY',
       get: function get() {
         var mat = new Mat3();
-        mat.set(0, 0, 1);
-        mat.set(1, 1, 1);
-        mat.set(2, 2, 1);
+        var data = mat.data;
+        data[0] = data[4] = data[8] = 1;
         return mat;
       }
     }]);
@@ -2361,13 +2408,13 @@ ne.ShaderBase = (function () {
       return [0, 0, 0, 0];
     },
     'mat2': function mat2() {
-      return [0, 0, 0, 0];
+      return new ne.Mat2();
     },
     'mat3': function mat3() {
-      return [0, 0, 0, 0, 0, 0, 0, 0, 0];
+      return new ne.Mat3();
     },
     'mat4': function mat4() {
-      return [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+      return new ne.Mat4();
     },
     'tone': function tone() {
       return new ne.Tone();
@@ -2406,13 +2453,13 @@ ne.ShaderBase = (function () {
       return gl['uniform' + value.length + 'f'].apply(gl, [location].concat(_toConsumableArray(value)));
     },
     'mat2': function mat2(gl, location, value) {
-      return gl.uniformMatrix3fv(location, false, value);
+      return gl.uniformMatrix3fv(location, false, value.data);
     },
     'mat3': function mat3(gl, location, value) {
-      return gl.uniformMatrix3fv(location, false, value);
+      return gl.uniformMatrix3fv(location, false, value.data);
     },
     'mat4': function mat4(gl, location, value) {
-      return gl.uniformMatrix3fv(location, false, value);
+      return gl.uniformMatrix3fv(location, false, value.data);
     },
     'tone': function tone(gl, location, value) {
       return gl.uniform4f(location, value.red / 255, value.green / 255, value.blue / 255, value.gray / 255);
@@ -3447,12 +3494,10 @@ ne.SpriteBase = (function () {
     }, {
       key: 'generateMatrix',
       value: function generateMatrix(gl) {
-        var $ = ne.tools.gl;
-
-        var mat = $.makeTranslation(-this.offset.x * this.parent.parentWidth / this.texture.width, -this.offset.y * this.parent.parentHeight / this.texture.height);
-        mat = $.matrixMultiply(mat, $.makeScale(this.scale.x, this.scale.y));
-        mat = $.matrixMultiply(mat, $.makeRotation(this.angle * Math.PI / 180));
-        mat = $.matrixMultiply(mat, $.makeTranslation(this.position.x * this.parent.parentWidth / this.texture.width, this.position.y * this.parent.parentHeight / this.texture.width));
+        var mat = ne.Mat3.translation(-this.offset.x * this.parent.parentWidth / this.texture.width, -this.offset.y * this.parent.parentHeight / this.texture.height);
+        mat.multiply(ne.Mat3.scale(this.scale.x, this.scale.y));
+        mat.multiply(ne.Mat3.rotation(this.angle * Math.PI / 180));
+        mat.multiply(ne.Mat3.translation(this.position.x * this.parent.parentWidth / this.texture.width, this.position.y * this.parent.parentHeight / this.texture.width));
         return mat;
       }
     }, {
@@ -3653,7 +3698,7 @@ ne.Scene = (function () {
         data[1] = data[3] = data[9] = 0; // x
         data[2] = data[8] = data[10] = game.width; // width
         data[5] = data[7] = data[11] = game.height; // height
-        this.shader.uniformValues.u_matrix = ne.tools.gl.make2DProjection(game.width, game.height);
+        this.shader.uniformValues.u_matrix = ne.Mat3.projection(game.width, game.height);
       }
     }, {
       key: 'render',

@@ -14,7 +14,7 @@ ne.Mat2 = (function () {
     }
 
     get data() {
-      return this.data;
+      return this._data;
     }
 
     get ['0']() {
