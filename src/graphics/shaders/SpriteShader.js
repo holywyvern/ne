@@ -23,11 +23,11 @@ ne.SpriteShader = (function () {
 
     fragment() {
       return `
-        float avg = 0.2126 * (u_tone.x) + 0.7152 * (u_tone.y) + 0.0722 * (u_tone.z);
+        float avg = 0.2126 * (u_tone.r) + 0.7152 * (u_tone.g) + 0.0722 * (u_tone.b);
         vec4 texColor = texture2D(u_texture, v_texCoord);
-        vec4 gs = vec4(avg, avg, avg, texColor[3]) * u_tone[3];
+        vec4 grayScale = vec4(avg, avg, avg, texColor[3]) * u_tone[3];
         vec4 tinted = texColor + vec4(u_tone.rgb, 0.0);
-        gl_FragColor = ( tinted * (1.0 - u_tone.a) + gs);
+        gl_FragColor = ( tinted * (1.0 - u_tone.a) + grayScale);
       `;
       return "gl_FragColor = texture2D(u_texture, v_texCoord);";
     }

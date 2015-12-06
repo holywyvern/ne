@@ -3420,7 +3420,7 @@ ne.SpriteShader = (function () {
     }, {
       key: 'fragment',
       value: function fragment() {
-        return '\n        float avg = 0.2126 * (u_tone.x) + 0.7152 * (u_tone.y) + 0.0722 * (u_tone.z);\n        vec4 texColor = texture2D(u_texture, v_texCoord);\n        vec4 gs = vec4(avg, avg, avg, texColor[3]) * u_tone[3];\n        vec4 tinted = texColor + vec4(u_tone.rgb, 0.0);\n        gl_FragColor = ( tinted * (1.0 - u_tone.a) + gs);\n      ';
+        return '\n        float avg = 0.2126 * (u_tone.r) + 0.7152 * (u_tone.g) + 0.0722 * (u_tone.b);\n        vec4 texColor = texture2D(u_texture, v_texCoord);\n        vec4 grayScale = vec4(avg, avg, avg, texColor[3]) * u_tone[3];\n        vec4 tinted = texColor + vec4(u_tone.rgb, 0.0);\n        gl_FragColor = ( tinted * (1.0 - u_tone.a) + grayScale);\n      ';
         return "gl_FragColor = texture2D(u_texture, v_texCoord);";
       }
     }, {
