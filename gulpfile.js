@@ -30,6 +30,7 @@ var $SCRIPTS = [
   // Graphics
   "src/graphics/ColorBase.js",
   "src/graphics/Color.js",
+  "src/graphics/Tone.js",
   "src/graphics/ShaderBase.js",
   "src/graphics/Shader.js",
   "src/graphics/Texture.js",
@@ -42,11 +43,12 @@ var $SCRIPTS = [
   "src/graphics/drawables/Drawable.js",
   "src/graphics/drawables/Actor.js",
   "src/graphics/drawables/Container.js",
+  "src/graphics/drawables/SpriteBase.js",
   "src/graphics/drawables/Sprite.js",
   "src/graphics/drawables/Scene.js",
   // Shader collection
   "src/graphics/shaders/SpriteShader.js",
-  "src/graphics/shaders/SceneShader.js"
+  "src/graphics/shaders/SceneShader.js" 
 ];
 
 gulp.task("compile", function () {

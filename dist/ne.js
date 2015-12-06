@@ -1586,6 +1586,130 @@ ne.Color = (function () {
 
     return Color;
 })();
+'use strict';
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+ne.Tone = (function () {
+  var Tone = (function (_ne$Vec) {
+    _inherits(Tone, _ne$Vec);
+
+    function Tone() {
+      var r = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+      var g = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+      var b = arguments.length <= 2 || arguments[2] === undefined ? 0 : arguments[2];
+      var a = arguments.length <= 3 || arguments[3] === undefined ? 0 : arguments[3];
+
+      _classCallCheck(this, Tone);
+
+      return _possibleConstructorReturn(this, Object.getPrototypeOf(Tone).call(this, r, g, b, a));
+    }
+
+    _createClass(Tone, [{
+      key: 'set',
+      value: function set(r, g, b) {
+        var a = arguments.length <= 3 || arguments[3] === undefined ? undefined : arguments[3];
+
+        if (typeof a == 'undefined') a = this.gray;
+        _get(Object.getPrototypeOf(Tone.prototype), 'set', this).call(this, r, g, b, a);
+        return this;
+      }
+    }, {
+      key: 'x',
+      get: function get() {
+        return this.red;
+      },
+      set: function set(value) {
+        this.red = value;
+      }
+    }, {
+      key: 'y',
+      get: function get() {
+        return this.green;
+      },
+      set: function set(value) {
+        this.green = value;
+      }
+    }, {
+      key: 'z',
+      get: function get() {
+        return this.blue;
+      },
+      set: function set(value) {
+        this.blue = value;
+      }
+    }, {
+      key: 'w',
+      get: function get() {
+        return this.gray;
+      },
+      set: function set(value) {
+        this.gray = value;
+      }
+    }, {
+      key: 'red',
+      get: function get() {
+        return this._red;
+      },
+      set: function set(value) {
+        this._red = Math.max(-255, Math.min(255, value));
+      }
+    }, {
+      key: 'green',
+      get: function get() {
+        return this._green;
+      },
+      set: function set(value) {
+        this._green = Math.max(-255, Math.min(255, value));
+      }
+    }, {
+      key: 'blue',
+      get: function get() {
+        return this._blue;
+      },
+      set: function set(value) {
+        this._blue = Math.max(-255, Math.min(255, value));
+      }
+    }, {
+      key: 'gray',
+      get: function get() {
+        return this._gray;
+      },
+      set: function set(value) {
+        this._gray = Math.max(0, Math.min(255, value));
+      }
+    }, {
+      key: 'grey',
+      get: function get() {
+        return this.gray;
+      },
+      set: function set(value) {
+        this.gray = value;
+      }
+    }], [{
+      key: 'RANDOM',
+      get: function get() {
+        var red = Math.floor(Math.random() * 512 - 255);
+        var green = Math.floor(Math.random() * 512 - 255);
+        var blue = Math.floor(Math.random() * 512 - 255);
+        var gray = Math.floor(Math.random() * 256);
+        return new Tone(red, green, blue, gray);
+      }
+    }]);
+
+    return Tone;
+  })(ne.Vec4);
+
+  return Tone;
+})();
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -1854,7 +1978,8 @@ ne.ShaderBase = (function () {
     'int': 'int',
     'mat2': 'mat2',
     'mat3': 'mat3',
-    'mat4': 'mat4'
+    'mat4': 'mat4',
+    'tone': 'vec4'
   };
 
   ShaderBase.VALUES = {
@@ -1899,6 +2024,9 @@ ne.ShaderBase = (function () {
     },
     'mat4': function mat4() {
       return [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    },
+    'tone': function tone() {
+      return new ne.Tone();
     }
   };
 
@@ -1941,6 +2069,9 @@ ne.ShaderBase = (function () {
     },
     'mat4': function mat4(gl, location, value) {
       return gl.uniformMatrix3fv(location, false, value);
+    },
+    'tone': function tone(gl, location, value) {
+      return gl.uniform4f(location, value.red / 255, value.green / 255, value.blue / 255, value.gray / 255);
     }
   };
 
@@ -2898,21 +3029,21 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-ne.Sprite = (function () {
+ne.SpriteBase = (function () {
 
   return (function (_ne$Actor) {
-    _inherits(Sprite, _ne$Actor);
+    _inherits(SpriteBase, _ne$Actor);
 
-    function Sprite() {
-      _classCallCheck(this, Sprite);
+    function SpriteBase() {
+      _classCallCheck(this, SpriteBase);
 
-      return _possibleConstructorReturn(this, Object.getPrototypeOf(Sprite).call(this));
+      return _possibleConstructorReturn(this, Object.getPrototypeOf(SpriteBase).call(this));
     }
 
-    _createClass(Sprite, [{
+    _createClass(SpriteBase, [{
       key: 'initMembers',
       value: function initMembers() {
-        _get(Object.getPrototypeOf(Sprite.prototype), 'initMembers', this).call(this);
+        _get(Object.getPrototypeOf(SpriteBase.prototype), 'initMembers', this).call(this);
         this.shader = ne.SpriteShader.INSTANCE;
         this.texture = null;
         this.scale = new ne.Point(1, 1);
@@ -2920,15 +3051,8 @@ ne.Sprite = (function () {
         this.offset = new ne.Point();
         this.origin = new ne.Point();
         this.frame = new ne.Rect();
+        this.tone = new ne.Tone();
         this.angle = 0;
-      }
-    }, {
-      key: 'move',
-      value: function move(x, y) {
-        var time = arguments.length <= 2 || arguments[2] === undefined ? 0 : arguments[2];
-        var mode = arguments.length <= 3 || arguments[3] === undefined ? null : arguments[3];
-
-        this.twig({ x: x, y: y }, time, mode);
       }
     }, {
       key: 'render',
@@ -2973,6 +3097,7 @@ ne.Sprite = (function () {
         this.shader.uniformValues.u_resolution.set(this.parent.parentWidth, this.parent.parentHeight);
         this.shader.uniformValues.u_textureSize.set(this.frame.w, this.frame.h);
         this.shader.uniformValues.u_matrix = this.generateMatrix(gl);
+        this.shader.uniformValues.u_tone = this.tone;
         this.shader.update(gl);
       }
     }, {
@@ -2985,32 +3110,6 @@ ne.Sprite = (function () {
         mat = $.matrixMultiply(mat, $.makeRotation(this.angle * Math.PI / 180));
         mat = $.matrixMultiply(mat, $.makeTranslation(this.position.x * this.parent.parentWidth / this.texture.width, this.position.y * this.parent.parentHeight / this.texture.width));
         return mat;
-      }
-    }, {
-      key: 'x',
-      get: function get() {
-        return this.position.x;
-      },
-      set: function set(value) {
-        this.position.x = value;
-      }
-    }, {
-      key: 'y',
-      get: function get() {
-        return this.position.y;
-      },
-      set: function set(value) {
-        this.position.y = value;
-      }
-    }, {
-      key: 'width',
-      get: function get() {
-        return this.frame.width;
-      }
-    }, {
-      key: 'height',
-      get: function get() {
-        return this.frame.height;
       }
     }, {
       key: 'texture',
@@ -3027,8 +3126,141 @@ ne.Sprite = (function () {
       }
     }]);
 
-    return Sprite;
+    return SpriteBase;
   })(ne.Actor);
+})();
+"use strict";
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+ne.Sprite = (function () {
+  var Sprite = (function (_ne$SpriteBase) {
+    _inherits(Sprite, _ne$SpriteBase);
+
+    function Sprite() {
+      _classCallCheck(this, Sprite);
+
+      return _possibleConstructorReturn(this, Object.getPrototypeOf(Sprite).apply(this, arguments));
+    }
+
+    _createClass(Sprite, [{
+      key: "move",
+      value: function move(x, y) {
+        var time = arguments.length <= 2 || arguments[2] === undefined ? 0 : arguments[2];
+        var mode = arguments.length <= 3 || arguments[3] === undefined ? null : arguments[3];
+
+        this.twig({ x: x, y: y }, time, mode);
+      }
+    }, {
+      key: "rotate",
+      value: function rotate(angle) {
+        var time = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+        var mode = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
+
+        this.twig({ angle: angle }, time, mode);
+      }
+    }, {
+      key: "tonalize",
+      value: function tonalize(tone) {
+        var time = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+        var mode = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
+
+        this.twig({ toneRed: tone.red, toneGreen: tone.green, toneBlue: tone.blue, toneGray: tone.gray }, time, mode);
+      }
+    }, {
+      key: "x",
+      get: function get() {
+        return this.position.x;
+      },
+      set: function set(value) {
+        this.position.x = value;
+      }
+    }, {
+      key: "y",
+      get: function get() {
+        return this.position.y;
+      },
+      set: function set(value) {
+        this.position.y = value;
+      }
+    }, {
+      key: "ox",
+      get: function get() {
+        return this.offset.x;
+      },
+      set: function set(value) {
+        this.offset.x = value;
+      }
+    }, {
+      key: "oy",
+      get: function get() {
+        return this.offset.y;
+      },
+      set: function set(value) {
+        this.offset.y = value;
+      }
+    }, {
+      key: "width",
+      get: function get() {
+        return this.frame.width;
+      }
+    }, {
+      key: "height",
+      get: function get() {
+        return this.frame.height;
+      }
+    }, {
+      key: "toneRed",
+      get: function get() {
+        return this.tone.red;
+      },
+      set: function set(value) {
+        this.tone.red = value;
+      }
+    }, {
+      key: "toneGreen",
+      get: function get() {
+        return this.tone.green;
+      },
+      set: function set(value) {
+        this.tone.green = value;
+      }
+    }, {
+      key: "toneBlue",
+      get: function get() {
+        return this.tone.blue;
+      },
+      set: function set(value) {
+        this.tone.blue = value;
+      }
+    }, {
+      key: "toneGray",
+      get: function get() {
+        return this.tone.gray;
+      },
+      set: function set(value) {
+        this.tone.gray = value;
+      }
+    }, {
+      key: "toneGrey",
+      get: function get() {
+        return this.toneGray;
+      },
+      set: function set(value) {
+        this.toneGray = value;
+      }
+    }]);
+
+    return Sprite;
+  })(ne.SpriteBase);
+
+  return Sprite;
 })();
 'use strict';
 
@@ -3157,7 +3389,7 @@ ne.Scene = (function () {
     return Scene;
   })(ne.Container);
 })();
-"use strict";
+'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
@@ -3181,25 +3413,18 @@ ne.SpriteShader = (function () {
     }
 
     _createClass(SpriteShader, [{
-      key: "vertex",
+      key: 'vertex',
       value: function vertex() {
-        return [
-        // rotates the texture
-        "vec2 point = a_position;", "vec2 size = u_resolution * (u_resolution / u_textureSize);", "vec2 position = (u_matrix * vec3(a_position, 1)).xy / size;",
-        // convert the rectangle from pixels to 0.0 to 1.0
-        "vec2 zeroToOne = position;",
-        // convert from 0->1 to 0->2
-        "vec2 zeroToTwo = zeroToOne * 2.0;",
-        // convert from 0->2 to -1->+1 (clipspace)
-        "vec2 clipSpace = zeroToTwo - 1.0;", "v_texCoord = a_texCoord;", "gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);"].join('\n');
+        return '\n        // rotates the texture\n        vec2 point = a_position;\n        vec2 size = u_resolution * (u_resolution / u_textureSize);\n        vec2 position = (u_matrix * vec3(a_position, 1.0)).xy / size;\n        // convert the rectangle from pixels to 0.0 to 1.0\n        vec2 zeroToOne = position;\n        // convert from 0->1 to 0->2\n        vec2 zeroToTwo = zeroToOne * 2.0;\n        // convert from 0->2 to -1->+1 (clipspace)\n        vec2 clipSpace = zeroToTwo - 1.0;\n        v_texCoord = a_texCoord;\n        gl_Position = vec4(clipSpace * vec2(1, -1.0), 0, 1.0);\n      ';
       }
     }, {
-      key: "fragment",
+      key: 'fragment',
       value: function fragment() {
+        return '\n        float avg = 0.2126 * (u_tone.x) + 0.7152 * (u_tone.y) + 0.0722 * (u_tone.z);\n        vec4 texColor = texture2D(u_texture, v_texCoord);\n        vec4 gs = vec4(avg, avg, avg, texColor[3]) * u_tone[3];\n        vec4 tinted = texColor + vec4(u_tone.rgb, 0.0);\n        gl_FragColor = ( tinted * (1.0 - u_tone.a) + gs);\n      ';
         return "gl_FragColor = texture2D(u_texture, v_texCoord);";
       }
     }, {
-      key: "attributes",
+      key: 'attributes',
       value: function attributes() {
         return {
           a_position: 'vec2',
@@ -3207,24 +3432,25 @@ ne.SpriteShader = (function () {
         };
       }
     }, {
-      key: "uniforms",
+      key: 'uniforms',
       value: function uniforms() {
         return {
           u_texture: 'sampler2D',
           u_textureSize: 'vec2',
           u_resolution: 'vec2',
+          u_tone: 'tone',
           u_matrix: 'mat3'
         };
       }
     }, {
-      key: "varying",
+      key: 'varying',
       value: function varying() {
         return {
           v_texCoord: 'point'
         };
       }
     }], [{
-      key: "INSTANCE",
+      key: 'INSTANCE',
       get: function get() {
         if (instance === null) {
           instance = new ne.SpriteShader();
