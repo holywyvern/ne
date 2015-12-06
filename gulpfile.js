@@ -20,6 +20,9 @@ var $SCRIPTS = [
   "src/geometry/Vec2.js",
   "src/geometry/Vec3.js",
   "src/geometry/Vec4.js",
+  "src/geometry/Mat2.js",
+  "src/geometry/Mat3.js",
+  "src/geometry/Mat4.js",
   "src/geometry/Point.js",
   "src/geometry/RectBase.js",
   "src/geometry/Rect.js",
@@ -48,7 +51,7 @@ var $SCRIPTS = [
   "src/graphics/drawables/Scene.js",
   // Shader collection
   "src/graphics/shaders/SpriteShader.js",
-  "src/graphics/shaders/SceneShader.js" 
+  "src/graphics/shaders/SceneShader.js"
 ];
 
 gulp.task("compile", function () {

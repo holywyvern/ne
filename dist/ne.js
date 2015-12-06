@@ -594,6 +594,326 @@ var _createClass = (function () { function defineProperties(target, props) { for
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+ne.Mat2 = (function () {
+  var Mat2 = (function () {
+    function Mat2() {
+      var cp = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+
+      _classCallCheck(this, Mat2);
+
+      this.createData();
+      if (cp) {
+        this.copyFrom(cp);
+      }
+    }
+
+    _createClass(Mat2, [{
+      key: 'createData',
+      value: function createData() {
+        this._data = new Float32Array(this.length);
+      }
+    }, {
+      key: 'at',
+      value: function at(i, j) {
+        return this[i % this.width + j * this.width];
+      }
+    }, {
+      key: 'set',
+      value: function set(i, j, value) {
+        this[i % this.width + j * this.width] = value;
+      }
+    }, {
+      key: 'clone',
+      value: function clone() {
+        return this.copyTo(new Mat2());
+      }
+    }, {
+      key: 'copyTo',
+      value: function copyTo(mat) {
+        var xs = Math.min(mat.width, this.width);
+        var ys = Math.min(mat.height, this.height);
+        for (var j = 0; j < ys; ++j) {
+          for (var i = 0; i < xs; ++i) {
+            mat.set(i, j, this.at(i, j));
+          }
+        }
+        return mat;
+      }
+    }, {
+      key: 'copyFrom',
+      value: function copyFrom(mat) {
+        var xs = Math.min(mat.width, this.width);
+        var ys = Math.min(mat.height, this.height);
+        for (var j = 0; j < ys; ++j) {
+          for (var i = 0; i < xs; ++i) {
+            this.set(i, j, mat.at(i, j));
+          }
+        }
+        return this;
+      }
+    }, {
+      key: 'data',
+      get: function get() {
+        return this.data;
+      }
+    }, {
+      key: '0',
+      get: function get() {
+        return this.data[0];
+      },
+      set: function set(value) {
+        this._data[0] = value;
+      }
+    }, {
+      key: '1',
+      get: function get() {
+        return this.data[1];
+      },
+      set: function set(value) {
+        this._data[1] = value;
+      }
+    }, {
+      key: '2',
+      get: function get() {
+        return this.data[2];
+      },
+      set: function set(value) {
+        this._data[2] = value;
+      }
+    }, {
+      key: '3',
+      get: function get() {
+        return this._data[3];
+      },
+      set: function set(value) {
+        this._data[3] = value;
+      }
+    }, {
+      key: 'width',
+      get: function get() {
+        return 2;
+      }
+    }, {
+      key: 'height',
+      get: function get() {
+        return 2;
+      }
+    }, {
+      key: 'length',
+      get: function get() {
+        return this.width * this.height;
+      }
+    }, {
+      key: 'xsize',
+      get: function get() {
+        return this.width;
+      }
+    }, {
+      key: 'ysize',
+      get: function get() {
+        return this.height;
+      }
+    }, {
+      key: 'size',
+      get: function get() {
+        return this.length;
+      }
+    }]);
+
+    return Mat2;
+  })();
+
+  return Mat2;
+})();
+'use strict';
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+ne.Mat3 = (function () {
+  var Mat3 = (function (_ne$Mat) {
+    _inherits(Mat3, _ne$Mat);
+
+    function Mat3() {
+      _classCallCheck(this, Mat3);
+
+      return _possibleConstructorReturn(this, Object.getPrototypeOf(Mat3).apply(this, arguments));
+    }
+
+    _createClass(Mat3, [{
+      key: 'clone',
+      value: function clone() {
+        return this.copyTo(new Mat3());
+      }
+    }, {
+      key: 'width',
+      get: function get() {
+        return 3;
+      }
+    }, {
+      key: 'height',
+      get: function get() {
+        return 3;
+      }
+    }, {
+      key: '4',
+      get: function get() {
+        return this.data[4];
+      },
+      set: function set(value) {
+        this.data[4] = value;
+      }
+    }, {
+      key: '5',
+      get: function get() {
+        return this.data[5];
+      },
+      set: function set(value) {
+        this.data[5] = value;
+      }
+    }, {
+      key: '6',
+      get: function get() {
+        return this.data[6];
+      },
+      set: function set(value) {
+        this.data[6] = value;
+      }
+    }, {
+      key: '7',
+      get: function get() {
+        return this.data[7];
+      },
+      set: function set(value) {
+        this.data[7] = value;
+      }
+    }], [{
+      key: 'IDENTITY',
+      get: function get() {}
+    }]);
+
+    return Mat3;
+  })(ne.Mat2);
+
+  return Mat3;
+})();
+'use strict';
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+ne.Mat4 = (function () {
+  var Mat4 = (function (_ne$Mat) {
+    _inherits(Mat4, _ne$Mat);
+
+    function Mat4() {
+      _classCallCheck(this, Mat4);
+
+      return _possibleConstructorReturn(this, Object.getPrototypeOf(Mat4).apply(this, arguments));
+    }
+
+    _createClass(Mat4, [{
+      key: 'clone',
+      value: function clone() {
+        return this.copyTo(new Mat4());
+      }
+    }, {
+      key: 'width',
+      get: function get() {
+        return 4;
+      }
+    }, {
+      key: 'height',
+      get: function get() {
+        return 4;
+      }
+    }, {
+      key: '8',
+      get: function get() {
+        return this.data[8];
+      },
+      set: function set(value) {
+        this.data[8] = value;
+      }
+    }, {
+      key: '9',
+      get: function get() {
+        return this.data[9];
+      },
+      set: function set(value) {
+        this.data[9] = value;
+      }
+    }, {
+      key: '10',
+      get: function get() {
+        return this.data[10];
+      },
+      set: function set(value) {
+        this.data[10] = value;
+      }
+    }, {
+      key: '11',
+      get: function get() {
+        return this.data[11];
+      },
+      set: function set(value) {
+        this.data[11] = value;
+      }
+    }, {
+      key: '12',
+      get: function get() {
+        return this.data[12];
+      },
+      set: function set(value) {
+        this.data[12] = value;
+      }
+    }, {
+      key: '13',
+      get: function get() {
+        return this.data[13];
+      },
+      set: function set(value) {
+        this.data[13] = value;
+      }
+    }, {
+      key: '14',
+      get: function get() {
+        return this.data[14];
+      },
+      set: function set(value) {
+        this.data[14] = value;
+      }
+    }, {
+      key: '15',
+      get: function get() {
+        return this.data[15];
+      },
+      set: function set(value) {
+        this.data[15] = value;
+      }
+    }]);
+
+    return Mat4;
+  })(ne.Mat3);
+
+  return Mat4;
+})();
+'use strict';
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
