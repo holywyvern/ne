@@ -47,7 +47,11 @@ ne.Mat3 = (function () {
     }
 
     static get IDENTITY() {
-
+      var mat = new Mat3();
+      mat.set(0, 0, 1);
+      mat.set(1, 1, 1);
+      mat.set(2, 2, 1);
+      return mat;
     }
 
   }

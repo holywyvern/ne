@@ -718,6 +718,14 @@ ne.Mat2 = (function () {
       get: function get() {
         return this.length;
       }
+    }], [{
+      key: 'IDENTITY',
+      get: function get() {
+        var mat = new Mat2();
+        mat.set(0, 0, 1);
+        mat.set(1, 1, 1);
+        return mat;
+      }
     }]);
 
     return Mat2;
@@ -794,7 +802,13 @@ ne.Mat3 = (function () {
       }
     }], [{
       key: 'IDENTITY',
-      get: function get() {}
+      get: function get() {
+        var mat = new Mat3();
+        mat.set(0, 0, 1);
+        mat.set(1, 1, 1);
+        mat.set(2, 2, 1);
+        return mat;
+      }
     }]);
 
     return Mat3;
@@ -900,6 +914,16 @@ ne.Mat4 = (function () {
       },
       set: function set(value) {
         this.data[15] = value;
+      }
+    }], [{
+      key: 'IDENTITY',
+      get: function get() {
+        var mat = new Mat4();
+        mat.set(0, 0, 1);
+        mat.set(1, 1, 1);
+        mat.set(2, 2, 1);
+        mat.set(3, 3, 1);
+        return mat;
       }
     }]);
 

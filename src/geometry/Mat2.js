@@ -7,7 +7,7 @@ ne.Mat2 = (function () {
       if (cp) {
         this.copyFrom(cp);
       }
-    } 
+    }
 
     createData() {
       this._data = new Float32Array(this.length);
@@ -106,6 +106,13 @@ ne.Mat2 = (function () {
         }
       }
       return this;
+    }
+
+    static get IDENTITY() {
+      var mat = new Mat2();
+      mat.set(0, 0, 1);
+      mat.set(1, 1, 1);
+      return mat;
     }
 
   }

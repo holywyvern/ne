@@ -78,6 +78,15 @@ ne.Mat4 = (function () {
       return this.copyTo(new Mat4());
     }
 
+    static get IDENTITY() {
+      var mat = new Mat4();
+      mat.set(0, 0, 1);
+      mat.set(1, 1, 1);
+      mat.set(2, 2, 1);
+      mat.set(3, 3, 1);
+      return mat;
+    }
+
   }
 
   return Mat4;
