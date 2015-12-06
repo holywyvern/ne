@@ -14,6 +14,7 @@ ne.Game = (function () {
       this.createRenderer(width, height);
       this.appendRenderer(id);
       this._time = Date.now();
+      this._processFrameBinding = this.processFrame.bind(this);
     }
 
     initEventHandlers() {
@@ -40,7 +41,7 @@ ne.Game = (function () {
     processFrame() {
       this.update(this.calculateDelta());
       this.render();
-      window.requestAnimationFrame(this.processFrame.bind(this));
+      window.requestAnimationFrame(this._processFrameBinding);
     }
 
     calculateDelta() {

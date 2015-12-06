@@ -44,6 +44,7 @@ ne.SceneManager = (function () {
       var loader = new ne.Loader();
       this.prepareLoad(loader);
       this.scene.load(this, loader);
+      loader.start();
     }
 
     destroyScene(scene) {

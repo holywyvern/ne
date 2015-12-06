@@ -118,7 +118,8 @@ ne.Loader = (function () {
         audio: {},
         pixmaps: {},
         json: {},
-        fonts: {}
+        fonts: {},
+        textures: {}
     };
 
     return (function () {
@@ -126,13 +127,56 @@ ne.Loader = (function () {
             _classCallCheck(this, Loader);
 
             this._whenDone = [];
+            this._toLoad = 0;
+            this._started = false;
         }
 
         _createClass(Loader, [{
-            key: 'loadPixmaps',
-            value: function loadPixmaps(name, url) {
-                if (typeof _cache.pixmaps[name] == 'undefined') {}
+            key: 'start',
+            value: function start() {
+                this._started = true;
+                this._callDone();
+            }
+        }, {
+            key: '_callDone',
+            value: function _callDone() {
+                var _this = this;
+
+                if (this._started && this._toLoad == 0) {
+                    this._whenDone.forEach(function (i) {
+                        i(_this);
+                    });
+                }
+            }
+        }, {
+            key: '_endSingleLoad',
+            value: function _endSingleLoad() {
+                this._toLoad -= 1;
+                this._callDone();
+            }
+        }, {
+            key: 'loadPixmap',
+            value: function loadPixmap(name, url) {
+                var _this2 = this;
+
+                if (typeof _cache.pixmaps[name] == 'undefined') {
+                    this._toLoad += 1;
+                    img = new Image();
+                    img.onload = function () {
+                        _cache.pixmaps[name] = ne.Pixmap.fromImage(img);
+                        _this2._endSingleLoad();
+                    };
+                    img.onerror = function () {
+                        _this2._endSingleLoad();
+                    };
+                    img.src = url;
+                }
                 return this;
+            }
+        }, {
+            key: 'loadTexture',
+            value: function loadTexture(name, url) {
+                this.loadPixmap(name, url);
             }
         }, {
             key: 'loadAudio',
@@ -154,7 +198,19 @@ ne.Loader = (function () {
             }
         }, {
             key: 'pixmap',
-            value: function pixmap(name) {}
+            value: function pixmap(name) {
+                return _cache.pixmaps[name] || null;
+            }
+        }, {
+            key: 'texture',
+            value: function texture(name) {
+                if (typeof _cache.textures[name] == 'undefined') {
+                    if (typeof _cache.pixmaps[name] != 'undefined') {
+                        _cache.textures[name] = new ne.Texture(_cache.pixmaps[name]);
+                    }
+                }
+                return _cache.textures[name] || null;
+            }
         }, {
             key: 'audio',
             value: function audio(name) {}
@@ -176,6 +232,7 @@ ne.Loader = (function () {
                 this.clearPixmaps();
                 this.clearAudio();
                 this.clearJson();
+                this.clearTextures();
             }
         }, {
             key: 'clearPixmaps',
@@ -186,6 +243,9 @@ ne.Loader = (function () {
         }, {
             key: 'clearJson',
             value: function clearJson() {}
+        }, {
+            key: 'clearTextures',
+            value: function clearTextures() {}
         }]);
 
         return Loader;
@@ -350,6 +410,14 @@ ne.Vec2 = (function () {
       }
     }, {
       key: 's',
+      get: function get() {
+        return this.x;
+      },
+      set: function set(value) {
+        this.x = value;
+      }
+    }, {
+      key: 't',
       get: function get() {
         return this.y;
       },
@@ -1367,6 +1435,7 @@ ne.SceneManager = (function () {
                 var loader = new ne.Loader();
                 this.prepareLoad(loader);
                 this.scene.load(this, loader);
+                loader.start();
             }
         }, {
             key: "destroyScene",
@@ -1438,6 +1507,7 @@ ne.Game = (function () {
         this.createRenderer(width, height);
         this.appendRenderer(id);
         this._time = Date.now();
+        this._processFrameBinding = this.processFrame.bind(this);
       }
     }, {
       key: 'initEventHandlers',
@@ -1477,7 +1547,7 @@ ne.Game = (function () {
       value: function processFrame() {
         this.update(this.calculateDelta());
         this.render();
-        window.requestAnimationFrame(this.processFrame.bind(this));
+        window.requestAnimationFrame(this._processFrameBinding);
       }
     }, {
       key: 'calculateDelta',
@@ -3809,7 +3879,7 @@ ne.SpriteShader = (function () {
     }, {
       key: 'fragment',
       value: function fragment() {
-        return '\n        float avg = 0.2126 * (u_tone.r) + 0.7152 * (u_tone.g) + 0.0722 * (u_tone.b);\n        vec4 texColor = texture2D(u_texture, v_texCoord);\n        vec4 grayScale = vec4(avg, avg, avg, texColor[3]) * u_tone[3];\n        vec4 tinted = texColor + vec4(u_tone.rgb, 0.0);\n        gl_FragColor = ( tinted * (1.0 - u_tone.a) + grayScale);\n      ';
+        return '\n        float avg = 0.2126 * (u_tone.r) + 0.7152 * (u_tone.g) + 0.0722 * (u_tone.b);\n        vec4 texColor = texture2D(u_texture, v_texCoord);\n        vec4 grayScale = vec4(avg, avg, avg, texColor[3]) * u_tone[3];\n        vec4 tinted = vec4(u_tone.rgb, 0.0);\n        gl_FragColor = ( tinted + texColor * (1.0 - u_tone.a) + grayScale);\n      ';
         return "gl_FragColor = texture2D(u_texture, v_texCoord);";
       }
     }, {

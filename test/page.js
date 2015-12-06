@@ -2,8 +2,6 @@ var game = new ne.Game('game-wrapper', 480, 320);
 
 var scene = new ne.Scene();
 
-game.goto(scene);
-
 sprites = [];
 
 var length = randomInt(10, 20);
@@ -47,4 +45,6 @@ function randomNumber(min, max) {
 }
 
 //TODO: automatically start from loader
-scene.start(game, null);
+//scene.start(game, null);
+
+game.goto(scene);

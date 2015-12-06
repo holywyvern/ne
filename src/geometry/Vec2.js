@@ -52,10 +52,18 @@ ne.Vec2 = (function () {
     }
 
     get s() {
-      return this.y;
+      return this.x;
     }
 
     set s(value) {
+      this.x = value;
+    }
+
+    get t() {
+      return this.y;
+    }
+
+    set t(value) {
       this.y = value;
     }
 
