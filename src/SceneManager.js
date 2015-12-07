@@ -60,6 +60,7 @@ ne.SceneManager = (function () {
 
     afterLoad(loader) {
       this.endLoad();
+      this.scene.startGlData(game);
       this.scene.start(this, loader);
     }
 

@@ -41,7 +41,7 @@ ne.Game = (function () {
     processFrame() {
       this.update(this.calculateDelta());
       this.render();
-      window.requestAnimationFrame(this._processFrameBinding);
+      window.setTimeout(this._processFrameBinding, 0);
     }
 
     calculateDelta() {

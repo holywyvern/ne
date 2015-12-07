@@ -21,7 +21,7 @@ ne.Scene = (function () {
     }
 
     start(game, loader) {
-      this.startGlData(game);
+      
     }
 
     startGlData(game) {

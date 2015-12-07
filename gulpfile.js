@@ -48,6 +48,7 @@ var $SCRIPTS = [
   "src/graphics/drawables/Container.js",
   "src/graphics/drawables/SpriteBase.js",
   "src/graphics/drawables/Sprite.js",
+  "src/graphics/drawables/SpriteSheet.js",
   "src/graphics/drawables/Scene.js",
   // Shader collection
   "src/graphics/shaders/SpriteShader.js",

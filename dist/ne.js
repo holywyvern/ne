@@ -161,7 +161,7 @@ ne.Loader = (function () {
 
                 if (typeof _cache.pixmaps[name] == 'undefined') {
                     this._toLoad += 1;
-                    img = new Image();
+                    var img = new Image();
                     img.onload = function () {
                         _cache.pixmaps[name] = ne.Pixmap.fromImage(img);
                         _this2._endSingleLoad();
@@ -1456,6 +1456,7 @@ ne.SceneManager = (function () {
             key: "afterLoad",
             value: function afterLoad(loader) {
                 this.endLoad();
+                this.scene.startGlData(game);
                 this.scene.start(this, loader);
             }
         }, {
@@ -1547,7 +1548,7 @@ ne.Game = (function () {
       value: function processFrame() {
         this.update(this.calculateDelta());
         this.render();
-        window.requestAnimationFrame(this._processFrameBinding);
+        window.setTimeout(this._processFrameBinding, 0);
       }
     }, {
       key: 'calculateDelta',
@@ -2774,10 +2775,10 @@ ne.Texture = (function () {
     }, {
       key: "textureRect",
       value: function textureRect(rect) {
-        var x1 = this.clamp(0, rect.w, rect.x) / this.width;
-        var y1 = this.clamp(0, rect.h, rect.y) / this.height;
-        var x2 = this.clamp(0, rect.w - x1, rect.x + rect.w) / this.width;
-        var y2 = this.clamp(0, rect.h - y1, rect.y + rect.h) / this.height;
+        var x1 = rect.x / this.width;
+        var y1 = rect.y / this.height;
+        var x2 = (rect.w + rect.x) / this.width;
+        var y2 = (rect.h + rect.y) / this.height;
         return new ne.Rect(x1, y1, x2, y2);
       }
     }, {
@@ -3721,6 +3722,120 @@ ne.Sprite = (function () {
 
   return Sprite;
 })();
+"use strict";
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+ne.SpriteSheet = (function () {
+  var SpriteSheet = (function (_ne$Sprite) {
+    _inherits(SpriteSheet, _ne$Sprite);
+
+    function SpriteSheet() {
+      _classCallCheck(this, SpriteSheet);
+
+      return _possibleConstructorReturn(this, Object.getPrototypeOf(SpriteSheet).call(this));
+    }
+
+    _createClass(SpriteSheet, [{
+      key: "initMembers",
+      value: function initMembers() {
+        _get(Object.getPrototypeOf(SpriteSheet.prototype), "initMembers", this).call(this);
+        this.columns = 1;
+        this.rows = 1;
+        this._currentFrame = 0;
+        this._currentMotion = null;
+        this._motionSpeed = 0;
+        this._motionIndex = 0;
+        this._motionTime = 0;
+        this._loops = 0;
+        this.motions = {};
+      }
+    }, {
+      key: "act",
+      value: function act(delta) {
+        _get(Object.getPrototypeOf(SpriteSheet.prototype), "act", this).call(this, delta);
+        this.updateFrameAnimation(delta);
+        this.updateFrame();
+      }
+    }, {
+      key: "updateFrameAnimation",
+      value: function updateFrameAnimation(delta) {
+        if (!this._currentMotion) return;
+        var i = 0;
+        this._motionTime -= delta;
+        while (this._motionTime <= 0) {
+          this._motionTime += this._motionSpeed;
+          this.updateMotionFrame();
+        }
+      }
+    }, {
+      key: "updateMotionFrame",
+      value: function updateMotionFrame() {
+        this._motionIndex += 1;
+        if (this.isMotionOver()) {
+          if (this._loops > 0) {
+            --this._loops;
+          }
+          this._motionIndex = this.isFrameLooping() ? 0 : this._motionIndex - 1;
+        }
+        this._currentFrame = this._currentMotion[this._motionIndex];
+      }
+    }, {
+      key: "isMotionOver",
+      value: function isMotionOver() {
+        return this._motionIndex >= this._currentMotion.length;
+      }
+    }, {
+      key: "isFrameLooping",
+      value: function isFrameLooping() {
+        return this._loops != 0;
+      }
+    }, {
+      key: "updateFrame",
+      value: function updateFrame() {
+        if (!this.texture) return;
+        var w = this.texture.width / this.columns;
+        var h = this.texture.height / this.rows;
+        var x = w * (this._currentFrame % this.columns);
+        var y = h * Math.floor(this._currentFrame / this.columns);
+        this.frame.set(x, y, w, h);
+      }
+    }, {
+      key: "startMotion",
+      value: function startMotion(name) {
+        var speed = arguments.length <= 1 || arguments[1] === undefined ? 100 : arguments[1];
+        var loops = arguments.length <= 2 || arguments[2] === undefined ? -1 : arguments[2];
+
+        this._motionIndex = 0;
+        this._currentMotion = this.motions[name] || null;
+        this._motionSpeed = speed;
+        this._loops = loops;
+        this._motionTime = speed;
+        if (this._currentMotion) {
+          this._currentFrame = this._currentMotion[this._motionIndex];
+        }
+      }
+    }, {
+      key: "afterLoad",
+      value: function afterLoad(loader) {
+        this.calculateDelta();
+        _get(Object.getPrototypeOf(SpriteSheet.prototype), "afterLoad", this).call(this, loader);
+      }
+    }]);
+
+    return SpriteSheet;
+  })(ne.Sprite);
+
+  return SpriteSheet;
+})();
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -3757,9 +3872,7 @@ ne.Scene = (function () {
       value: function load(game, loader) {}
     }, {
       key: 'start',
-      value: function start(game, loader) {
-        this.startGlData(game);
-      }
+      value: function start(game, loader) {}
     }, {
       key: 'startGlData',
       value: function startGlData(game) {

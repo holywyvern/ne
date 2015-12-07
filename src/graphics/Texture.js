@@ -110,10 +110,10 @@ ne.Texture = (function () {
     }
 
     textureRect(rect) {
-      var x1 = this.clamp(0, rect.w,             rect.x           ) / this.width;
-      var y1 = this.clamp(0, rect.h,            rect.y           ) / this.height;
-      var x2 = this.clamp(0, rect.w  - x1, (rect.x + rect.w)  ) / this.width;
-      var y2 = this.clamp(0, rect.h - y1, (rect.y + rect.h) ) / this.height;
+      var x1 = rect.x / this.width;
+      var y1 = rect.y / this.height;
+      var x2 = ( rect.w + rect.x  ) / this.width;
+      var y2 = ( rect.h + rect.y ) / this.height;
       return new ne.Rect(x1, y1, x2, y2)
     }
 

@@ -38,7 +38,7 @@ ne.Loader = (function () {
     loadPixmap(name, url) {
       if (typeof _cache.pixmaps[name] == 'undefined') {
         this._toLoad += 1;
-        img = new Image();
+        var img = new Image();
         img.onload = () => {
           _cache.pixmaps[name] = ne.Pixmap.fromImage(img);
           this._endSingleLoad();

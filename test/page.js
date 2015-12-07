@@ -2,9 +2,28 @@ var game = new ne.Game('game-wrapper', 480, 320);
 
 var scene = new ne.Scene();
 
+scene.load = function (game, loader) {
+  loader.loadPixmap('test', 'test/sprite.png');
+}
+
+scene.start = function (game, loader) {
+  this._sprites = [];
+  this._motions = {'default': [0, 1, 2, 3, 2, 1]};
+  for (var i = 0; i < 1; ++i) {
+    var sprite = new ne.SpriteSheet();
+    sprite.motions = this._motions;
+    sprite.rows = 1;
+    sprite.columns = 4;
+    sprite.texture = loader.texture('test');
+    sprite.startMotion('default');
+    this.add(sprite);
+    this._sprites.push(sprite);
+  }
+}
+/*
 sprites = [];
 
-var length = randomInt(10, 20);
+var length = randomInt(500, 500);
 
 var pixmap = new ne.Pixmap(100, 100);
 var c1 = ne.Color.RANDOM;
@@ -43,6 +62,7 @@ function randomInt(min, max) {
 function randomNumber(min, max) {
   return Math.random() * (max - min) + min;
 }
+*/
 
 //TODO: automatically start from loader
 //scene.start(game, null);
