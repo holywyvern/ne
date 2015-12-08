@@ -11,16 +11,17 @@ scene.start = function (game, loader) {
     return Math.floor( Math.random() * (max - min) + min);
   }
   this._sprites = [];
-  this._motions = {'default': [0, 1, 2, 3, 2, 1]};
+  this._motions = {'default': [1, 0, 1, 2]};
   for (var i = 0; i < 500; ++i) {
     var sprite = new ne.SpriteSheet();
     sprite.motions = this._motions;
     sprite.rows = 1;
-    sprite.columns = 4;
+    sprite.columns = 3;
     sprite.texture = loader.texture('test');
     sprite.startMotion('default', 150);
     sprite.x = randomInt(0, game.width - 64);
     sprite.y = randomInt(0, game.height - 64);
+    sprite.tone = ne.Tone.RANDOM;
     this.add(sprite);
     this._sprites.push(sprite);
   }
