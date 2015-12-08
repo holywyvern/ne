@@ -25,7 +25,7 @@ ne.SpriteBase = (function () {
     set frame(value) {
       this.shader.uniformValues.u_frame = value;
     }
-
+    
     get texture() {
       return this._texture;
     }
@@ -80,16 +80,15 @@ ne.SpriteBase = (function () {
     }
 
     generateMatrix(gl) {
-      var mat =  ne.Mat3.translation(
-        -this.offset.x * this.parent.parentWidth / this.texture.width,
-        -this.offset.y * this.parent.parentHeight / this.texture.height
-      );
-      mat.multiply(ne.Mat3.scale(this.scale.x, this.scale.y));
-      mat.multiply(ne.Mat3.rotation(this.angle * Math.PI / 180) );
-      mat.multiply(ne.Mat3.translation(
-        this.position.x * this.parent.parentWidth / this.texture.width,
-        this.position.y * this.parent.parentHeight  / this.texture.height
-      ) );
+      var w = this.frame.width;
+      var h = this.frame.height;
+      var pw =  this.parent.parentWidth;
+      var ph = this.parent.parentHeight;
+      var mat =  ne.Mat3
+        .translation( -this.offset.x * pw / w, -this.offset.y * ph / h )
+        .scale(this.scale.x, this.scale.y)
+        .rotate(this.angle * Math.PI / 180)
+        .translate( this.position.x * pw / w, this.position.y * ph / h );
       return mat;
     }
 

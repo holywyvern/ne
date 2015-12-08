@@ -21,6 +21,10 @@ scene.start = function (game, loader) {
     sprite.startMotion('default', 150);
     sprite.x = randomInt(0, game.width - 64);
     sprite.y = randomInt(0, game.height - 64);
+    sprite.angle = [0, 90, 180, 270][i % 4];
+    sprite.twig({angle: sprite.angle + 360}, 10000);
+    sprite.ox = sprite.texture.width / 6;
+    sprite.oy = sprite.texture.height / 2;
     sprite.tone = ne.Tone.RANDOM;
     this.add(sprite);
     this._sprites.push(sprite);

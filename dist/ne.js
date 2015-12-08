@@ -3215,8 +3215,7 @@ ne.Actor = (function () {
           type = this.defaultTwigMode();
         }
         if (time <= 0) {
-          this._setProperties(props);
-          return;
+          time = 0;
         }
         this._twigs.push(new Twig(this, props, time, type));
       }
@@ -3279,6 +3278,8 @@ ne.Actor = (function () {
         this._type = type;
         this._subject = subject;
         this._initialValues = this.createInitialValues(subject, props);
+        this._whenDone = [];
+        this._doneCall = false;
       }
     }, {
       key: "createInitialValues",
@@ -3316,14 +3317,16 @@ ne.Actor = (function () {
       value: function update(delta) {
         this._time = this._time - delta;
         if (this._time > 0) {
-          this.updateFunctions();
+          this.updateValues();
           return false;
         }
+        this.setFinalValues();
+        this.callDoneCallbacks();
         return true;
       }
     }, {
-      key: "updateFunctions",
-      value: function updateFunctions() {
+      key: "setFinalValues",
+      value: function setFinalValues() {
         var _iteratorNormalCompletion2 = true;
         var _didIteratorError2 = false;
         var _iteratorError2 = undefined;
@@ -3332,11 +3335,7 @@ ne.Actor = (function () {
           for (var _iterator2 = Object.keys(this._properties)[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
             var k = _step2.value;
 
-            var init = this._initialValues[k];
-            var final = this._properties[k];
-            var current = this._subject[k];
-            var v = this._type(init, final, current, this._totalTime, this._time);
-            this._subject[k] = v;
+            this._subject[k] = this._properties[k];
           }
         } catch (err) {
           _didIteratorError2 = true;
@@ -3352,6 +3351,54 @@ ne.Actor = (function () {
             }
           }
         }
+      }
+    }, {
+      key: "callDoneCallbacks",
+      value: function callDoneCallbacks() {
+        if (!this._doneCall) {
+          this._doneCall = true;
+          this._whenDone.forEach(function (callback) {
+            return callback();
+          });
+        }
+      }
+    }, {
+      key: "updateValues",
+      value: function updateValues() {
+        var _iteratorNormalCompletion3 = true;
+        var _didIteratorError3 = false;
+        var _iteratorError3 = undefined;
+
+        try {
+          for (var _iterator3 = Object.keys(this._properties)[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+            var k = _step3.value;
+
+            var init = this._initialValues[k];
+            var final = this._properties[k];
+            var current = this._subject[k];
+            var v = this._type(init, final, current, this._totalTime, this._time);
+            this._subject[k] = v;
+          }
+        } catch (err) {
+          _didIteratorError3 = true;
+          _iteratorError3 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion3 && _iterator3.return) {
+              _iterator3.return();
+            }
+          } finally {
+            if (_didIteratorError3) {
+              throw _iteratorError3;
+            }
+          }
+        }
+      }
+    }, {
+      key: "done",
+      value: function done(callback) {
+        this._whenDone.push(callback);
+        return this;
       }
     }, {
       key: "properties",
@@ -3613,10 +3660,11 @@ ne.SpriteBase = (function () {
     }, {
       key: 'generateMatrix',
       value: function generateMatrix(gl) {
-        var mat = ne.Mat3.translation(-this.offset.x * this.parent.parentWidth / this.texture.width, -this.offset.y * this.parent.parentHeight / this.texture.height);
-        mat.multiply(ne.Mat3.scale(this.scale.x, this.scale.y));
-        mat.multiply(ne.Mat3.rotation(this.angle * Math.PI / 180));
-        mat.multiply(ne.Mat3.translation(this.position.x * this.parent.parentWidth / this.texture.width, this.position.y * this.parent.parentHeight / this.texture.height));
+        var w = this.frame.width;
+        var h = this.frame.height;
+        var pw = this.parent.parentWidth;
+        var ph = this.parent.parentHeight;
+        var mat = ne.Mat3.translation(-this.offset.x * pw / w, -this.offset.y * ph / h).scale(this.scale.x, this.scale.y).rotate(this.angle * Math.PI / 180).translate(this.position.x * pw / w, this.position.y * ph / h);
         return mat;
       }
     }, {
@@ -4061,7 +4109,7 @@ ne.SpriteShader = (function () {
     _createClass(SpriteShader, [{
       key: 'vertex',
       value: function vertex() {
-        return '\n        // rotates the texture\n        vec2 point = a_position;\n        vec2 size = u_resolution * u_resolution / u_textureSize;\n        vec2 tpos = a_position * u_frame.zw / u_textureSize;\n        vec2 position = (u_matrix * vec3(tpos, 1.0)).xy / size;\n        // convert from 0->1 to 0->2\n        vec2 zeroToTwo = position * 2.0;\n        // convert from 0->2 to -1->+1 (clipspace)\n        vec2 clipSpace = zeroToTwo - 1.0;\n        v_texCoord = a_texCoord;\n        gl_Position = vec4(clipSpace * vec2(1, -1.0), 0, 1.0);\n      ';
+        return '\n        // rotates the texture\n        vec2 point = a_position;\n        vec2 size = u_resolution * u_resolution / u_frame.zw;\n\n        vec2 position = (u_matrix * vec3(a_position, 1.0)).xy / size;\n        // convert from 0->1 to 0->2\n        vec2 zeroToTwo = position * 2.0;\n        // convert from 0->2 to -1->+1 (clipspace)\n        vec2 clipSpace = zeroToTwo - 1.0;\n        v_texCoord = a_texCoord;\n        gl_Position = vec4(clipSpace * vec2(1, -1.0), 0, 1.0);\n      ';
       }
     }, {
       key: 'fragment',

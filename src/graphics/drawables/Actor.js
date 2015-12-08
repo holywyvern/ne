@@ -16,8 +16,7 @@ ne.Actor = (function () {
         type = this.defaultTwigMode();
       }
       if (time <= 0) {
-        this._setProperties(props);
-        return;
+        time = 0;
       }
       this._twigs.push(new Twig(this, props, time, type));
     }
@@ -68,6 +67,8 @@ ne.Actor = (function () {
       this._type          = type;
       this._subject       = subject;
       this._initialValues = this.createInitialValues(subject, props);
+      this._whenDone      = [];
+      this._doneCall      = false;
     }
 
     createInitialValues(subject, props) {
@@ -81,13 +82,28 @@ ne.Actor = (function () {
     update(delta) {
       this._time = this._time - delta;
       if (this._time > 0) {
-        this.updateFunctions();
+        this.updateValues();
         return false;
       }
+      this.setFinalValues();
+      this.callDoneCallbacks();
       return true;
     }
 
-    updateFunctions() {
+    setFinalValues() {
+      for (var k of Object.keys(this._properties)) {
+        this._subject[k] = this._properties[k];
+      }
+    }
+
+    callDoneCallbacks() {
+      if (!this._doneCall) {
+        this._doneCall = true;
+        this._whenDone.forEach((callback) => callback() );
+      }
+    }
+
+    updateValues() {
       for (var k of Object.keys(this._properties)) {
         var init = this._initialValues[k];
         var final = this._properties[k];
@@ -95,6 +111,11 @@ ne.Actor = (function () {
         var v = this._type(init, final, current, this._totalTime, this._time);
         this._subject[k] = v;
       }
+    }
+
+    done(callback) {
+      this._whenDone.push(callback);
+      return this;
     }
 
   }
