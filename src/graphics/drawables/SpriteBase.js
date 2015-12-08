@@ -14,9 +14,16 @@ ne.SpriteBase = (function () {
       this.position = new ne.Point();
       this.offset   = new ne.Point();
       this.origin   = new ne.Point();
-      this.frame    = new ne.Rect();
       this.tone     = new ne.Tone();
       this.angle    = 0;
+    }
+
+    get frame() {
+      return this.shader.uniformValues.u_frame;
+    }
+
+    set frame(value) {
+      this.shader.uniformValues.u_frame = value;
     }
 
     get texture() {
@@ -66,7 +73,7 @@ ne.SpriteBase = (function () {
     updateShader(gl, rect) {
       this.shader.updateAttribute(gl, 'a_texCoord');
       this.shader.uniformValues.u_resolution.set(this.parent.parentWidth, this.parent.parentHeight);
-      this.shader.uniformValues.u_textureSize.set(this.frame.w, this.frame.h);
+      this.shader.uniformValues.u_textureSize.set(this.texture.width, this.texture.height);
       this.shader.uniformValues.u_matrix      = this.generateMatrix(gl);
       this.shader.uniformValues.u_tone        = this.tone;
       this.shader.update(gl);
@@ -81,7 +88,7 @@ ne.SpriteBase = (function () {
       mat.multiply(ne.Mat3.rotation(this.angle * Math.PI / 180) );
       mat.multiply(ne.Mat3.translation(
         this.position.x * this.parent.parentWidth / this.texture.width,
-        this.position.y * this.parent.parentHeight  / this.texture.width
+        this.position.y * this.parent.parentHeight  / this.texture.height
       ) );
       return mat;
     }

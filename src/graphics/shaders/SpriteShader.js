@@ -9,7 +9,8 @@ ne.SpriteShader = (function () {
         // rotates the texture
         vec2 point = a_position;
         vec2 size = u_resolution * u_resolution / u_textureSize;
-        vec2 position = (u_matrix * vec3(a_position, 1.0)).xy / size;
+        vec2 tpos = a_position * u_frame.zw / u_textureSize;
+        vec2 position = (u_matrix * vec3(tpos, 1.0)).xy / size;
         // convert from 0->1 to 0->2
         vec2 zeroToTwo = position * 2.0;
         // convert from 0->2 to -1->+1 (clipspace)
@@ -43,7 +44,8 @@ ne.SpriteShader = (function () {
         u_textureSize: 'vec2',
         u_resolution:  'vec2',
         u_tone: 'tone',
-        u_matrix: 'mat3'
+        u_matrix: 'mat3',
+        u_frame: 'rect'
       };
     }
 

@@ -7,15 +7,20 @@ scene.load = function (game, loader) {
 }
 
 scene.start = function (game, loader) {
+  function randomInt(min, max) {
+    return Math.floor( Math.random() * (max - min) + min);
+  }
   this._sprites = [];
   this._motions = {'default': [0, 1, 2, 3, 2, 1]};
-  for (var i = 0; i < 1; ++i) {
+  for (var i = 0; i < 500; ++i) {
     var sprite = new ne.SpriteSheet();
     sprite.motions = this._motions;
     sprite.rows = 1;
     sprite.columns = 4;
     sprite.texture = loader.texture('test');
-    sprite.startMotion('default');
+    sprite.startMotion('default', 150);
+    sprite.x = randomInt(0, game.width - 64);
+    sprite.y = randomInt(0, game.height - 64);
     this.add(sprite);
     this._sprites.push(sprite);
   }
@@ -53,10 +58,6 @@ for (var i = 0; i < length; ++i) {
   spr.frame.set(0, 0, spr.texture.width, spr.texture.height);
   spr.tone = ne.Tone.RANDOM;
   scene.add(spr);
-}
-
-function randomInt(min, max) {
-  return Math.floor( Math.random() * (max - min) + min);
 }
 
 function randomNumber(min, max) {

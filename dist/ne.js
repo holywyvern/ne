@@ -8,26 +8,75 @@
 // MIT license
 
 (function () {
-    var lastTime = 0;
-    var vendors = ['ms', 'moz', 'webkit', 'o'];
-    for (var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
-        window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
-        window.cancelAnimationFrame = window[vendors[x] + 'CancelAnimationFrame'] || window[vendors[x] + 'CancelRequestAnimationFrame'];
+  var lastTime = 0;
+  var vendors = ['ms', 'moz', 'webkit', 'o'];
+  for (var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+    window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
+    window.cancelAnimationFrame = window[vendors[x] + 'CancelAnimationFrame'] || window[vendors[x] + 'CancelRequestAnimationFrame'];
+  }
+
+  if (!window.requestAnimationFrame) window.requestAnimationFrame = function (callback, element) {
+    var currTime = new Date().getTime();
+    var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+    var id = window.setTimeout(function () {
+      callback(currTime + timeToCall);
+    }, timeToCall);
+    lastTime = currTime + timeToCall;
+    return id;
+  };
+
+  if (!window.cancelAnimationFrame) window.cancelAnimationFrame = function (id) {
+    clearTimeout(id);
+  };
+})();
+
+// Closure
+(function () {
+  /**
+   * Decimal adjustment of a number.
+   *
+   * @param {String}  type  The type of adjustment.
+   * @param {Number}  value The number.
+   * @param {Integer} exp   The exponent (the 10 logarithm of the adjustment base).
+   * @returns {Number} The adjusted value.
+   */
+  function decimalAdjust(type, value, exp) {
+    // If the exp is undefined or zero...
+    if (typeof exp === 'undefined' || +exp === 0) {
+      return Math[type](value);
     }
+    value = +value;
+    exp = +exp;
+    // If the value is not a number or the exp is not an integer...
+    if (isNaN(value) || !(typeof exp === 'number' && exp % 1 === 0)) {
+      return NaN;
+    }
+    // Shift
+    value = value.toString().split('e');
+    value = Math[type](+(value[0] + 'e' + (value[1] ? +value[1] - exp : -exp)));
+    // Shift back
+    value = value.toString().split('e');
+    return +(value[0] + 'e' + (value[1] ? +value[1] + exp : exp));
+  }
 
-    if (!window.requestAnimationFrame) window.requestAnimationFrame = function (callback, element) {
-        var currTime = new Date().getTime();
-        var timeToCall = Math.max(0, 16 - (currTime - lastTime));
-        var id = window.setTimeout(function () {
-            callback(currTime + timeToCall);
-        }, timeToCall);
-        lastTime = currTime + timeToCall;
-        return id;
+  // Decimal round
+  if (!Math.round10) {
+    Math.round10 = function (value, exp) {
+      return decimalAdjust('round', value, exp);
     };
-
-    if (!window.cancelAnimationFrame) window.cancelAnimationFrame = function (id) {
-        clearTimeout(id);
+  }
+  // Decimal floor
+  if (!Math.floor10) {
+    Math.floor10 = function (value, exp) {
+      return decimalAdjust('floor', value, exp);
     };
+  }
+  // Decimal ceil
+  if (!Math.ceil10) {
+    Math.ceil10 = function (value, exp) {
+      return decimalAdjust('ceil', value, exp);
+    };
+  }
 })();
 "use strict";
 
@@ -3512,7 +3561,6 @@ ne.SpriteBase = (function () {
         this.position = new ne.Point();
         this.offset = new ne.Point();
         this.origin = new ne.Point();
-        this.frame = new ne.Rect();
         this.tone = new ne.Tone();
         this.angle = 0;
       }
@@ -3557,7 +3605,7 @@ ne.SpriteBase = (function () {
       value: function updateShader(gl, rect) {
         this.shader.updateAttribute(gl, 'a_texCoord');
         this.shader.uniformValues.u_resolution.set(this.parent.parentWidth, this.parent.parentHeight);
-        this.shader.uniformValues.u_textureSize.set(this.frame.w, this.frame.h);
+        this.shader.uniformValues.u_textureSize.set(this.texture.width, this.texture.height);
         this.shader.uniformValues.u_matrix = this.generateMatrix(gl);
         this.shader.uniformValues.u_tone = this.tone;
         this.shader.update(gl);
@@ -3568,8 +3616,16 @@ ne.SpriteBase = (function () {
         var mat = ne.Mat3.translation(-this.offset.x * this.parent.parentWidth / this.texture.width, -this.offset.y * this.parent.parentHeight / this.texture.height);
         mat.multiply(ne.Mat3.scale(this.scale.x, this.scale.y));
         mat.multiply(ne.Mat3.rotation(this.angle * Math.PI / 180));
-        mat.multiply(ne.Mat3.translation(this.position.x * this.parent.parentWidth / this.texture.width, this.position.y * this.parent.parentHeight / this.texture.width));
+        mat.multiply(ne.Mat3.translation(this.position.x * this.parent.parentWidth / this.texture.width, this.position.y * this.parent.parentHeight / this.texture.height));
         return mat;
+      }
+    }, {
+      key: 'frame',
+      get: function get() {
+        return this.shader.uniformValues.u_frame;
+      },
+      set: function set(value) {
+        this.shader.uniformValues.u_frame = value;
       }
     }, {
       key: 'texture',
@@ -3987,7 +4043,7 @@ ne.SpriteShader = (function () {
     _createClass(SpriteShader, [{
       key: 'vertex',
       value: function vertex() {
-        return '\n        // rotates the texture\n        vec2 point = a_position;\n        vec2 size = u_resolution * u_resolution / u_textureSize;\n        vec2 position = (u_matrix * vec3(a_position, 1.0)).xy / size;\n        // convert from 0->1 to 0->2\n        vec2 zeroToTwo = position * 2.0;\n        // convert from 0->2 to -1->+1 (clipspace)\n        vec2 clipSpace = zeroToTwo - 1.0;\n        v_texCoord = a_texCoord;\n        gl_Position = vec4(clipSpace * vec2(1, -1.0), 0, 1.0);\n      ';
+        return '\n        // rotates the texture\n        vec2 point = a_position;\n        vec2 size = u_resolution * u_resolution / u_textureSize;\n        vec2 tpos = a_position * u_frame.zw / u_textureSize;\n        vec2 position = (u_matrix * vec3(tpos, 1.0)).xy / size;\n        // convert from 0->1 to 0->2\n        vec2 zeroToTwo = position * 2.0;\n        // convert from 0->2 to -1->+1 (clipspace)\n        vec2 clipSpace = zeroToTwo - 1.0;\n        v_texCoord = a_texCoord;\n        gl_Position = vec4(clipSpace * vec2(1, -1.0), 0, 1.0);\n      ';
       }
     }, {
       key: 'fragment',
@@ -4011,7 +4067,8 @@ ne.SpriteShader = (function () {
           u_textureSize: 'vec2',
           u_resolution: 'vec2',
           u_tone: 'tone',
-          u_matrix: 'mat3'
+          u_matrix: 'mat3',
+          u_frame: 'rect'
         };
       }
     }, {
