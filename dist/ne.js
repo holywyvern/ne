@@ -3622,9 +3622,15 @@ ne.SpriteBase = (function () {
           this.useShader(gl);
           this.applyBlendMode(gl);
           this.updateParent(gl);
-          this.useTexture(gl);
-          ne.tools.gl.draw(gl);
+          this.prepareAndRender(gl);
         }
+      }
+    }, {
+      key: 'prepareAndRender',
+      value: function prepareAndRender(gl) {
+        var rect = this.useTexture(gl);
+        this.updateShader(gl, rect);
+        ne.tools.gl.draw(gl);
       }
     }, {
       key: 'applyBlendMode',
@@ -3648,8 +3654,7 @@ ne.SpriteBase = (function () {
     }, {
       key: 'useTexture',
       value: function useTexture(gl) {
-        var rect = this.texture.bind(gl, this.frame);
-        this.updateShader(gl, rect);
+        return this.texture.bind(gl, this.frame);
       }
     }, {
       key: 'updateShader',
@@ -3964,6 +3969,107 @@ ne.SpriteSheet = (function () {
 })();
 'use strict';
 
+var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; })();
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+ne.Plane = (function () {
+  var Plane = (function (_ne$Sprite) {
+    _inherits(Plane, _ne$Sprite);
+
+    function Plane() {
+      _classCallCheck(this, Plane);
+
+      return _possibleConstructorReturn(this, Object.getPrototypeOf(Plane).apply(this, arguments));
+    }
+
+    _createClass(Plane, [{
+      key: 'initMembers',
+      value: function initMembers() {
+        _get(Object.getPrototypeOf(Plane.prototype), 'initMembers', this).call(this);
+        this.shader = ne.PlaneShader.INSTANCE;
+      }
+    }, {
+      key: 'prepareAndRender',
+      value: function prepareAndRender(gl) {
+        var rect = this.useTexture(gl);
+        this.updateShader(gl, rect);
+        var max = Math.max(this.parent.parentWidth, this.parent.parentHeight);
+        this._untiledPosition = this.position.clone();
+        this.renderTiles(gl, max);
+        this.position = this._untiledPosition;
+      }
+    }, {
+      key: 'renderTiles',
+      value: function renderTiles(gl, max) {
+        var _calculateTileValues = this.calculateTileValues();
+
+        var _calculateTileValues2 = _slicedToArray(_calculateTileValues, 4);
+
+        var sw = _calculateTileValues2[0];
+        var sh = _calculateTileValues2[1];
+        var s = _calculateTileValues2[2];
+        var c = _calculateTileValues2[3];
+
+        var xtimes = Math.floor(max / sw) + 3;
+        var ytimes = Math.floor(max / sh) + 3;
+        for (var x = 0; x < xtimes; ++x) {
+          for (var y = 0; y < ytimes; ++y) {
+            this.drawTile(gl, x, y, sw, sh, s, c);
+          }
+        }
+      }
+    }, {
+      key: 'calculateTileValues',
+      value: function calculateTileValues() {
+        var sx = this.scale.x * this.frame.width;
+        var sy = this.scale.y * this.frame.height;
+        var r = this.angle * Math.PI / 180;
+        var s = Math.sin(r);
+        var c = Math.cos(r);
+        var sw = sx * c * c + sy * s * s;
+        var sh = sy * c * c + sx * s * s;
+        return [sw, sh, s, c];
+      }
+    }, {
+      key: 'drawTile',
+      value: function drawTile(gl, x, y, sx, sy, s, c) {
+        function mod(a, b) {
+          return (a % b + b) % b;
+        }
+        var px = this._untiledPosition.x * c * c - this._untiledPosition.y * s * s;
+        var py = this._untiledPosition.y * c * c - this._untiledPosition.x * s * s;
+        this.position.x = mod(px, sx) + sx * (x - 1);
+        this.position.y = mod(py, sy) + sy * (y - 1);
+        this.shader.uniformValues.u_matrix = this.generateMatrix(gl);
+        this.shader.update(gl);
+        ne.tools.gl.draw(gl);
+      }
+    }, {
+      key: 'updateShader',
+      value: function updateShader(gl, rect) {
+        this.shader.updateAttribute(gl, 'a_texCoord');
+        this.shader.uniformValues.u_resolution.set(this.parent.parentWidth, this.parent.parentHeight);
+        this.shader.uniformValues.u_textureSize.set(this.texture.width, this.texture.height);
+        this.shader.uniformValues.u_tone = this.tone;
+      }
+    }]);
+
+    return Plane;
+  })(ne.Sprite);
+
+  return Plane;
+})();
+'use strict';
+
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
@@ -4160,6 +4266,44 @@ ne.SpriteShader = (function () {
 
     return SpriteShader;
   })(ne.Shader);
+})();
+"use strict";
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+ne.PlaneShader = (function () {
+
+  var _shader = null;
+
+  var PlaneShader = (function (_ne$SpriteShader) {
+    _inherits(PlaneShader, _ne$SpriteShader);
+
+    function PlaneShader() {
+      _classCallCheck(this, PlaneShader);
+
+      return _possibleConstructorReturn(this, Object.getPrototypeOf(PlaneShader).apply(this, arguments));
+    }
+
+    _createClass(PlaneShader, null, [{
+      key: "INSTANCE",
+      get: function get() {
+        if (_shader === null) {
+          _shader = new PlaneShader();
+        }
+        return _shader;
+      }
+    }]);
+
+    return PlaneShader;
+  })(ne.SpriteShader);
+
+  return PlaneShader;
 })();
 "use strict";
 

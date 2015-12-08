@@ -49,9 +49,11 @@ var $SCRIPTS = [
   "src/graphics/drawables/SpriteBase.js",
   "src/graphics/drawables/Sprite.js",
   "src/graphics/drawables/SpriteSheet.js",
+  "src/graphics/drawables/Plane.js",
   "src/graphics/drawables/Scene.js",
   // Shader collection
   "src/graphics/shaders/SpriteShader.js",
+  "src/graphics/shaders/PlaneShader.js",
   "src/graphics/shaders/SceneShader.js"
 ];
 
@@ -77,5 +79,12 @@ gulp.task("default", ["compile"], function () {
 });
 
 gulp.task('watch', function(){
-  gulp.watch('src/**/*.js', ['compile', 'default']);
+  function doThis() {
+    try {
+      gulp.watch('src/**/*.js', ['compile', 'default']);
+    } catch (e) {
+      doThis();
+    }
+  }
+  doThis();
 });

@@ -4,9 +4,15 @@ var scene = new ne.Scene();
 
 scene.load = function (game, loader) {
   loader.loadPixmap('test', 'test/sprite.png');
+  loader.loadPixmap('bg', 'test/background.png');
 }
 
 scene.start = function (game, loader) {
+  this._background = new ne.Plane();
+  this._background.texture = loader.texture('bg');
+  //this._background.scale.set(0.5, 2);
+  this._background.angle = 90;
+  this.add(this._background);
   var whenDone = (sprite) => {
     var dx = randomInt(0, game.width - 64);
     var dy = randomInt(0, game.height - 64);
@@ -15,6 +21,9 @@ scene.start = function (game, loader) {
     var d = Math.sqrt(dx * dx + dy * dy);
     var gw = Math.sqrt(game.width * game.width + game.height * game.height);
     sprite.move(-dx, game.height + dy, 10000 + d * 10000 / gw ).done(whenDone);
+  };
+  var loopBg = (bg) => {
+    bg.move(bg.x + 100, bg.y + 100, 1000).done(loopBg);
   };
   function randomInt(min, max) {
     return Math.floor( Math.random() * (max - min) + min);
@@ -33,6 +42,7 @@ scene.start = function (game, loader) {
     this.add(sprite);
     this._sprites.push(sprite);
   }
+  loopBg(this._background);
 }
 /*
 sprites = [];

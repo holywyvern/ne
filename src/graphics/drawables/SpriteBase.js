@@ -25,7 +25,7 @@ ne.SpriteBase = (function () {
     set frame(value) {
       this.shader.uniformValues.u_frame = value;
     }
-    
+
     get texture() {
       return this._texture;
     }
@@ -44,9 +44,14 @@ ne.SpriteBase = (function () {
         this.useShader(gl);
         this.applyBlendMode(gl);
         this.updateParent(gl);
-        this.useTexture(gl);
-        ne.tools.gl.draw(gl);
+        this.prepareAndRender(gl);
       }
+    }
+
+    prepareAndRender(gl) {
+      var rect = this.useTexture(gl);
+      this.updateShader(gl, rect);
+      ne.tools.gl.draw(gl);
     }
 
     applyBlendMode(gl) {
@@ -66,8 +71,7 @@ ne.SpriteBase = (function () {
     }
 
     useTexture(gl) {
-      var rect = this.texture.bind(gl, this.frame);
-      this.updateShader(gl, rect);
+      return this.texture.bind(gl, this.frame);
     }
 
     updateShader(gl, rect) {
