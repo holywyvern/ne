@@ -3771,6 +3771,24 @@ ne.Sprite = (function () {
       set: function set(value) {
         this.toneGray = value;
       }
+    }, {
+      key: "mirrorX",
+      get: function get() {
+        return this.scale.x < 0;
+      },
+      set: function set(value) {
+        var sign = value ? -1 : 1;
+        this.scale.x = sign * Math.abs(this.scale.x);
+      }
+    }, {
+      key: "mirrorY",
+      get: function get() {
+        return this.scale.y < 0;
+      },
+      set: function set(value) {
+        var sign = value ? -1 : 1;
+        this.scale.y = sign * Math.abs(this.scale.y);
+      }
     }]);
 
     return Sprite;

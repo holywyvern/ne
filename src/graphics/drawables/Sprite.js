@@ -94,6 +94,24 @@ ne.Sprite = (function () {
         this.twig({toneRed: tone.red, toneGreen: tone.green, toneBlue: tone.blue, toneGray: tone.gray }, time, mode);
     }
 
+    get mirrorX() {
+      return this.scale.x < 0;
+    }
+
+    set mirrorX(value) {
+      var sign = value ? -1 : 1;
+      this.scale.x = sign * Math.abs(this.scale.x);
+    }
+
+    get mirrorY() {
+      return this.scale.y < 0;
+    }
+
+    set mirrorY(value) {
+      var sign = value ? -1 : 1;
+      this.scale.y = sign * Math.abs(this.scale.y);
+    }
+
   }
 
   return Sprite;
