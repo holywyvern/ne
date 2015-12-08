@@ -7,6 +7,15 @@ scene.load = function (game, loader) {
 }
 
 scene.start = function (game, loader) {
+  var whenDone = (sprite) => {
+    var dx = randomInt(0, game.width - 64);
+    var dy = randomInt(0, game.height - 64);
+    sprite.x = dx + game.width;
+    sprite.y = dy - game.height;
+    var d = Math.sqrt(dx * dx + dy * dy);
+    var gw = Math.sqrt(game.width * game.width + game.height * game.height);
+    sprite.move(-dx, game.height + dy, 10000 + d * 10000 / gw ).done(whenDone);
+  };
   function randomInt(min, max) {
     return Math.floor( Math.random() * (max - min) + min);
   }
@@ -19,13 +28,8 @@ scene.start = function (game, loader) {
     sprite.columns = 3;
     sprite.texture = loader.texture('test');
     sprite.startMotion('default', 150);
-    sprite.x = randomInt(0, game.width - 64);
-    sprite.y = randomInt(0, game.height - 64);
-    sprite.angle = [0, 90, 180, 270][i % 4];
-    sprite.twig({angle: sprite.angle + 360}, 10000);
-    sprite.ox = sprite.texture.width / 6;
-    sprite.oy = sprite.texture.height / 2;
     sprite.tone = ne.Tone.RANDOM;
+    whenDone(sprite);
     this.add(sprite);
     this._sprites.push(sprite);
   }

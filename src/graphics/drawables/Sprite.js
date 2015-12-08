@@ -83,15 +83,15 @@ ne.Sprite = (function () {
     }
 
     move(x, y, time=0, mode=null) {
-      this.twig({x: x, y: y}, time, mode);
+      return this.twig({x: x, y: y}, time, mode);
     }
 
     rotate(angle, time=0, mode=null) {
-      this.twig({angle: angle}, time, mode);
+      return this.twig({angle: angle}, time, mode);
     }
 
     tonalize(tone, time=0, mode=null) {
-        this.twig({toneRed: tone.red, toneGreen: tone.green, toneBlue: tone.blue, toneGray: tone.gray }, time, mode);
+      return this.twig({toneRed: tone.red, toneGreen: tone.green, toneBlue: tone.blue, toneGray: tone.gray }, time, mode);
     }
 
     get mirrorX() {

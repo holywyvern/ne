@@ -3217,7 +3217,9 @@ ne.Actor = (function () {
         if (time <= 0) {
           time = 0;
         }
-        this._twigs.push(new Twig(this, props, time, type));
+        var twig = new Twig(this, props, time, type);
+        this._twigs.push(twig);
+        return twig;
       }
     }, {
       key: "defaultTwigMode",
@@ -3355,10 +3357,12 @@ ne.Actor = (function () {
     }, {
       key: "callDoneCallbacks",
       value: function callDoneCallbacks() {
+        var _this4 = this;
+
         if (!this._doneCall) {
           this._doneCall = true;
           this._whenDone.forEach(function (callback) {
-            return callback();
+            return callback(_this4._subject);
           });
         }
       }
@@ -3719,7 +3723,7 @@ ne.Sprite = (function () {
         var time = arguments.length <= 2 || arguments[2] === undefined ? 0 : arguments[2];
         var mode = arguments.length <= 3 || arguments[3] === undefined ? null : arguments[3];
 
-        this.twig({ x: x, y: y }, time, mode);
+        return this.twig({ x: x, y: y }, time, mode);
       }
     }, {
       key: "rotate",
@@ -3727,7 +3731,7 @@ ne.Sprite = (function () {
         var time = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
         var mode = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
 
-        this.twig({ angle: angle }, time, mode);
+        return this.twig({ angle: angle }, time, mode);
       }
     }, {
       key: "tonalize",
@@ -3735,7 +3739,7 @@ ne.Sprite = (function () {
         var time = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
         var mode = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
 
-        this.twig({ toneRed: tone.red, toneGreen: tone.green, toneBlue: tone.blue, toneGray: tone.gray }, time, mode);
+        return this.twig({ toneRed: tone.red, toneGreen: tone.green, toneBlue: tone.blue, toneGray: tone.gray }, time, mode);
       }
     }, {
       key: "x",

@@ -18,7 +18,9 @@ ne.Actor = (function () {
       if (time <= 0) {
         time = 0;
       }
-      this._twigs.push(new Twig(this, props, time, type));
+      var twig = new Twig(this, props, time, type);
+      this._twigs.push(twig);
+      return twig;
     }
 
     defaultTwigMode() {
@@ -99,7 +101,7 @@ ne.Actor = (function () {
     callDoneCallbacks() {
       if (!this._doneCall) {
         this._doneCall = true;
-        this._whenDone.forEach((callback) => callback() );
+        this._whenDone.forEach((callback) => callback(this._subject) );
       }
     }
 
