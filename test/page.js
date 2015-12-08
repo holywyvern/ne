@@ -11,7 +11,7 @@ scene.start = function (game, loader) {
   this._background = new ne.Plane();
   this._background.texture = loader.texture('bg');
   //this._background.scale.set(0.5, 2);
-  this._background.angle = 90;
+  this._background.angle = 0;
   this.add(this._background);
   var whenDone = (sprite) => {
     var dx = randomInt(0, game.width - 64);
@@ -30,7 +30,7 @@ scene.start = function (game, loader) {
   }
   this._sprites = [];
   this._motions = {'default': [1, 0, 1, 2]};
-  for (var i = 0; i < 500; ++i) {
+  for (var i = 0; i < 100; ++i) {
     var sprite = new ne.SpriteSheet();
     sprite.motions = this._motions;
     sprite.rows = 1;
