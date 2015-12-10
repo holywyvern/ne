@@ -1,38 +1,29 @@
 {
-  "name": "nova-engine",
+  "name": "ne",
   "version": "1.0.0",
-  "description": "A game engine than works with the nova editor",
+  "description": "A game utility library",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/holywyvern/ne.git"
-  },
   "keywords": [
-    "game",
-    "engine",
-    "javascript",
-    "nova"
+    "Game",
+    "library",
+    "nova",
+    "engine"
   ],
-  "author": "Ramiro Rojo <ramiro.rojo@gmail.com>",
+  "author": "Ramiro Rojo <ramiro.rojo.cretta@gmail.com>",
   "license": "APACHE 2.0",
-  "bugs": {
-    "url": "https://github.com/holywyvern/ne/issues"
-  },
-  "homepage": "https://github.com/holywyvern/ne",
   "devDependencies": {
-    "babel-preset-es2015": "^6.1.18",
+    "bower": "^1.7.0",
     "gulp": "^3.9.0",
-    "gulp-babel": "^6.1.1",
-    "gulp-cached": "^1.1.0",
     "gulp-concat": "^2.6.0",
     "gulp-minify": "0.0.5",
-    "gulp-remember": "^0.3.0",
-    "gulp-sourcemaps": "^1.6.0"
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-typescript": "^2.10.0",
+    "merge2": "^0.3.6"
   },
   "dependencies": {
-    "babel-polyfill": "^6.2.0"
+    "opentype.js": "^0.6.0"
   }
 }
