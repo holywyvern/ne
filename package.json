@@ -4,7 +4,11 @@
   "description": "A game utility library",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/holywyvern/ne.git"
   },
   "keywords": [
     "Game",
@@ -14,6 +18,10 @@
   ],
   "author": "Ramiro Rojo <ramiro.rojo.cretta@gmail.com>",
   "license": "APACHE 2.0",
+  "bugs": {
+    "url": "https://github.com/holywyvern/ne/issues"
+  },
+  "homepage": "https://github.com/holywyvern/ne",
   "devDependencies": {
     "bower": "^1.7.0",
     "gulp": "^3.9.0",
@@ -21,7 +29,8 @@
     "gulp-minify": "0.0.5",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-typescript": "^2.10.0",
-    "merge2": "^0.3.6"
+    "merge2": "^0.3.6",
+    "pegjs": "^0.9.0"
   },
   "dependencies": {
     "opentype.js": "^0.6.0"
