@@ -34,14 +34,22 @@ module ne.utils {
 
   }
 
+  export declare type LoaderCallback = (loader: Loader) => any;
+
   export class Loader {
 
     private _loadStart: boolean;
     private _toLoad: number;
+    private _callbacks : LoaderCallback[];
 
     constructor() {
       this._loadStart = false;
       this._toLoad    = 0;
+      this._callbacks = [];
+    }
+
+    done(callback) {
+      this._callbacks.push(callback);
     }
 
     start() {
@@ -57,6 +65,7 @@ module ne.utils {
     }
 
     callDone() {
+      this._callbacks.forEach((callback) => callback(this));
       return this;
     }
 
@@ -112,7 +121,6 @@ module ne.utils {
       } else {
         this._prepareLegacyAudioRequest(url);
       }
-
 
     }
 
