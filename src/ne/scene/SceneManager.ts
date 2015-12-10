@@ -1,4 +1,4 @@
-module ne {
+module ne.scene {
 
   export class SceneManager {
 
