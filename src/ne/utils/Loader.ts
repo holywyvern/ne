@@ -4,12 +4,21 @@ module ne.utils {
 
   var _pixmapCache : { [ s: string ]: graphics.Pixmap } = {};
   var _fontCache   : { [ s: string ]: any }             = {};
-  var _audioCache  : { [ s: string]: audio.AudioFile  } = {};
+  var _audioCache  : { [ s: string]: audio.Buffer  }    = {};
 
   var cls = AudioContext || (<any>window).AudioContext || (<any>window).webkitAudioContext;
-  var AC : AudioContext = new cls();
 
-  export class LoaderView {
+  var AC : AudioContext = null;
+
+  if (cls) {
+    AC = new cls();
+  }
+
+  export class CacheFinder {
+
+    constructor(loader:Loader) {
+
+    }
 
     pixmap(url:string) {
       return _pixmapCache[url];
@@ -17,6 +26,10 @@ module ne.utils {
 
     font(url:string) {
       return _fontCache[url];
+    }
+
+    audio(url) {
+      return _audioCache[url];
     }
 
   }
@@ -94,16 +107,35 @@ module ne.utils {
         return;
       }
       ++this._toLoad;
+      if (AC) {
+        this._prepareWebAudioRequest(url);
+      } else {
+        this._prepareLegacyAudioRequest(url);
+      }
+
+
+    }
+
+    _prepareLegacyAudioRequest(url) {
+      var audioTag = document.createElement('audio');
+      audioTag.onload = function () {
+        _audioCache[url] = new audio.LegacyBuffer(audioTag);
+        this._checkLoad();
+      }
+      audioTag.onerror = function () {
+        _audioCache[url] = null;
+        this._checkLoad();
+      }
+      audioTag.src = url;
+    }
+
+    _prepareWebAudioRequest(url) {
       var request = new XMLHttpRequest();
       request.open('GET', url, true);
       request.responseType = 'arraybuffer';
-      this._prepareAudioRequest(url, request);
-    }
-
-    _prepareAudioRequest(url, request) {
       request.onload = () => {
         AC.decodeAudioData(request.response, function(buffer) {
-          _audioCache[url] = new audio.AudioFile(AC, buffer);
+          _audioCache[url] = new audio.WebAudioBuffer(AC, buffer);
           this._checkLoad();
         });
       }
@@ -115,8 +147,8 @@ module ne.utils {
       request.send();
     }
 
-    get view() {
-      return new LoaderView();
+    get cache() {
+      return new CacheFinder(this);
     }
 
     _checkLoad() {
