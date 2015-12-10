@@ -5,6 +5,7 @@ module ne.utils {
   var _pixmapCache : { [ s: string ]: graphics.Pixmap } = {};
   var _fontCache   : { [ s: string ]: any }             = {};
   var _audioCache  : { [ s: string]: audio.Buffer  }    = {};
+  var _jsonCache   : { [ s: string]: any }              = {};
 
   var cls = AudioContext || (<any>window).AudioContext || (<any>window).webkitAudioContext;
 
@@ -30,6 +31,10 @@ module ne.utils {
 
     audio(url) {
       return _audioCache[url];
+    }
+
+    json(url) {
+      return _jsonCache[url];
     }
 
   }
@@ -124,6 +129,21 @@ module ne.utils {
 
     }
 
+    json(url) {
+      var request = new XMLHttpRequest();
+      request.open('GET', url, true);
+      request.onload = () => {
+        _jsonCache[url] =  JSON.parse(request.responseText);
+        this._checkLoad();
+      }
+      request.onerror = () => {
+        console.error(`Could not load json file: '${url}'.\n`);
+        _jsonCache[url] = null;
+        this._checkLoad();
+      }
+      request.send();
+    }
+
     _prepareLegacyAudioRequest(url) {
       var audioTag = document.createElement('audio');
       audioTag.onload = function () {
@@ -131,6 +151,7 @@ module ne.utils {
         this._checkLoad();
       }
       audioTag.onerror = function () {
+        console.error(`Could not load audio file: '${url}'.\n`);
         _audioCache[url] = null;
         this._checkLoad();
       }
@@ -164,6 +185,29 @@ module ne.utils {
       if (this.isDone()) {
         this.callDone();
       }
+    }
+
+    static clear() {
+      this.clearPixmaps();
+      this.clearFonts();
+      this.clearAudio();
+      this.clearJson();
+    }
+
+    static clearPixmaps() {
+      _pixmapCache = {};
+    }
+
+    static clearFonts() {
+      _fontCache = {};
+    }
+
+    static clearAudio() {
+      _audioCache = {};
+    }
+
+    static clearJson() {
+      _jsonCache = {};
     }
 
   }

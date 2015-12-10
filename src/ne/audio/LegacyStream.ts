@@ -8,8 +8,7 @@ module ne.audio {
     constructor(buffer : LegacyBuffer) {
       super();
       this._buffer  = buffer;
-      this._tag     = document.createElement('audio');
-      this._tag.src = buffer.src.src;
+      this._tag     = <HTMLAudioElement>buffer.src.cloneNode();
     }
 
     play(loop=false) {
