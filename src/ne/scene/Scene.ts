@@ -1,4 +1,4 @@
-module ne.scene {
+ module ne.scene {
 
   export class Scene implements ne.utils.EventHandler {
 
