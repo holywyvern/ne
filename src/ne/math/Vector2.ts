@@ -78,21 +78,24 @@ module ne.math {
       return this;
     }
 
-    cross(vec) {
-      var data = this.data;
-      var x = data[1] * vec[2] - data[2] * vec[1];
-      var y = data[2] * vec[0] - data[0] * vec[2];
-      var z = data[0] * vec[1] - data[1] * vec[0];
-      data[0] = x;
-      data[1] = y;
-      data[2] = z;
-      return this;
-    }
-
     set (x, y) {
       var data = this.data;
       data[0] = x;
       data[1] = y;
+    }
+
+    normalize() {
+      var data = this.data;
+      var sum = 0;
+      var length = this.length;
+      for (var i = 0; i < length; ++i) {
+        sum += data[i] * data[i];
+      }
+      var vec = Math.sqrt(sum);
+      for (var i = 0; i < length; ++i) {
+        data[i] = data[i] / vec || 0;
+      }
+      return this;
     }
 
   }
