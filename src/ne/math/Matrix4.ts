@@ -137,9 +137,13 @@ module ne.math {
     }
 
     camera(cam: ne.scene.Camera) {
-      var pos = cam.origin.clone();
-      var zAxis = pos.sub(cam.destination).normalize();
-      var xAxis = cam.up.clone().cross(zAxis);
+      return this.lookAt(cam.origin, cam.destination, cam.up);
+    }
+
+    lookAt(from: Vector3, to: Vector3, up: Vector3) {
+      var pos = from.clone();
+      var zAxis = pos.sub(to).normalize();
+      var xAxis = up.clone().cross(zAxis);
       var yAxis = zAxis.clone().cross(xAxis);
       var d = this.data, dx = xAxis.data, dy = yAxis.data, dz = zAxis.data, pd = pos.data;
       d[0]  = dx[0]; d[1]  = dx[1]; d[2]  = dx[2]; d[3]  = 0;

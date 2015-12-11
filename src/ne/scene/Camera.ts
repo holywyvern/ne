@@ -26,8 +26,12 @@ module ne.scene {
       return this._up;
     }
 
-    get view() {
+    get matrix() {
       return this._view.camera(this);
+    }
+
+    get view() {
+      return this.matrix.inverse();
     }
 
   }
