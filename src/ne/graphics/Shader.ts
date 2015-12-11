@@ -1,0 +1,92 @@
+module ne.graphics {
+
+  export class Shader {
+
+    public src        : string;
+    private _glShader : WebGLShader;
+    private _fragment : boolean;
+    private _filter   : Filter;
+
+    constructor(filter: Filter, fragment=false) {
+      this.src = '';
+      this._glShader = null;
+      this._fragment = fragment;
+      this._filter   = filter;
+    }
+
+    get fragment() {
+      return this._fragment;
+    }
+
+    get generatedSource() {
+      var head = this._makeHead();
+      var vars = this._makeVariables();
+      return `${head}${vars}\nvoid main(void) {\n${ this.src }\n}`;
+    }
+
+    destroy(gl: WebGLRenderingContext) {
+      if (this._glShader) {
+        gl.deleteShader(this._glShader);
+        this._glShader = null;
+      }
+    }
+
+    compile(gl: WebGLRenderingContext) {
+      if (this._glShader === null) {
+        var type = this.fragment ? gl.FRAGMENT_SHADER : gl.VERTEX_SHADER;
+        this._glShader = gl.createShader(type);
+        gl.shaderSource(this._glShader, this.generatedSource);
+        gl.compileShader(this._glShader);
+      }
+      return this._glShader;
+    }
+
+    private _makeHead() {
+      return 'precision mediump float;\n';
+    }
+
+    private _makeVariables() {
+      if (this.fragment) {
+        return this._mapFragmentVariables();
+      }
+      return this._mapVertexVariables();
+    }
+
+    private _mapAttributes() {
+      var attr = this._filter.attributes();
+      return Object.keys(attr)
+        .map((k) => {
+          return `${attr[k]} ${k};`;
+        })
+        .join('\n');
+    }
+
+    private _mapUniforms() {
+      var attr = this._filter.uniforms();
+      return Object.keys(attr)
+        .map((k) => {
+          return `${attr[k].type} ${k};`;
+        })
+        .join('\n');
+    }
+
+    private _mapVarying() {
+      var attr = this._filter.varying();
+      return Object.keys(attr)
+        .map((k) => {
+          return `${attr[k]} ${k};`;
+        })
+        .join('\n');
+    }
+
+    private _mapVertexVariables() {
+      return this._mapAttributes() + this._mapUniforms() + this._mapVarying();
+    }
+
+    private _mapFragmentVariables() {
+      return this._mapUniforms() + this._mapVarying();
+    }
+
+  }
+
+}
