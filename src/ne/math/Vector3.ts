@@ -33,6 +33,18 @@ module ne.math {
       data[2] = z;
     }
 
+    cross(vec:Vector3) {
+      var data = this.data;
+      var vd   = vec.data;
+      var x = data[1] * vd[2] - data[2] * vd[1];
+      var y = data[2] * vd[0] - data[0] * vd[2];
+      var z = data[0] * vd[1] - data[1] * vd[0];
+      data[0] = x;
+      data[1] = y;
+      data[2] = z;
+      return this;
+    }
+
   }
 
 }

@@ -131,6 +131,24 @@ module ne.math {
       return mat;
     }
 
+    static camera(cam: ne.scene.Camera) {
+        var mat = new Matrix4();
+        return mat.camera(cam);
+    }
+
+    camera(cam: ne.scene.Camera) {
+      var pos = cam.origin.clone();
+      var zAxis = pos.sub(cam.destination).normalize();
+      var xAxis = cam.up.clone().cross(zAxis);
+      var yAxis = zAxis.clone().cross(xAxis);
+      var d = this.data, dx = xAxis.data, dy = yAxis.data, dz = zAxis.data, pd = pos.data;
+      d[0]  = dx[0]; d[1]  = dx[1]; d[2]  = dx[2]; d[3]  = 0;
+      d[4]  = dy[0]; d[5]  = dy[1]; d[6]  = dy[2]; d[7]  = 0;
+      d[8]  = dz[0]; d[9]  = dz[1]; d[10] = dz[2]; d[11] = 0;
+      d[12] = pd[0]; d[13] = pd[1]; d[14] = pd[2]; d[15] = 0;
+      return this;
+    }
+
     translate(x:number, y:number, z=0) {
       return this.mul(Matrix4.translation(x, y, z));
     }

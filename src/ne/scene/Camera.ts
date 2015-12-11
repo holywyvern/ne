@@ -1,21 +1,33 @@
 module ne.scene {
 
-  class Camera {
+  export class Camera {
 
-    private _position : math.Vector3;
-    private _angle    : math.Vector3;
+    private _origin      : math.Vector3;
+    private _destination : math.Vector3;
+    private _up          : math.Vector3;
+    private _view        : math.Matrix4;
 
     constructor() {
-      this._position = new math.Vector3();
-      this._angle    = new math.Vector3();
+      this._origin      = new math.Vector3();
+      this._destination = new math.Vector3();
+      this._up          = new math.Vector3();
+      this._view        = new math.Matrix4();
     }
 
-    get position() {
-      return this._position;
+    get origin() {
+      return this._origin;
     }
 
-    get angle() {
-      return this._angle;
+    get destination() {
+      return this._destination;
+    }
+
+    get up() {
+      return this._up;
+    }
+
+    get view() {
+      return this._view.camera(this);
     }
 
   }
