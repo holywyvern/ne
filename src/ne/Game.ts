@@ -4,9 +4,9 @@ module ne {
   export var CANVAS2D = 2;
 
   export interface GameOptions {
-    mode: number;
-    width: number;
-    height: number;
+    mode?: number;
+    width?: number;
+    height?: number;
   }
 
   export class LoadScene extends scene.Scene {
@@ -18,10 +18,13 @@ module ne {
     private _updateBind   : (delta: number) => any;
     private _sceneManager : scene.SceneManager;
     private _render       : graphics.Render;
+    private _time         : number;
 
-    constructor(options : GameOptions= { width: 640, height: 480, mode: ne.WEBGL }) {
-      this._sceneManager = new ne.scene.SceneManager(LoadScene);
-      this.createRender(options);
+    constructor({ width: width = 480, height: height = 320,
+                  mode: mode = ne.WEBGL,
+                  loadScene: loadScene = LoadScene }) {
+      this._sceneManager = new ne.scene.SceneManager(loadScene);
+      this.createRender({ width, height, mode });
     }
 
     createRender(options : GameOptions) {
@@ -33,12 +36,18 @@ module ne {
     }
 
     start(scene: scene.SceneClass) {
+      this._time = performance.now();
       this._updateBind = this.update.bind(this);
+      this._sceneManager.goto(scene);
+      requestAnimationFrame(this._updateBind);
     }
 
-    update(delta: number) {
+    update(timestamp: number) {
+      var delta = timestamp - this._time;
       this._render.render(this._sceneManager.instance)
       this._sceneManager.update(delta);
+      requestAnimationFrame(this._updateBind);
+      this._time = timestamp;
     }
 
     get view() {

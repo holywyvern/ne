@@ -22,7 +22,7 @@ module ne.graphics {
     }
 
     render(object: RenderObject) {
-
+      object.render(this._gl);
     }
 
   }
