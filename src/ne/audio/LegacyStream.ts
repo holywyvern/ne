@@ -1,3 +1,5 @@
+/// <reference path="./Stream.ts" />
+
 module ne.audio {
 
   export class LegacyStream extends Stream {

@@ -99,7 +99,7 @@ module ne.math {
     }
 
   }
-  vectorFields(Vector2.prototype, 's', 't');
+  vectorFields(Vector2.prototype, 's', 't', 'p', 'q');
   vectorFields(Vector2.prototype, 'u', 'v');
   vectorFields(Vector2.prototype, 'x', 'y', 'z', 'w');
   vectorFields(Vector2.prototype, 'r', 'g', 'b', 'a');

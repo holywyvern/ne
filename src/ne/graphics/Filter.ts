@@ -210,12 +210,10 @@ module ne.graphics {
       },
       sampler2d(gl: WebGLRenderingContext, location: WebGLUniformLocation, value: Texture) {
         if (value) {
-          gl.uniform1i (location, 0);
         }
       },
       texture(gl: WebGLRenderingContext, location: WebGLUniformLocation, value: Texture) {
         if (value) {
-          gl.uniform1i (location, 0);
         }
       }
     }

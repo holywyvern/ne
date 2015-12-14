@@ -1,7 +1,5 @@
 module ne.audio {
 
-
-
   export class Buffer {
 
     constructor() {

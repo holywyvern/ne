@@ -1,3 +1,5 @@
+/// <reference path="./Buffer.ts" />
+
 module ne.audio {
 
 

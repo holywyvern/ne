@@ -147,6 +147,22 @@ module ne.math {
           this[1] = value;
         }
 
+        get p() {
+          return this[2];
+        }
+
+        set p(value:number) {
+          this[2] = value;
+        }
+
+        get q() {
+          return this[3];
+        }
+
+        set q(value:number) {
+          this[3] = value;
+        }
+
   }
 
 }

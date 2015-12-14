@@ -1,24 +1,6 @@
+/// <reference path="./combinator.ts" />
+
 module ne.math {
-
-  function permutator(inputArr: String[]): String[][] {
-    var results = [];
-
-    function permute(arr, memo=[]) {
-      var cur;
-      for (var i = 0; i < arr.length; i++) {
-        cur = arr.splice(i, 1);
-        if (arr.length === 0) {
-          results.push(memo.concat(cur));
-        }
-        permute(arr.slice(), memo.concat(cur));
-        arr.splice(i, 0, cur[0]);
-      }
-
-      return results;
-    }
-
-    return permute(inputArr);
-  }
 
   function makePropertyAccessor(slice: String[]) {
     var length = slice.length;
@@ -52,15 +34,17 @@ module ne.math {
 
   function makeProperties(properties: String[]): PropertyDescriptorMap {
     var result: PropertyDescriptorMap = {};
-    var permutations = permutator(properties);
+    //var permutations = permutator(properties);
+    var permutations = combinator(properties.length, properties);
     for (var length = 1; length <= properties.length; ++length) {
       makePropertiesOfSize(result, permutations, length);
     }
     return result;
   }
 
-  export function vectorFields(object: any, ...properties) {
-    Object.defineProperties(object, makeProperties(<String[]>properties));
+
+  export function vectorFields(object: any, ...properties: String[]) {
+    Object.defineProperties(object, makeProperties(properties));
   }
 
 }
