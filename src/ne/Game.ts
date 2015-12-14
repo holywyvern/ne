@@ -48,8 +48,8 @@ module ne {
       var delta = timestamp - this._time;
       this._render.render(this._sceneManager.instance)
       this._sceneManager.update(delta);
-      requestAnimationFrame(this._updateBind);
       this._time = timestamp;
+      requestAnimationFrame(this._updateBind);
     }
 
     get view() {
