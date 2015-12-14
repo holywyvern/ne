@@ -1,5 +1,5 @@
 
-var requestAnimFrame: (callback: () => void) => void = (function(){
+window.requestAnimationFrame = (function(){
   return window.requestAnimationFrame ||
   (<any>window).webkitRequestAnimationFrame ||
   (<any>window).mozRequestAnimationFrame ||

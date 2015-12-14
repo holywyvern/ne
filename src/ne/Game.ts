@@ -1,3 +1,5 @@
+/// <reference path="./scene/Scene.ts" />
+
 module ne {
 
   export var WEBGL    = 1;
