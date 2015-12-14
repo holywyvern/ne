@@ -42,7 +42,7 @@ module ne.graphics {
       this._generateGlBuffer();
       this.bind(new Rect(0, 0, this.width, this.height));
       this._generateGlTexture();
-
+      return this._glTexture;
     }
 
     update() {

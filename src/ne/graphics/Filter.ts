@@ -153,21 +153,25 @@ module ne.graphics {
       mat4:   'mat4',
       color:  'vec4',
       rect:   'vec4',
-      point:  'vec3'
+      point:  'vec3',
+      sampler2d: 'sampler2d',
+      texture:   'sampler2d'
     }
 
     public static DEFAULTS = {
-      number: () => 0,
-      float:  () => 0,
-      mat2:   () => new math.Matrix2(),
-      mat3:   () => new math.Matrix3(),
-      mat4:   () => new math.Matrix4(),
-      vec2:   () => new math.Vector2(),
-      vec3:   () => new math.Vector3(),
-      vec4:   () => new math.Vector4(),
-      color:  () => new Color(),
-      rect:   () => new Rect(),
-      point:  () => new Point()
+      number:    () => 0,
+      float:     () => 0,
+      mat2:      () => new math.Matrix2(),
+      mat3:      () => new math.Matrix3(),
+      mat4:      () => new math.Matrix4(),
+      vec2:      () => new math.Vector2(),
+      vec3:      () => new math.Vector3(),
+      vec4:      () => new math.Vector4(),
+      color:     () => new Color(),
+      rect:      () => new Rect(),
+      point:     () => new Point(),
+      sampler2d: () => null,
+      texture:   () => null,
     };
 
     public static UPDATE = {
@@ -203,6 +207,16 @@ module ne.graphics {
       },
       point(gl: WebGLRenderingContext, location: WebGLUniformLocation, value: math.Vector3) {
         gl.uniform3fv(location, value.data);
+      },
+      sampler2d(gl: WebGLRenderingContext, location: WebGLUniformLocation, value: Texture) {
+        if (value) {
+          gl.uniform1i (location, 0);
+        }
+      },
+      texture(gl: WebGLRenderingContext, location: WebGLUniformLocation, value: Texture) {
+        if (value) {
+          gl.uniform1i (location, 0);
+        }
       }
     }
 
