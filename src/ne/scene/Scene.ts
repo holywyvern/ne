@@ -38,6 +38,10 @@
 
     }
 
+    render(gl: WebGLRenderingContext) {
+
+    }
+
   }
 
 }

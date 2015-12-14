@@ -116,7 +116,7 @@ module ne.graphics {
     private _checkProgram(gl: WebGLRenderingContext) {
       var success = gl.getProgramParameter(this._glProgram, gl.LINK_STATUS);
       if (!success) {
-         throw ("program filed to link:" + gl.getProgramInfoLog (this._glProgram));
+         throw new Error("program filed to link:" + gl.getProgramInfoLog (this._glProgram));
       }
     }
 

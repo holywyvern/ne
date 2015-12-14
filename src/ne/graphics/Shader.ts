@@ -48,6 +48,7 @@ module ne.graphics {
         // Something went wrong during compilation; get the error
         var err = "Could not compile shader: " + gl.getShaderInfoLog(this._glShader);
         this.destroy(gl);
+        throw new Error(err);
       }
     }
 

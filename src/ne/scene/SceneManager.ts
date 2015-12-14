@@ -36,6 +36,10 @@ module ne.scene {
       return this._sceneStack[this._sceneStack.length - 1];
     }
 
+    get events() {
+      return this._instance ? this._instance.events : null;
+    }
+
     get instance() {
       return this._instance;
     }
