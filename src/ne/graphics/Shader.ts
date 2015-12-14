@@ -38,7 +38,17 @@ module ne.graphics {
         gl.shaderSource(this._glShader, this.generatedSource);
         gl.compileShader(this._glShader);
       }
+      this._validateShader(gl);
       return this._glShader;
+    }
+
+    private _validateShader(gl: WebGLRenderingContext) {
+      var success = gl.getShaderParameter(this._glShader, gl.COMPILE_STATUS);
+      if (!success) {
+        // Something went wrong during compilation; get the error
+        var err = "Could not compile shader: " + gl.getShaderInfoLog(this._glShader);
+        this.destroy(gl);
+      }
     }
 
     private _makeHead() {
@@ -53,7 +63,7 @@ module ne.graphics {
     }
 
     private _mapAttributes() {
-      var attr = this._filter.attributes();
+      var attr = this._filter.attributes;
       return Object.keys(attr)
         .map((k) => {
           return `${attr[k]} ${k};`;
@@ -62,7 +72,7 @@ module ne.graphics {
     }
 
     private _mapUniforms() {
-      var attr = this._filter.uniforms();
+      var attr = this._filter.uniforms;
       return Object.keys(attr)
         .map((k) => {
           return `${attr[k].type} ${k};`;
@@ -71,7 +81,7 @@ module ne.graphics {
     }
 
     private _mapVarying() {
-      var attr = this._filter.varying();
+      var attr = this._filter.varying;
       return Object.keys(attr)
         .map((k) => {
           return `${attr[k]} ${k};`;
