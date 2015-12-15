@@ -48,6 +48,13 @@ module ne.objects {
       if (idx === -1) {
         this._children.push(child);
         this.notifyChanges();
+        child.parent = this;
+      }
+    }
+
+    update(delta: number) {
+      for (var c of this._children) {
+        c.update(delta);
       }
     }
 

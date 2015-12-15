@@ -46,7 +46,9 @@ module ne.graphics {
       var success = gl.getShaderParameter(this._glShader, gl.COMPILE_STATUS);
       if (!success) {
         // Something went wrong during compilation; get the error
-        var err = "Could not compile shader: " + gl.getShaderInfoLog(this._glShader);
+        var info = gl.getShaderInfoLog(this._glShader);
+        var source = this.generatedSource;
+        var err = `Could not compile shader: ${info}\nSource:\n${source}`;
         this.destroy(gl);
         throw new Error(err);
       }

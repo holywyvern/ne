@@ -85,13 +85,13 @@ module ne.utils {
     _prepareImage(url) {
       var img = new Image();
       img.onload = () => {
-        this._checkLoad();
         _pixmapCache[url] = graphics.Pixmap.fromImage(img);
+        this._checkLoad();
       }
       img.onerror = () => {
-        this._checkLoad();
         _pixmapCache[url] = null;
         console.error(`Could not load image: '${url}'`);
+        this._checkLoad();
       }
       img.src = url;
     }

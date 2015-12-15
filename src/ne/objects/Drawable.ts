@@ -9,6 +9,7 @@ module ne.objects {
     constructor() {
       this._z = 0;
       this._parent = null;
+      this.visible = true;
     }
 
     get z() {
@@ -38,8 +39,12 @@ module ne.objects {
         if (value) {
           value.add(this);
         }
-        this._parent = value;
       }
+      this._parent = value;
+    }
+
+    update(delta: number) {
+
     }
 
     render(render: graphics.WebGLRender) {

@@ -11,11 +11,13 @@ module ne.scene {
     private _instance   : Scene;
     private _loadScene  : Scene;
     private _isReady    : boolean;
+    private _game       : Game;
 
-    constructor(loadScene : SceneClass = null) {
+    constructor(game : Game, loadScene : SceneClass = null) {
       this._sceneStack = [null];
       this._lastScene  = null;
       this._instance   = null;
+      this._game       = game;
       this.setupLoadScene(loadScene);
     }
 
@@ -23,13 +25,18 @@ module ne.scene {
       this._isReady = false;
       var loader = new utils.Loader();
       this._loadScene  = new (scene || Scene)(this);
-      this._instance.load(loader);
+      this._instance   = this._loadScene;
+      this._loadScene.load(loader);
       loader.done(() => this._isReady = true );
       loader.start();
     }
 
     get ready() {
       return this._isReady;
+    }
+
+    get game() {
+      return this._game;
     }
 
     get scene() {

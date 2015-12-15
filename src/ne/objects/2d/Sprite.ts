@@ -11,7 +11,7 @@ module ne.objects {
 
     constructor() {
       super();
-      this.filter    = null;
+      this.filter    = ne.filters.TextureFilter.INSTANCE;
       this.texture   = null;
       this._position = new math.Vector2();
       this.frame     = new graphics.Rect();

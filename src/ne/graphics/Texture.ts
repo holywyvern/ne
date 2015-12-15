@@ -40,7 +40,6 @@ module ne.graphics {
     generate(gl: WebGLRenderingContext) {
       this._gl = gl;
       this._generateGlBuffer();
-      this.bind(gl, new Rect(0, 0, this.width, this.height));
       this._generateGlTexture();
       return this._glTexture;
     }
@@ -72,6 +71,7 @@ module ne.graphics {
 
     private _generateGlTexture() {
       var gl = this._gl;
+      this._glTexture = gl.createTexture();
       gl.bindTexture(gl.TEXTURE_2D, this._glTexture);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);

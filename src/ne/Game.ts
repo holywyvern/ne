@@ -13,8 +13,8 @@ module ne {
     constructor({ width: width = 480, height: height = 320,
                   mode: mode = ne.Mode.AUTO,
                   loadScene: loadScene = <scene.SceneClass>scene.LoadScene }) {
-      this._sceneManager = new ne.scene.SceneManager(loadScene);
       this.createRender({ width, height, mode });
+      this._sceneManager = new ne.scene.SceneManager(this, loadScene);    
     }
 
     createRender(options : GameOptions) {
@@ -58,9 +58,21 @@ module ne {
       return this._render.canvas;
     }
 
+    get rect(): ne.graphics.Rect {
+      return new ne.graphics.Rect(0, 0, this.width, this.height);
+    }
+
     attach(id: string|HTMLElement) {
       var e = typeof id == 'string' ? document.getElementById(<string>id) : <HTMLElement>id;
       e.appendChild(this.view);
+    }
+
+    get width() {
+      return this._render.width;
+    }
+
+    get height() {
+      return this._render.height;
     }
 
   }
