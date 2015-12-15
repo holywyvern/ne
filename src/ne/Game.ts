@@ -1,19 +1,7 @@
-/// <reference path="./scene/Scene.ts" />
+/// <reference path="./scene/LoadScene.ts" />
+/// <reference path="./Mode.ts" />
 
 module ne {
-
-  export var WEBGL    = 1;
-  export var CANVAS2D = 2;
-
-  export interface GameOptions {
-    mode?: number;
-    width?: number;
-    height?: number;
-  }
-
-  export class LoadScene extends scene.Scene {
-
-  }
 
   export class Game {
 
@@ -23,17 +11,31 @@ module ne {
     private _time         : number;
 
     constructor({ width: width = 480, height: height = 320,
-                  mode: mode = ne.WEBGL,
-                  loadScene: loadScene = LoadScene }) {
+                  mode: mode = ne.Mode.AUTO,
+                  loadScene: loadScene = <scene.SceneClass>scene.LoadScene }) {
       this._sceneManager = new ne.scene.SceneManager(loadScene);
       this.createRender({ width, height, mode });
     }
 
     createRender(options : GameOptions) {
-      if (options.mode === WEBGL) {
-        this._render = new graphics.WebGLRender(options.width, options.height);
-      } else {
-        this._render = new graphics.Canvas2DRender(options.width, options.height);
+      switch (options.mode) {
+        case Mode.CANVAS2D:
+          this._render = new graphics.Canvas2DRender(options);
+          break;
+        case Mode.WEBGL:
+          this._render = new graphics.WebGLRender(options);
+          break;
+        case Mode.AUTO: default:
+          this._autoDetectMode(options)
+          break;
+      }
+    }
+
+    private _autoDetectMode(options : GameOptions) {
+      try {
+        this._render = new graphics.WebGLRender(options);
+      } catch (e) {
+        this._render = new graphics.Canvas2DRender(options);
       }
     }
 
@@ -54,6 +56,11 @@ module ne {
 
     get view() {
       return this._render.canvas;
+    }
+
+    attach(id: string|HTMLElement) {
+      var e = typeof id == 'string' ? document.getElementById(<string>id) : <HTMLElement>id;
+      e.appendChild(this.view);
     }
 
   }

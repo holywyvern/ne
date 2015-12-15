@@ -6,8 +6,12 @@ module ne.graphics {
 
     private _gl: WebGLRenderingContext;
 
-    constructor(width: number, height: number) {
-      super(width, height);
+    constructor(options : GameOptions) {
+      super(options.width, options.height);
+      this._createContext();
+    }
+
+    private _createContext() {
       this._gl = <WebGLRenderingContext>this.canvas.getContext('webgl');
       if (!this._gl) {
         this._gl = this.canvas.getContext('experimental-webgl');
