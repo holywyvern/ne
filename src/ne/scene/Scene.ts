@@ -38,7 +38,7 @@
 
     }
 
-    render(gl: WebGLRenderingContext) {
+    render(gl: graphics.WebGLRender) {
 
     }
 

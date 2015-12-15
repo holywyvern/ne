@@ -40,7 +40,7 @@ module ne.graphics {
     generate(gl: WebGLRenderingContext) {
       this._gl = gl;
       this._generateGlBuffer();
-      this.bind(new Rect(0, 0, this.width, this.height));
+      this.bind(gl, new Rect(0, 0, this.width, this.height));
       this._generateGlTexture();
       return this._glTexture;
     }
@@ -55,7 +55,8 @@ module ne.graphics {
       }
     }
 
-    bind(rect: Rect) {
+    bind(gl: WebGLRenderingContext, rect: Rect) {
+      this.check(gl);
       this._bindGlBuffer(this._buffer, rect);
       this._bindGlTexture();
     }

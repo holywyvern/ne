@@ -1,6 +1,6 @@
-module ne.graphics {
+module ne.objects {
 
-  export class Drawable implements RenderObject {
+  export class Drawable implements graphics.RenderObject {
 
     public visible  : boolean;
     private _z      : number;
@@ -42,7 +42,7 @@ module ne.graphics {
       }
     }
 
-    render(gl: WebGLRenderingContext) {
+    render(render: graphics.WebGLRender) {
 
     }
 

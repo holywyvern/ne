@@ -1,10 +1,5 @@
 module ne.graphics {
 
-  export interface RenderObject {
-    render(gl : WebGLRenderingContext);
-    render2d?(ctx : CanvasRenderingContext2D);
-  }
-
   export class Render {
 
     private _canvas : HTMLCanvasElement;

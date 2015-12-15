@@ -1,8 +1,8 @@
 /// <reference path="./Drawable.ts" />
 
-module ne.graphics {
+module ne.objects {
 
-  export class DrawableContainer extends Drawable implements RenderObject  {
+  export class DrawableContainer extends Drawable  {
 
     private _changed  : boolean;
     private _children : Array<Drawable>;
@@ -17,9 +17,9 @@ module ne.graphics {
       this._changed = true;
     }
 
-    render(gl: WebGLRenderingContext) {
+    render(render: graphics.WebGLRender) {
       this._checkZIndex();
-      this._renderChildren(gl);
+      this._renderChildren(render);
     }
 
     protected _checkZIndex() {
@@ -29,9 +29,9 @@ module ne.graphics {
       }
     }
 
-    protected _renderChildren(gl: WebGLRenderingContext) {
+    protected _renderChildren(render: graphics.WebGLRender) {
       for (var c of this._children) {
-        c.render(gl);
+        c.render(render);
       }
     }
 
@@ -53,6 +53,10 @@ module ne.graphics {
 
     contains(child : Drawable) {
       return this._children.indexOf(child) !== -1;
+    }
+
+    prepare(render: graphics.WebGLRender) {
+
     }
 
   }
