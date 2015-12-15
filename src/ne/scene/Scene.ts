@@ -26,7 +26,7 @@
 
     }
 
-    start(loader : utils.CacheFinder) {
+    start(cache : utils.CacheFinder) {
 
     }
 
