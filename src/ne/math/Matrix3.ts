@@ -4,6 +4,10 @@ module ne.math {
 
   export class Matrix3 extends Matrix2 {
 
+    get width() {
+      return 3;
+    }
+
     get['4']() {
       return this._data[4];
     }

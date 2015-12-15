@@ -142,6 +142,23 @@ module ne.graphics {
       return this._varying;
     }
 
+    updateAttribute(name:string, size:number) {
+      var pos = this._locations.attributes[name];
+      this._gl.enableVertexAttribArray(pos);
+      this._gl.vertexAttribPointer(pos, size, this._gl.FLOAT, false, 0, 0);
+    }
+
+    updateUniforms() {
+      var keys = Object.keys(this._uniforms);
+      var length = keys.length;
+      for (var i = 0; i < length; ++i) {
+        let key = keys[i];
+        let u   = this._uniforms[key];
+        let pos = this._locations.uniforms[key];
+        Filter.UPDATE[u.type](this._gl, pos, u.value);
+      }
+    }
+
     public static TYPES = {
       number: 'float',
       float:  'float',
@@ -154,8 +171,8 @@ module ne.graphics {
       color:  'vec4',
       rect:   'vec4',
       point:  'vec3',
-      sampler2d: 'sampler2d',
-      texture:   'sampler2d'
+      sampler2D: 'sampler2D',
+      texture:   'sampler2D'
     }
 
     public static DEFAULTS = {
@@ -170,7 +187,7 @@ module ne.graphics {
       color:     () => new Color(),
       rect:      () => new Rect(),
       point:     () => new Point(),
-      sampler2d: () => null,
+      sampler2D: () => null,
       texture:   () => null,
     };
 
@@ -208,7 +225,7 @@ module ne.graphics {
       point(gl: WebGLRenderingContext, location: WebGLUniformLocation, value: math.Vector3) {
         gl.uniform3fv(location, value.data);
       },
-      sampler2d(gl: WebGLRenderingContext, location: WebGLUniformLocation, value: Texture) {
+      sampler2D(gl: WebGLRenderingContext, location: WebGLUniformLocation, value: Texture) {
         if (value) {
         }
       },

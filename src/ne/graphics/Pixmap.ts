@@ -36,6 +36,10 @@ module ne.graphics {
       return this._canvas.height;
     }
 
+    get rect() {
+      return new Rect(0, 0, this.width, this.height);
+    }
+
   }
 
 }

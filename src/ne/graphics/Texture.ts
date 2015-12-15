@@ -116,6 +116,10 @@ module ne.graphics {
       return this._pixmap.height;
     }
 
+    get rect() {
+      return this._pixmap.rect;
+    }
+
   }
 
 }

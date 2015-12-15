@@ -69,7 +69,7 @@ module ne.graphics {
       var attr = this._filter.attributes;
       return Object.keys(attr)
         .map((k) => {
-          return `${attr[k]} ${k};`;
+          return `attribute ${attr[k]} ${k};\n`;
         })
         .join('\n');
     }
@@ -78,7 +78,7 @@ module ne.graphics {
       var attr = this._filter.uniforms;
       return Object.keys(attr)
         .map((k) => {
-          return `${attr[k].type} ${k};`;
+          return `uniform ${attr[k].type} ${k};\n`;
         })
         .join('\n');
     }
@@ -87,7 +87,7 @@ module ne.graphics {
       var attr = this._filter.varying;
       return Object.keys(attr)
         .map((k) => {
-          return `${attr[k]} ${k};`;
+          return `varying ${attr[k]} ${k};\n`;
         })
         .join('\n');
     }

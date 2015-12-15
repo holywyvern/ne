@@ -36,13 +36,7 @@ module ne.graphics {
     }
 
     prepareRectBuffer(rect : graphics.Rect) {
-      var x1 = rect.x;
-      var x2 = rect.x + rect.width;
-      var y1 = rect.y;
-      var y2 = rect.y + rect.height;
-      var data = new Float32Array([ x1, y1, x2, y1, x1, y2, x1, y2, x2, y1, x2, y2 ]);
-      this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this._buffer);
-      this.gl.bufferData(this.gl.ARRAY_BUFFER, data, this.gl.STATIC_DRAW);
+      utils.gl.bindBuffer(this.gl, this._buffer, rect);
     }
 
   }
